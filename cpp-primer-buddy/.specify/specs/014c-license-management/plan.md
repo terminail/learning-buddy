@@ -1,156 +1,219 @@
-# Implementation Plan: Course Content Provider
+# Implementation Plan: License Management (Podman)
+
+**Feature Branch**: `014c-license-management`  
+**Created**: 2025-11-07  
+**Status**: Draft  
 
 ## Overview
-This plan outlines the implementation approach for creating a Course Content Provider that runs within the Learning Buddy Docker Environment (infrastructure container) to provide an API for the Learning Buddy extension to access course content. The Course Content Provider also orchestrates course-specific Docker environments for development work and implements anti-bulk copying measures. **Docker is a mandatory requirement for all extension functionality, and there are no fallback options for users without Docker.** This architectural change will simplify the extension by moving complex download logic into the infrastructure container while maintaining all existing security and licensing features.
 
-## Phase 1: Critical Docker Environment Verification (Week 1)
+This plan outlines the implementation of the License Management component that runs within the Learning Buddy Podman Environment. The implementation will focus on secure license verification, download limit enforcement, and usage tracking while maintaining integration with the extension-level license management system.
 
-### Week 1, Days 1-2: Docker Status Checking
-- Implement immediate Docker installation checking at extension startup
-- Implement Docker daemon running status verification
-- Create immediate blocking of all functionality when Docker is not available
-- Implement clear error messaging with installation guidance
+## Phase 1: Podman Environment Foundation (Week 1)
 
-### Week 1, Days 3-4: Continuous Monitoring
-- Implement continuous Docker status monitoring during operation
-- Implement graceful handling of Docker daemon stoppages
-- Add real-time error messaging when Docker becomes unavailable
-- Test Docker verification mechanisms
+### Objective
+Establish the core License Management component within the Learning Buddy Podman Environment.
 
-### Week 1, Days 5-7: DockerStatusChecker Component
-- Create DockerStatusChecker component
-- Integrate with extension startup sequence
-- Implement error handling and user guidance mechanisms
-- Conduct unit testing of Docker verification
+### Tasks
 
-## Phase 2: Infrastructure Container Setup (Week 2)
+1. **Podman Environment Integration**
+   - Integrate License Management component with existing Podman environment
+   - Implement Podman container management for license operations
+   - Develop secure communication between extension and license container
 
-### Week 2, Days 1-2: Content Provider Design
-- Design Course Content Provider architecture within Learning Buddy Docker Environment
-- Define extension-infrastructure container communication protocol
-- Create infrastructure container image specifications
-- Plan orchestration of course-specific containers
+2. **Core License Verification**
+   - Implement course-specific license verification functionality
+   - Create secure license data handling within containers
+   - Develop license authenticity verification mechanisms
 
-### Week 2, Days 3-4: Container Content Provider
-- Create ContainerContentProvider component within infrastructure container
-- Implement Gitee content fetching within infrastructure container
-- Add support for multiple content sources
-- Implement error handling and retry logic
+3. **Basic Usage Tracking**
+   - Implement basic license usage tracking per course
+   - Create centralized repository integration
+   - Develop anonymization mechanisms for user privacy
 
-### Week 2, Days 5-7: Container Integration
-- Integrate content provider with Learning Buddy Docker Environment
-- Implement basic extension-infrastructure container communication
-- Implement orchestration of course-specific containers
-- Conduct initial testing
-- Document container requirements
+### Success Criteria
+- License Management component runs within Podman environment
+- Basic license verification works for individual courses
+- Usage tracking is established with privacy protection
 
-## Phase 3: Security and Licensing (Week 3)
+## Phase 2: Download Limit Enforcement (Week 2)
 
-### Week 3, Days 1-2: Container License Management
-- Create ContainerLicenseManager component within infrastructure container
-- Implement license verification within infrastructure container
-- Ensure secure handling of license data
-- Add license validation error handling
+### Objective
+Implement comprehensive download limit enforcement per course with flexible policies for free and paid courses.
 
-### Week 3, Days 3-4: Download Limit Enforcement
-- Create ContainerUsageTracker component within infrastructure container
-- Implement download limit enforcement within infrastructure container
-- Add centralized usage tracking
-- Test limit enforcement scenarios
+### Tasks
 
-### Week 3, Days 5-7: Security Testing
-- Conduct security audit of infrastructure container components
-- Test license data protection mechanisms
-- Validate download limit enforcement
-- Fix security vulnerabilities
+1. **Download Limit System**
+   - Implement per-course download limit enforcement
+   - Create flexible policies for different course types
+   - Develop tracking mechanisms for shared licenses
 
-## Phase 4: Anti-Bulk Copying Measures (Week 4)
+2. **Limit Policy Management**
+   - Implement different limit policies for free vs. paid courses
+   - Create configurable limit settings per course
+   - Develop override mechanisms for special cases
 
-### Week 4, Days 1-2: Rate Limiting and Session Management
-- Implement RateLimiter component within Course Content Provider
-- Create SessionManager for time-limited learning sessions
-- Add ActivityTracker for learning activity requirements
-- Test rate limiting and session management
+3. **Integration Testing**
+   - Test download limit enforcement across multiple courses
+   - Verify limit tracking accuracy
+   - Validate policy flexibility
 
-### Week 4, Days 3-4: Content Obfuscation and Fragmentation
-- Implement ContentObfuscator to add educational but non-essential elements
-- Create FragmentManager for fragmented content distribution
-- Test content obfuscation and fragmentation
-- Validate that legitimate access is not significantly impacted
+### Success Criteria
+- Download limits are enforced per course within containers
+- Different policies work for free and paid courses
+- Limit tracking is accurate and reliable
 
-### Week 4, Days 5-7: Anti-Bulk Copying Controller
-- Create AntiBulkCopyingController to coordinate all measures
-- Integrate anti-bulk copying measures with license verification
-- Integrate anti-bulk copying measures with download limits
-- Conduct comprehensive testing of anti-bulk copying measures
+## Phase 3: Multi-Course Support (Week 3)
 
-## Phase 5: Container Orchestration (Week 5)
+### Objective
+Implement full multi-course license management with independent course access control.
 
-### Week 5, Days 1-2: Course Container Management
-- Implement orchestration of course-specific Docker environments
-- Create secure mounting of course materials to course containers
-- Implement container lifecycle management for course containers
-- Test isolation between infrastructure and course containers
+### Tasks
 
-### Week 5, Days 3-4: Content Caching
-- Implement infrastructure container-based content caching
-- Add offline content access support
-- Optimize cache storage and retrieval
-- Test caching scenarios
+1. **Multi-Course Architecture**
+   - Implement independent license management for multiple courses
+   - Create course-specific access control mechanisms
+   - Develop user interface for managing multiple licenses
 
-### Week 5, Days 5-7: Progress Reporting
-- Add progress reporting for downloads and container setup
-- Implement user feedback mechanisms
-- Add status tracking for all container operations
-- Test progress reporting
+2. **Course Access Control**
+   - Implement access control based on course licensing
+   - Create clear indicators for license requirements
+   - Develop access validation for mixed license scenarios
 
-## Phase 6: Extension Interface and Final Testing (Week 6)
+3. **License Lifecycle Management**
+   - Implement license expiration handling per course
+   - Create renewal mechanisms
+   - Develop status reporting to extension-level manager
 
-### Week 6, Days 1-2: Extension Interface
-- Create ExtensionContainerInterface component
-- Implement simplified extension communication with infrastructure container
-- Add error reporting from infrastructure container
-- Test extension-infrastructure container integration
+### Success Criteria
+- Users can manage licenses for multiple courses independently
+- Access control works correctly for each course
+- License expiration is handled properly per course
 
-### Week 6, Days 3-5: Comprehensive Testing
-- Conduct end-to-end testing
-- Perform user acceptance testing
-- Test edge cases and error scenarios
-- Validate success criteria
-- Test complete isolation between container types
-- Test critical Docker verification at startup and during operation
-- Test anti-bulk copying measures effectiveness
+## Phase 4: Error Handling and User Experience (Week 4)
 
-### Week 6, Days 6-7: Performance Optimization
-- Conduct performance optimization
-- Refine user experience based on feedback
-- Document performance benchmarks
-- Final validation and quality assurance
+### Objective
+Implement comprehensive error handling and enhance user experience with clear feedback.
 
-## Risk Mitigation
+### Tasks
 
-### Technical Risks
-- **Container communication complexity**: Design simple, robust communication protocols
-- **Resource constraints**: Implement resource limits and monitoring
-- **Security vulnerabilities**: Regular security scanning and validation
-- **Cross-platform issues**: Extensive testing on all supported platforms
+1. **Error Handling**
+   - Implement robust error handling for license operations
+   - Create clear error messages for different failure scenarios
+   - Develop recovery mechanisms for service outages
 
-### Schedule Risks
-- **Complex container integration**: Plan for iterative integration approach
-- **Performance optimization challenges**: Focus on common use cases first
-- **Security implementation**: Allocate sufficient time for thorough security testing
+2. **User Experience Enhancements**
+   - Implement user-friendly license management interface
+   - Create clear status indicators for license states
+   - Develop helpful guidance for license issues
+
+3. **Performance Optimization**
+   - Optimize license verification performance
+   - Improve communication efficiency with extension
+   - Enhance resource management for license operations
+
+### Success Criteria
+- License-related errors are handled gracefully with clear feedback
+- Users can easily manage and understand their license status
+- Performance meets specified success criteria
+
+## Phase 5: Testing and Quality Assurance (Week 5)
+
+### Objective
+Comprehensive testing of all functionality to ensure quality and reliability.
+
+### Tasks
+
+1. **Unit Testing**
+   - Test all core license management components individually
+   - Validate license verification algorithms
+   - Test usage tracking accuracy
+
+2. **Integration Testing**
+   - Test end-to-end license management workflows
+   - Validate extension-container communication
+   - Test multi-course scenarios
+
+3. **User Acceptance Testing**
+   - Validate all user stories and acceptance scenarios
+   - Test edge cases and error conditions
+   - Verify success criteria are met
+
+4. **Security Testing**
+   - Verify license data stays within containers
+   - Test protection against unauthorized access
+   - Validate privacy protection mechanisms
+
+### Success Criteria
+- All unit tests pass with required coverage
+- Integration tests validate end-to-end functionality
+- User acceptance testing confirms all user stories work
+- Security testing validates protection measures
+- Performance meets all specified success criteria
+
+## Phase 6: Documentation and Deployment (Week 6)
+
+### Objective
+Complete documentation and prepare for deployment.
+
+### Tasks
+
+1. **Technical Documentation**
+   - Document License Management architecture
+   - Create API documentation for extension-container communication
+   - Document security implementation details
+
+2. **User Documentation**
+   - Create user guides for license management
+   - Document Podman environment requirements
+   - Provide troubleshooting guides
+
+3. **Deployment Preparation**
+   - Finalize Podman environment images
+   - Prepare extension release
+   - Set up monitoring and logging
+
+### Success Criteria
+- Comprehensive technical documentation is complete
+- User documentation is clear and helpful
+- Deployment is smooth and reliable
+- Monitoring and logging are in place
+
+## Dependencies
+
+1. **Podman Environment Integration** (010-podman-environment)
+   - Base Podman environment must be available
+   - Podman status checking functionality required
+
+2. **Course Content Provider** (014b-content-downloading)
+   - Content access control requires license verification
+   - Usage tracking integration needed
+
+3. **Extension License Management** (023-license-management)
+   - UI integration required
+   - Status reporting needed
+
+## Risks and Mitigation
+
+1. **Podman Compatibility Issues**
+   - Risk: Podman may not work consistently across different platforms
+   - Mitigation: Extensive cross-platform testing and clear system requirements
+
+2. **License Verification Performance**
+   - Risk: License verification may slow down content access
+   - Mitigation: Performance optimization and caching strategies
+
+3. **Security Vulnerabilities**
+   - Risk: License system may introduce new security concerns
+   - Mitigation: Comprehensive security testing and review
+
+4. **Service Availability**
+   - Risk: License verification service outages may block content access
+   - Mitigation: Offline caching and graceful degradation
 
 ## Success Metrics
-- Content downloaded through infrastructure container > 95% of cases
-- Extension network operations reduced by > 80%
-- User satisfaction with simplified extension > 90%
-- Container-based downloads complete within 5 minutes > 90% of cases
-- Docker requirement properly enforced in 100% of cases
-- Complete isolation between infrastructure and course containers in 100% of cases
-- Course materials securely mounted to course containers in 99% of cases
-- Critical Docker verification completes in 100% of cases within 2 seconds
-- Clear error messages displayed for Docker issues in 100% of cases
-- Extension blocks all functionality when Docker is not available in 100% of cases
-- Anti-bulk copying measures implemented in 100% of cases
-- Rate limiting enforced in 100% of rapid access attempts
-- Learning sessions properly managed in 99% of cases
+
+1. **Security**: 100% of license verification handled within containers
+2. **Reliability**: 100% of download limit enforcement within containers
+3. **Accuracy**: 99% accuracy in centralized license usage tracking
+4. **User Experience**: 100% of users can manage multiple course licenses independently
+5. **Error Handling**: 95% of license errors handled with appropriate feedback

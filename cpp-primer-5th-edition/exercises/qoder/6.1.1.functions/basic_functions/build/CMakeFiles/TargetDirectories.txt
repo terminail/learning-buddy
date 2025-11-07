@@ -1,0 +1,6 @@
+D:/git/programming-learning-vscode-buddy/cpp_primer_5th_deepseek/exercises/qoder/6.1.1.functions/basic_functions/build/CMakeFiles/basic_functions_exercises.dir
+D:/git/programming-learning-vscode-buddy/cpp_primer_5th_deepseek/exercises/qoder/6.1.1.functions/basic_functions/build/CMakeFiles/basic_functions_solutions.dir
+D:/git/programming-learning-vscode-buddy/cpp_primer_5th_deepseek/exercises/qoder/6.1.1.functions/basic_functions/build/CMakeFiles/test_basic_functions_basics.dir
+D:/git/programming-learning-vscode-buddy/cpp_primer_5th_deepseek/exercises/qoder/6.1.1.functions/basic_functions/build/CMakeFiles/test_basic_functions_practice.dir
+D:/git/programming-learning-vscode-buddy/cpp_primer_5th_deepseek/exercises/qoder/6.1.1.functions/basic_functions/build/CMakeFiles/edit_cache.dir
+D:/git/programming-learning-vscode-buddy/cpp_primer_5th_deepseek/exercises/qoder/6.1.1.functions/basic_functions/build/CMakeFiles/rebuild_cache.dir

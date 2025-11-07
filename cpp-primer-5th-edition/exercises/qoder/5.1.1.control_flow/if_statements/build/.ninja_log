@@ -1,0 +1,9 @@
+# ninja log v7
+9	347	7841238212125752	CMakeFiles/if_statements_exercises.dir/src/if_statements_exercises.cpp.obj	36dc897585112845
+24	361	7841238212283190	CMakeFiles/if_statements_solutions.dir/src/if_statements_solutions.cpp.obj	ba566a2ca40ef019
+349	524	7841238215532727	if_statements_exercises.exe	ad9839f058f81938
+362	526	7841238215656552	if_statements_solutions.exe	a1aa876048d0ac9f
+54	867	7841238212580989	CMakeFiles/test_if_statements_practice.dir/test/test_if_statements_practice.cpp.obj	3936ea0daf7561d2
+39	878	7841238212429810	CMakeFiles/test_if_statements_basics.dir/test/test_if_statements_basics.cpp.obj	f1637568fd2dfe9a
+868	1044	7841238220714756	test_if_statements_practice.exe	ff57d80ae8e2b486
+879	1047	7841238220821763	test_if_statements_basics.exe	6d1de148fb61d362

@@ -11,7 +11,7 @@ This specification has been enhanced to support multi-course licensing where lic
 
 ## Implementation Summary
 
-The license management system has been implemented with a web-based UI that allows users to add, view, and remove license keys. Licenses are verified using RSA public key cryptography within Docker containers. The system includes development tools for generating test licenses. Enhanced licenses now support Gitee content delivery with download limits (see feature 008-gitee-content-delivery).
+The license management system has been implemented with a web-based UI that allows users to add, view, and remove license keys. Licenses are verified using RSA public key cryptography within Podman containers. The system includes development tools for generating test licenses. Enhanced licenses now support Gitee content delivery with download limits (see feature 008-gitee-content-delivery).
 
 With the multi-course support in Learning Buddy, licenses are now course-specific:
 - Each course can have its own licensing model (free or paid)
@@ -19,12 +19,12 @@ With the multi-course support in Learning Buddy, licenses are now course-specifi
 - Free courses require no license verification
 - Paid courses require valid course-specific licenses
 - License management is handled per course rather than globally
-- License verification is performed securely within Docker containers without exposing sensitive data to the extension
-- Download limits are enforced per course within Docker containers to prevent license sharing
+- License verification is performed securely within Podman containers without exposing sensitive data to the extension
+- Download limits are enforced per course within Podman containers to prevent license sharing
 - License usage is tracked centrally per course in a centralized repository
 - User identification is anonymized for privacy protection
 
-**Note**: Docker is a mandatory requirement for this extension. The License Management component runs exclusively within the Learning Buddy Docker Environment. Users must have Docker installed and running to access any course content.
+**Note**: Podman is a mandatory requirement for this extension. The License Management component runs exclusively within the Learning Buddy Podman Environment. Users must have Podman installed and running to access any course content.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -109,7 +109,7 @@ As a learner, I want to remove licenses for specific courses from the extension 
 - **FR-012**: Extension MUST support both free and paid courses within the same extension
 - **FR-013**: Extension MUST clearly indicate which courses require licenses and which are free
 - **FR-014**: Extension MUST handle license expiration per course independently
-- **FR-015**: Extension MUST handle license verification within Docker containers for each course
+- **FR-015**: Extension MUST handle license verification within Podman containers for each course
 - **FR-016**: Extension MUST enforce download limits per course to prevent license sharing
 - **FR-017**: Extension MUST track license usage per course in a centralized repository
 - **FR-018**: Extension MUST anonymize user identification for privacy protection
@@ -122,8 +122,8 @@ As a learner, I want to remove licenses for specific courses from the extension 
 - **CourseLicenseStorage**: Secure storage for active license keys using VS Code's global state per course
 - **CourseLicenseValidator**: Verifies the authenticity and validity of license keys using RSA public key cryptography per course
 - **LicenseUI**: Web-based user interface for license management operations per course
-- **ContainerLicenseManager**: Handles license verification within Docker containers for each course
-- **ContainerUsageTracker**: Enforces download limits within Docker containers per course
+- **ContainerLicenseManager**: Handles license verification within Podman containers for each course
+- **ContainerUsageTracker**: Enforces download limits within Podman containers per course
 - **UsageTracker**: Tracks license usage in a centralized repository per course
 - **PrivacyManager**: Anonymizes user identification for privacy protection
 

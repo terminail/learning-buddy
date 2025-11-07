@@ -3,13 +3,13 @@
 **Feature Branch**: `018-course-structure-tool`  
 **Created**: 2025-11-07  
 **Status**: Draft  
-**Input**: User description: "Course creators need to provide course structure information and Dockerfile that meets Learning Buddy requirements. Learning Buddy should provide a tool to automatically scan course content, validate compliance, generate compliant course-structure.json files, and quickly check if course content and Dockerfile exist and are compliant."
+**Input**: User description: "Course creators need to provide course structure information and Podmanfile that meets Learning Buddy requirements. Learning Buddy should provide a tool to automatically scan course content, validate compliance, generate compliant course-structure.json files, and quickly check if course content and Podmanfile exist and are compliant."
 
 **See Also**: [Course-Specific Extension specification](../019-course-specific-extension/spec.md) for details on building course-specific extensions.
 
 ## Implementation Summary
 
-This feature provides a command-line tool that course creators can use to both validate their course repositories and automatically generate course-structure.json files that comply with Learning Buddy requirements. The tool automatically scans course content, validates required files, checks Dockerfile compliance, generates compliant course structures, and reports any issues. This helps course creators quickly identify and fix problems before distributing their courses, while also automating the creation of properly formatted course structure files.
+This feature provides a command-line tool that course creators can use to both validate their course repositories and automatically generate course-structure.json files that comply with Learning Buddy requirements. The tool automatically scans course content, validates required files, checks Podmanfile compliance, generates compliant course structures, and reports any issues. This helps course creators quickly identify and fix problems before distributing their courses, while also automating the creation of properly formatted course structure files.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -55,19 +55,19 @@ As a course creator, I want to automatically generate a compliant course-structu
 2. **Given** a course repository with mixed content types, **When** I run the generation tool, **Then** it should correctly categorize sections based on file types and naming conventions.
 3. **Given** an existing course-structure.json file, **When** I run the generation tool with an update flag, **Then** it should update the existing file while preserving manual customizations.
 
-### User Story 3 - Validate Dockerfile Compliance (Priority: P1)
+### User Story 3 - Validate Podmanfile Compliance (Priority: P1)
 
-As a course creator, I want to validate that my Dockerfile meets Learning Buddy requirements so that I can ensure learners will get the correct development environment.
+As a course creator, I want to validate that my Podmanfile meets Learning Buddy requirements so that I can ensure learners will get the correct development environment.
 
-**Why this priority**: This is essential for providing the right development environment - invalid Dockerfiles will prevent environment setup.
+**Why this priority**: This is essential for providing the right development environment - invalid Podmanfiles will prevent environment setup.
 
-**Independent Test**: Can be fully tested by running the validation tool on Dockerfiles with various issues and verifying that it correctly identifies compliance problems.
+**Independent Test**: Can be fully tested by running the validation tool on Podmanfiles with various issues and verifying that it correctly identifies compliance problems.
 
 **Acceptance Scenarios**:
 
-1. **Given** a valid Dockerfile that meets requirements, **When** I run the validation tool, **Then** it should report that the Dockerfile is valid.
-2. **Given** a Dockerfile missing required components, **When** I run the validation tool, **Then** it should report the missing components.
-3. **Given** a Dockerfile with security issues, **When** I run the validation tool, **Then** it should report the security concerns.
+1. **Given** a valid Podmanfile that meets requirements, **When** I run the validation tool, **Then** it should report that the Podmanfile is valid.
+2. **Given** a Podmanfile missing required components, **When** I run the validation tool, **Then** it should report the missing components.
+3. **Given** a Podmanfile with security issues, **When** I run the validation tool, **Then** it should report the security concerns.
 
 ### User Story 4 - Validate Course Catalog Structure (Priority: P2)
 
@@ -103,8 +103,8 @@ As a course creator, I want the validation tool to generate detailed reports of 
 - How does the tool handle network connectivity issues when validating remote repositories?
 - What happens when the course-structure.json file is malformed JSON?
 - How does the tool handle very large course repositories?
-- What happens when the Dockerfile contains syntax errors?
-- How does the tool handle repositories with multiple Dockerfiles?
+- What happens when the Podmanfile contains syntax errors?
+- How does the tool handle repositories with multiple Podmanfiles?
 - What happens when required directories are empty?
 
 ## Requirements *(mandatory)*
@@ -112,9 +112,9 @@ As a course creator, I want the validation tool to generate detailed reports of 
 ### Functional Requirements
 
 - **FR-001**: Tool MUST validate that course repositories follow the required directory structure
-- **FR-002**: Tool MUST validate that required files (course-structure.json, Dockerfile) exist in the repository
+- **FR-002**: Tool MUST validate that required files (course-structure.json, Podmanfile) exist in the repository
 - **FR-003**: Tool MUST validate that course-structure.json follows the required JSON format
-- **FR-004**: Tool MUST validate that Dockerfile meets Learning Buddy requirements
+- **FR-004**: Tool MUST validate that Podmanfile meets Learning Buddy requirements
 - **FR-005**: Tool MUST validate that course catalog files follow the required JSON format
 - **FR-006**: Tool MUST support validating local course repositories
 - **FR-007**: Tool MUST support validating remote course repositories (Gitee, GitHub)
@@ -124,7 +124,7 @@ As a course creator, I want the validation tool to generate detailed reports of 
 - **FR-011**: Tool SHOULD provide validation summary statistics
 - **FR-012**: Tool SHOULD support different output formats (text, JSON, HTML)
 - **FR-013**: Tool MUST validate that chapter directories exist and contain required content
-- **FR-014**: Tool MUST check for common security issues in Dockerfiles
+- **FR-014**: Tool MUST check for common security issues in Podmanfiles
 - **FR-015**: Tool MUST validate that protected chapter references match actual chapter IDs
 - **FR-016**: Tool MUST automatically generate course-structure.json files by scanning course content
 - **FR-017**: Tool MUST support updating existing course-structure.json files while preserving manual customizations
@@ -139,7 +139,7 @@ The tool MUST validate that course repositories follow this structure:
 ```
 course-repo/
 ├── course-structure.json     # Required: Course structure definition
-├── Dockerfile                # Required: Dockerfile for course environment
+├── Podmanfile                # Required: Podmanfile for course environment
 ├── README.md                 # Optional: Course overview
 ├── chapters/                 # Required: Course content organized by chapters
 │   ├── 1_introduction/
@@ -176,9 +176,9 @@ The tool MUST validate that course-structure.json contains these required fields
 }
 ```
 
-### Dockerfile Validation
+### Podmanfile Validation
 
-The tool MUST validate that Dockerfiles:
+The tool MUST validate that Podmanfiles:
 - Contain a valid FROM instruction
 - Include necessary development tools for the course
 - Do not contain obvious security vulnerabilities
@@ -206,7 +206,7 @@ The tool SHOULD support customization options for:
 - **RepositoryValidator**: Validates course repository structure and required files
 - **StructureValidator**: Validates course-structure.json format and content
 - **StructureGenerator**: Automatically generates course-structure.json files from course content
-- **DockerfileValidator**: Validates Dockerfile compliance and security
+- **PodmanfileValidator**: Validates Podmanfile compliance and security
 - **CatalogValidator**: Validates course catalog structure and content
 - **ReportGenerator**: Generates detailed validation reports
 - **ValidationResult**: Contains validation results and issues found
@@ -221,8 +221,8 @@ The tool SHOULD support customization options for:
 - **SC-002**: Course repositories with structural issues are correctly identified in 99% of cases
 - **SC-003**: Valid course-structure.json files are validated as valid in 100% of cases
 - **SC-004**: Invalid course-structure.json files are correctly identified in 99% of cases
-- **SC-005**: Valid Dockerfiles are validated as valid in 100% of cases
-- **SC-006**: Invalid Dockerfiles are correctly identified in 95% of cases
+- **SC-005**: Valid Podmanfiles are validated as valid in 100% of cases
+- **SC-006**: Invalid Podmanfiles are correctly identified in 95% of cases
 - **SC-007**: Valid course catalogs are validated as valid in 100% of cases
 - **SC-008**: Invalid course catalogs are correctly identified in 99% of cases
 - **SC-009**: Detailed validation reports are generated with actionable suggestions in 100% of cases

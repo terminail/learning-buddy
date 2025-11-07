@@ -1,32 +1,32 @@
 # Implementation Plan: Course Content Provider
 
 ## Overview
-This plan outlines the implementation approach for creating a Course Content Provider that runs within the Learning Buddy Docker Environment (infrastructure container) to provide an API for the Learning Buddy extension to access course content. The Course Content Provider also orchestrates course-specific Docker environments for development work and implements anti-bulk copying measures. **Docker is a mandatory requirement for all extension functionality, and there are no fallback options for users without Docker.** This architectural change will simplify the extension by moving complex download logic into the infrastructure container while maintaining all existing security and licensing features.
+This plan outlines the implementation approach for creating a Course Content Provider that runs within the Learning Buddy Podman Environment (infrastructure container) to provide an API for the Learning Buddy extension to access course content. The Course Content Provider also orchestrates course-specific Podman environments for development work and implements anti-bulk copying measures. **Podman is a mandatory requirement for all extension functionality, and there are no fallback options for users without Podman.** This architectural change will simplify the extension by moving complex download logic into the infrastructure container while maintaining all existing security and licensing features.
 
-## Phase 1: Critical Docker Environment Verification (Week 1)
+## Phase 1: Critical Podman Environment Verification (Week 1)
 
-### Week 1, Days 1-2: Docker Status Checking
-- Implement immediate Docker installation checking at extension startup
-- Implement Docker daemon running status verification
-- Create immediate blocking of all functionality when Docker is not available
+### Week 1, Days 1-2: Podman Status Checking
+- Implement immediate Podman installation checking at extension startup
+- Implement Podman daemon running status verification
+- Create immediate blocking of all functionality when Podman is not available
 - Implement clear error messaging with installation guidance
 
 ### Week 1, Days 3-4: Continuous Monitoring
-- Implement continuous Docker status monitoring during operation
-- Implement graceful handling of Docker daemon stoppages
-- Add real-time error messaging when Docker becomes unavailable
-- Test Docker verification mechanisms
+- Implement continuous Podman status monitoring during operation
+- Implement graceful handling of Podman daemon stoppages
+- Add real-time error messaging when Podman becomes unavailable
+- Test Podman verification mechanisms
 
-### Week 1, Days 5-7: DockerStatusChecker Component
-- Create DockerStatusChecker component
+### Week 1, Days 5-7: PodmanStatusChecker Component
+- Create PodmanStatusChecker component
 - Integrate with extension startup sequence
 - Implement error handling and user guidance mechanisms
-- Conduct unit testing of Docker verification
+- Conduct unit testing of Podman verification
 
 ## Phase 2: Infrastructure Container Setup (Week 2)
 
 ### Week 2, Days 1-2: Content Provider Design
-- Design Course Content Provider architecture within Learning Buddy Docker Environment
+- Design Course Content Provider architecture within Learning Buddy Podman Environment
 - Define extension-infrastructure container communication protocol
 - Create infrastructure container image specifications
 - Plan orchestration of course-specific containers
@@ -38,7 +38,7 @@ This plan outlines the implementation approach for creating a Course Content Pro
 - Implement error handling and retry logic
 
 ### Week 2, Days 5-7: Container Integration
-- Integrate content provider with Learning Buddy Docker Environment
+- Integrate content provider with Learning Buddy Podman Environment
 - Implement basic extension-infrastructure container communication
 - Implement orchestration of course-specific containers
 - Conduct initial testing
@@ -87,7 +87,7 @@ This plan outlines the implementation approach for creating a Course Content Pro
 ## Phase 5: Container Orchestration (Week 5)
 
 ### Week 5, Days 1-2: Course Container Management
-- Implement orchestration of course-specific Docker environments
+- Implement orchestration of course-specific Podman environments
 - Create secure mounting of course materials to course containers
 - Implement container lifecycle management for course containers
 - Test isolation between infrastructure and course containers
@@ -118,7 +118,7 @@ This plan outlines the implementation approach for creating a Course Content Pro
 - Test edge cases and error scenarios
 - Validate success criteria
 - Test complete isolation between container types
-- Test critical Docker verification at startup and during operation
+- Test critical Podman verification at startup and during operation
 - Test anti-bulk copying measures effectiveness
 
 ### Week 6, Days 6-7: Performance Optimization
@@ -145,12 +145,12 @@ This plan outlines the implementation approach for creating a Course Content Pro
 - Extension network operations reduced by > 80%
 - User satisfaction with simplified extension > 90%
 - Container-based downloads complete within 5 minutes > 90% of cases
-- Docker requirement properly enforced in 100% of cases
+- Podman requirement properly enforced in 100% of cases
 - Complete isolation between infrastructure and course containers in 100% of cases
 - Course materials securely mounted to course containers in 99% of cases
-- Critical Docker verification completes in 100% of cases within 2 seconds
-- Clear error messages displayed for Docker issues in 100% of cases
-- Extension blocks all functionality when Docker is not available in 100% of cases
+- Critical Podman verification completes in 100% of cases within 2 seconds
+- Clear error messages displayed for Podman issues in 100% of cases
+- Extension blocks all functionality when Podman is not available in 100% of cases
 - Anti-bulk copying measures implemented in 100% of cases
 - Rate limiting enforced in 100% of rapid access attempts
 - Learning sessions properly managed in 99% of cases

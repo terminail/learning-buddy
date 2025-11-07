@@ -3,13 +3,13 @@
 **Feature Branch**: `015-course-content-provider`  
 **Created**: 2025-11-07  
 **Status**: Draft  
-**Input**: User description: "Since we have Docker, why not create a content provider that resides in Docker to download from Gitee or other sources without bothering Learning Buddy. Buddy just interacts with Docker to get everything."
+**Input**: User description: "Since we have Podman, why not create a content provider that resides in Podman to download from Gitee or other sources without bothering Learning Buddy. Buddy just interacts with Podman to get everything."
 
 ## Implementation Summary
 
-This feature implements a Course Content Provider that runs within the Learning Buddy Docker Environment to provide an API for the Learning Buddy extension to access course content. Instead of the extension directly handling Gitee API calls and content downloads, the Course Content Provider (residing in the Learning Buddy Docker Environment) fetches content directly from Gitee or other sources and provides a clean API for the extension to access. The Learning Buddy extension will interact with the Course Content Provider to manage content access, simplifying the extension architecture and improving security.
+This feature implements a Course Content Provider that runs within the Learning Buddy Podman Environment to provide an API for the Learning Buddy extension to access course content. Instead of the extension directly handling Gitee API calls and content downloads, the Course Content Provider (residing in the Learning Buddy Podman Environment) fetches content directly from Gitee or other sources and provides a clean API for the extension to access. The Learning Buddy extension will interact with the Course Content Provider to manage content access, simplifying the extension architecture and improving security.
 
-This specification merges the functionality previously defined in the Gitee Content Delivery specification (008) into the container-based approach, where all content downloading, license verification, and usage tracking now happens within the Learning Buddy Docker Environment. The Course Content Provider is responsible for downloading course material and providing a clean API interface for the Learning Buddy extension. It also orchestrates course-specific Docker environments for development work.
+This specification merges the functionality previously defined in the Gitee Content Delivery specification (008) into the container-based approach, where all content downloading, license verification, and usage tracking now happens within the Learning Buddy Podman Environment. The Course Content Provider is responsible for downloading course material and providing a clean API interface for the Learning Buddy extension. It also orchestrates course-specific Podman environments for development work.
 
 This specification also incorporates anti-bulk copying measures (see feature 009-anti-bulk-copying) that are now implemented within the Course Content Provider for enhanced security.
 
@@ -21,34 +21,34 @@ The Course Content Provider manages different types of learning materials includ
 - **Hints**: Guidance to help solve exercises without revealing full solutions
 - **Learning Guides**: Documents containing key concepts and learning objectives for chapters
 
-**Note**: Docker is a mandatory requirement for this extension. The Course Content Provider runs exclusively within the Learning Buddy Docker Environment, and all course content (protected and non-protected) is managed through this infrastructure container. Users must have Docker installed and running to access any course content.
+**Note**: Podman is a mandatory requirement for this extension. The Course Content Provider runs exclusively within the Learning Buddy Podman Environment, and all course content (protected and non-protected) is managed through this infrastructure container. Users must have Podman installed and running to access any course content.
 
-**Critical Requirement**: The Learning Buddy extension MUST perform comprehensive Docker environment checks at startup and before any Docker operations to ensure Docker is properly installed and actively running. This is a critical requirement for the proper functioning of the extension.
+**Critical Requirement**: The Learning Buddy extension MUST perform comprehensive Podman environment checks at startup and before any Podman operations to ensure Podman is properly installed and actively running. This is a critical requirement for the proper functioning of the extension.
 
-**Architecture Note**: The Course Content Provider operates within the Learning Buddy Docker Environment and has a distinct role from course-specific Docker environments:
-1. **Learning Buddy Docker Environment**: Hosts the Course Content Provider and handles all infrastructure functions including content delivery, license verification, and orchestration of course environments.
-2. **Course-Specific Docker Environments**: Created based on course Dockerfiles to provide development tools and runtime environments. These are orchestrated by the Course Content Provider but have no content management responsibilities.
+**Architecture Note**: The Course Content Provider operates within the Learning Buddy Podman Environment and has a distinct role from course-specific Podman environments:
+1. **Learning Buddy Podman Environment**: Hosts the Course Content Provider and handles all infrastructure functions including content delivery, license verification, and orchestration of course environments.
+2. **Course-Specific Podman Environments**: Created based on course Podmanfiles to provide development tools and runtime environments. These are orchestrated by the Course Content Provider but have no content management responsibilities.
 
-The Course Content Provider securely mounts course materials into Course-Specific Docker Environments as read-only volumes, ensuring content protection while providing development access.
+The Course Content Provider securely mounts course materials into Course-Specific Podman Environments as read-only volumes, ensuring content protection while providing development access.
 
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Container-Based Content Download (Priority: P1)
 
-As a learner with a valid license, I want the Docker container to handle downloading protected content from Gitee so that the Learning Buddy extension doesn't need to manage complex download logic.
+As a learner with a valid license, I want the Podman container to handle downloading protected content from Gitee so that the Learning Buddy extension doesn't need to manage complex download logic.
 
 **Why this priority**: This is the core functionality - moving download logic to containers to simplify the extension.
 
-**Independent Test**: Can be fully tested by verifying that content is downloaded through Docker containers rather than the extension.
+**Independent Test**: Can be fully tested by verifying that content is downloaded through Podman containers rather than the extension.
 
 **Acceptance Scenarios**:
 
-1. **Given** a user with a valid license, **When** they access protected content, **Then** the Docker container should handle the download from Gitee.
+1. **Given** a user with a valid license, **When** they access protected content, **Then** the Podman container should handle the download from Gitee.
 2. **Given** a user without internet access, **When** they try to access content, **Then** the container should provide appropriate error handling.
 
 ### User Story 2 - Extension-Container Communication (Priority: P1)
 
-As a learner using the Learning Buddy extension, I want the extension to communicate with Docker containers to manage content access so that I have a seamless learning experience.
+As a learner using the Learning Buddy extension, I want the extension to communicate with Podman containers to manage content access so that I have a seamless learning experience.
 
 **Why this priority**: This is essential for the user experience - the extension must effectively coordinate with containers.
 
@@ -61,7 +61,7 @@ As a learner using the Learning Buddy extension, I want the extension to communi
 
 ### User Story 3 - License Verification in Containers (Priority: P1)
 
-As a course creator, I want license verification to happen in Docker containers so that content access is secure and the extension doesn't handle sensitive license data.
+As a course creator, I want license verification to happen in Podman containers so that content access is secure and the extension doesn't handle sensitive license data.
 
 **Why this priority**: This is essential for security - keeping license data within containers.
 
@@ -74,7 +74,7 @@ As a course creator, I want license verification to happen in Docker containers 
 
 ### User Story 4 - Download Limit Enforcement in Containers (Priority: P1)
 
-As a course creator, I want download limits to be enforced within Docker containers so that license sharing is prevented and the extension doesn't need to track usage.
+As a course creator, I want download limits to be enforced within Podman containers so that license sharing is prevented and the extension doesn't need to track usage.
 
 **Why this priority**: This is essential for protecting revenue and ensuring fair usage - without proper limits, users could share licenses unlimitedly.
 
@@ -138,25 +138,25 @@ As a learner using the Learning Buddy extension, I want the Course Content Provi
 1. **Given** a course catalog in a remote repository, **When** the extension is activated, **Then** the Course Content Provider should load and provide the catalog information.
 2. **Given** network connectivity issues, **When** the Course Content Provider attempts to load the catalog, **Then** it should handle errors gracefully and provide appropriate feedback.
 
-### User Story 9 - Critical Docker Environment Verification (Priority: P0)
+### User Story 9 - Critical Podman Environment Verification (Priority: P0)
 
-As a learner using the Learning Buddy extension, I want the extension to immediately check if Docker is installed and running so that I know right away if I can use the extension or need to install Docker.
+As a learner using the Learning Buddy extension, I want the extension to immediately check if Podman is installed and running so that I know right away if I can use the extension or need to install Podman.
 
-**Why this priority**: This is critical for user experience - users must know immediately if Docker is missing or not running to avoid confusion and wasted time.
+**Why this priority**: This is critical for user experience - users must know immediately if Podman is missing or not running to avoid confusion and wasted time.
 
-**Independent Test**: Can be tested by running the extension on systems with and without Docker installed, and with Docker daemon running and stopped.
+**Independent Test**: Can be tested by running the extension on systems with and without Podman installed, and with Podman daemon running and stopped.
 
 **Acceptance Scenarios**:
 
-1. **Given** a system without Docker installed, **When** the extension starts, **Then** it should immediately display a clear error message with installation instructions.
-2. **Given** a system with Docker installed but not running, **When** the extension starts, **Then** it should immediately display a clear error message with instructions to start Docker.
-3. **Given** a system with Docker installed and running, **When** the extension starts, **Then** it should proceed with normal initialization without any Docker-related warnings.
+1. **Given** a system without Podman installed, **When** the extension starts, **Then** it should immediately display a clear error message with installation instructions.
+2. **Given** a system with Podman installed but not running, **When** the extension starts, **Then** it should immediately display a clear error message with instructions to start Podman.
+3. **Given** a system with Podman installed and running, **When** the extension starts, **Then** it should proceed with normal initialization without any Podman-related warnings.
 
 ### Edge Cases
 
-- What happens when Docker is not installed on the user's system? (Answer: Extension must display clear installation requirements and guidance immediately at startup)
+- What happens when Podman is not installed on the user's system? (Answer: Extension must display clear installation requirements and guidance immediately at startup)
 - How does the system handle network issues during container-based downloads?
-- What happens when the Docker daemon is not running? (Answer: Extension must detect and notify user to start Docker immediately at startup)
+- What happens when the Podman daemon is not running? (Answer: Extension must detect and notify user to start Podman immediately at startup)
 - How does the system handle container initialization failures?
 - What happens when there's insufficient disk space for downloaded content?
 - How does the system handle updates to the container content provider?
@@ -173,33 +173,33 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 
 ### Functional Requirements
 
-- **FR-001**: Learning Buddy Docker Environment MUST include built-in content provider for fetching content from Gitee and other sources
-- **FR-002**: Learning Buddy extension MUST communicate with Course Content Provider in Learning Buddy Docker Environment to manage content access
+- **FR-001**: Learning Buddy Podman Environment MUST include built-in content provider for fetching content from Gitee and other sources
+- **FR-002**: Learning Buddy extension MUST communicate with Course Content Provider in Learning Buddy Podman Environment to manage content access
 - **FR-003**: Course Content Provider MUST handle license verification without exposing sensitive data to the extension
 - **FR-004**: Course Content Provider MUST enforce download limits to prevent license sharing
 - **FR-005**: Course Content Provider MUST cache downloaded content for offline access
 - **FR-006**: Course Content Provider MUST handle network errors and API rate limits gracefully
 - **FR-007**: Learning Buddy extension MUST provide a simplified interface for content access
-- **FR-008**: Course Content Provider MUST orchestrate course-specific Docker environments for development work
+- **FR-008**: Course Content Provider MUST orchestrate course-specific Podman environments for development work
 - **FR-009**: Course Content Provider MUST provide clear error messages for download-related issues
-- **FR-010**: Learning Buddy extension MUST verify Docker installation and provide clear guidance when Docker is not available
+- **FR-010**: Learning Buddy extension MUST verify Podman installation and provide clear guidance when Podman is not available
 - **FR-011**: Course Content Provider SHOULD support multiple content sources (Gitee, GitHub, etc.)
 - **FR-012**: Course Content Provider MUST ensure secure storage of downloaded content
 - **FR-013**: Course Content Provider MUST prevent unauthorized access to protected content
-- **FR-014**: Learning Buddy extension MUST require Docker for all functionality
+- **FR-014**: Learning Buddy extension MUST require Podman for all functionality
 - **FR-015**: Course Content Provider MUST support progress reporting for long-running downloads
 - **FR-016**: Course Content Provider MUST track license usage in a centralized repository
 - **FR-017**: Course Content Provider MUST authenticate with content repositories using secure token handling
 - **FR-018**: Course Content Provider MUST anonymize user identification for privacy protection
 - **FR-019**: Course Content Provider MUST verify license authenticity before allowing content access
 - **FR-020**: Course Content Provider MUST support multiple repositories for content and tracking
-- **FR-021**: Course Content Provider MUST securely mount course materials into course-specific Docker environments
-- **FR-022**: Course Content Provider MUST isolate course-specific Docker environments from infrastructure functions
-- **FR-023**: Learning Buddy extension MUST perform Docker environment checks at startup before any other operations
-- **FR-024**: Learning Buddy extension MUST verify Docker daemon is actively running, not just installed
-- **FR-025**: Learning Buddy extension MUST immediately block all functionality and display clear error messages if Docker is not properly installed or running
-- **FR-026**: Learning Buddy extension MUST provide specific installation guidance with links to Docker installation resources
-- **FR-027**: Learning Buddy extension MUST continuously monitor Docker status during operation and handle Docker daemon stoppages gracefully
+- **FR-021**: Course Content Provider MUST securely mount course materials into course-specific Podman environments
+- **FR-022**: Course Content Provider MUST isolate course-specific Podman environments from infrastructure functions
+- **FR-023**: Learning Buddy extension MUST perform Podman environment checks at startup before any other operations
+- **FR-024**: Learning Buddy extension MUST verify Podman daemon is actively running, not just installed
+- **FR-025**: Learning Buddy extension MUST immediately block all functionality and display clear error messages if Podman is not properly installed or running
+- **FR-026**: Learning Buddy extension MUST provide specific installation guidance with links to Podman installation resources
+- **FR-027**: Learning Buddy extension MUST continuously monitor Podman status during operation and handle Podman daemon stoppages gracefully
 - **FR-028**: Course Content Provider MUST implement anti-bulk copying measures as defined in specification 009-anti-bulk-copying
 - **FR-029**: Course Content Provider MUST enforce rate limits between content accesses
 - **FR-030**: Course Content Provider MUST implement time-limited learning sessions
@@ -223,14 +223,14 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 
 ### Key Entities
 
-- **ContainerContentDownloader**: Built-in downloader within Docker containers that fetches content from remote sources (replaces GiteeContentDelivery)
-- **ContainerLicenseManager**: Handles license verification within Docker containers (replaces GiteeLicense)
-- **ContainerUsageTracker**: Enforces download limits within Docker containers (replaces GiteeUsageTracker)
+- **ContainerContentDownloader**: Built-in downloader within Podman containers that fetches content from remote sources (replaces GiteeContentDelivery)
+- **ContainerLicenseManager**: Handles license verification within Podman containers (replaces GiteeLicense)
+- **ContainerUsageTracker**: Enforces download limits within Podman containers (replaces GiteeUsageTracker)
 - **ExtensionContainerInterface**: Simplified interface in the extension for communicating with containers
-- **ContainerContentCache**: Storage for downloaded content within Docker containers (replaces ContentCache)
+- **ContainerContentCache**: Storage for downloaded content within Podman containers (replaces ContentCache)
 - **ContainerErrorReporter**: Handles error reporting from containers to the extension (replaces GiteeAPIHandler)
 - **ContainerAPIHandler**: Handles API requests with error handling and rate limiting within containers
-- **DockerStatusChecker**: Critical component that verifies Docker installation and active status at startup and during operation
+- **PodmanStatusChecker**: Critical component that verifies Podman installation and active status at startup and during operation
 - **AntiBulkCopyingController**: Coordinates all anti-bulk copying measures within the Course Content Provider
 - **CatalogManager**: Manages course catalog loading, caching, and validation within the Course Content Provider
 - **Exercise**: A programming task related to a specific chapter
@@ -245,7 +245,7 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 
 ### Measurable Outcomes
 
-- **SC-001**: Content is downloaded through Docker containers in 95% of cases with valid licenses
+- **SC-001**: Content is downloaded through Podman containers in 95% of cases with valid licenses
 - **SC-002**: License verification is handled within containers in 100% of cases
 - **SC-003**: Download limits are enforced within containers in 100% of cases
 - **SC-004**: Previously downloaded content is accessible offline through containers in 100% of cases
@@ -259,10 +259,10 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 - **SC-012**: Download limits are enforced correctly in 100% of cases using centralized tracking
 - **SC-013**: License usage is tracked centrally with 99% accuracy
 - **SC-014**: API errors are handled gracefully with appropriate user feedback in 95% of cases
-- **SC-015**: Docker installation and status verification completes in 100% of cases within 2 seconds
-- **SC-016**: Clear error messages are displayed for Docker issues in 100% of cases
-- **SC-017**: Extension blocks all functionality when Docker is not available in 100% of cases
-- **SC-018**: Docker status monitoring detects changes in daemon status in 95% of cases within 5 seconds
+- **SC-015**: Podman installation and status verification completes in 100% of cases within 2 seconds
+- **SC-016**: Clear error messages are displayed for Podman issues in 100% of cases
+- **SC-017**: Extension blocks all functionality when Podman is not available in 100% of cases
+- **SC-018**: Podman status monitoring detects changes in daemon status in 95% of cases within 5 seconds
 - **SC-019**: Anti-bulk copying measures are implemented within the Course Content Provider in 100% of cases
 - **SC-020**: Rate limiting is enforced in 100% of rapid access attempts
 - **SC-021**: Learning sessions are properly managed in 99% of cases

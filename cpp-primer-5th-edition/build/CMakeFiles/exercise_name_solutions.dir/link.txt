@@ -1,0 +1,2 @@
+C:\msys64\mingw64\bin\ar.exe qc libexercise_name_solutions.a CMakeFiles/exercise_name_solutions.dir/src/exercise_name_solutions.cpp.obj
+C:\msys64\mingw64\bin\ranlib.exe libexercise_name_solutions.a

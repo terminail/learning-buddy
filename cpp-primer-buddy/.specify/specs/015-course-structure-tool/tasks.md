@@ -28,13 +28,13 @@
 
 ## Phase 2: Advanced Validation
 
-### Dockerfile Validation
-- [ ] Create DockerfileValidator class
-- [ ] Implement validateDockerfile(filePath) method
-- [ ] Implement checkBaseImage(dockerfileContent) method
-- [ ] Implement checkSecurityIssues(dockerfileContent) method
-- [ ] Implement checkBestPractices(dockerfileContent) method
-- [ ] Add unit tests for DockerfileValidator
+### Podmanfile Validation
+- [ ] Create PodmanfileValidator class
+- [ ] Implement validatePodmanfile(filePath) method
+- [ ] Implement checkBaseImage(podmanfileContent) method
+- [ ] Implement checkSecurityIssues(podmanfileContent) method
+- [ ] Implement checkBestPractices(podmanfileContent) method
+- [ ] Add unit tests for PodmanfileValidator
 
 ### Catalog Validation
 - [ ] Create CatalogValidator class
@@ -63,7 +63,7 @@
 - [ ] Add unit tests for remote validation
 
 ### Security and Performance
-- [ ] Enhance Dockerfile security validation
+- [ ] Enhance Podmanfile security validation
 - [ ] Optimize validation performance
 - [ ] Add caching for remote repositories
 - [ ] Implement progress indicators

@@ -19,7 +19,7 @@ This plan outlines the implementation approach for building Course Learning Budd
 
 ### Week 1, Days 5-7: Repository Integration
 - Implement repository URL embedding
-- Add support for course-specific Dockerfiles
+- Add support for course-specific Podmanfiles
 - Implement default course setting
 - Conduct initial testing
 

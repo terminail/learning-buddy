@@ -1,31 +1,31 @@
 # Development Tasks: Course Content Provider
 
-## Phase 1: Critical Docker Environment Verification
+## Phase 1: Critical Podman Environment Verification
 
-### Docker Status Checking
-- [ ] Implement immediate Docker installation checking at extension startup
-- [ ] Implement Docker daemon running status verification
-- [ ] Implement immediate blocking of all functionality when Docker is not available
+### Podman Status Checking
+- [ ] Implement immediate Podman installation checking at extension startup
+- [ ] Implement Podman daemon running status verification
+- [ ] Implement immediate blocking of all functionality when Podman is not available
 - [ ] Implement clear error messaging with installation guidance
-- [ ] Add unit tests for Docker verification mechanisms
+- [ ] Add unit tests for Podman verification mechanisms
 
 ### Continuous Monitoring
-- [ ] Implement continuous Docker status monitoring during operation
-- [ ] Implement graceful handling of Docker daemon stoppages
-- [ ] Add real-time error messaging when Docker becomes unavailable
+- [ ] Implement continuous Podman status monitoring during operation
+- [ ] Implement graceful handling of Podman daemon stoppages
+- [ ] Add real-time error messaging when Podman becomes unavailable
 - [ ] Add unit tests for continuous monitoring
 
-### DockerStatusChecker Component
-- [ ] Create DockerStatusChecker component
+### PodmanStatusChecker Component
+- [ ] Create PodmanStatusChecker component
 - [ ] Integrate with extension startup sequence
 - [ ] Implement error handling and user guidance mechanisms
-- [ ] Conduct unit testing of DockerStatusChecker
-- [ ] Document Docker verification requirements
+- [ ] Conduct unit testing of PodmanStatusChecker
+- [ ] Document Podman verification requirements
 
 ## Phase 2: Infrastructure Container Setup
 
 ### Content Provider Design
-- [ ] Design Course Content Provider architecture within Learning Buddy Docker Environment
+- [ ] Design Course Content Provider architecture within Learning Buddy Podman Environment
 - [ ] Define extension-infrastructure container communication protocol
 - [ ] Create infrastructure container image specifications
 - [ ] Plan orchestration of course-specific containers
@@ -39,7 +39,7 @@
 - [ ] Add unit tests for ContainerContentProvider
 
 ### Container Integration
-- [ ] Integrate content provider with Learning Buddy Docker Environment
+- [ ] Integrate content provider with Learning Buddy Podman Environment
 - [ ] Implement basic extension-infrastructure container communication
 - [ ] Implement orchestration of course-specific containers
 - [ ] Conduct initial testing
@@ -97,7 +97,7 @@
 ## Phase 5: Container Orchestration
 
 ### Course Container Management
-- [ ] Implement orchestration of course-specific Docker environments
+- [ ] Implement orchestration of course-specific Podman environments
 - [ ] Create secure mounting of course materials to course containers
 - [ ] Implement container lifecycle management for course containers
 - [ ] Test isolation between infrastructure and course containers
@@ -132,7 +132,7 @@
 - [ ] Test edge cases and error scenarios
 - [ ] Validate all success criteria
 - [ ] Test complete isolation between container types
-- [ ] Test critical Docker verification at startup and during operation
+- [ ] Test critical Podman verification at startup and during operation
 - [ ] Test error messaging and blocking functionality
 - [ ] Test anti-bulk copying measures effectiveness
 - [ ] Document test results

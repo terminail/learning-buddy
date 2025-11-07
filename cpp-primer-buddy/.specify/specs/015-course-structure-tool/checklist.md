@@ -8,18 +8,18 @@
 - [ ] Integration points with existing features are identified
 - [ ] Course repository structure requirements are well-defined
 - [ ] Course structure file validation requirements are clear
-- [ ] Dockerfile validation requirements are specified
+- [ ] Podmanfile validation requirements are specified
 - [ ] Course catalog validation requirements are defined
 
 ## Design Considerations
 - [ ] Command-line interface design
 - [ ] Repository validation approach
 - [ ] Course structure validation approach
-- [ ] Dockerfile validation approach
+- [ ] Podmanfile validation approach
 - [ ] Catalog validation approach
 - [ ] Error reporting and formatting
 - [ ] Remote repository access strategy
-- [ ] Security validation for Dockerfiles
+- [ ] Security validation for Podmanfiles
 - [ ] Performance optimization for large repositories
 
 ## Implementation Tasks
@@ -29,32 +29,32 @@
 - [ ] Implement repository structure validation
 - [ ] Create StructureValidator component
 - [ ] Implement course-structure.json validation
-- [ ] Create DockerfileValidator component
-- [ ] Implement Dockerfile compliance validation
+- [ ] Create PodmanfileValidator component
+- [ ] Implement Podmanfile compliance validation
 - [ ] Create CatalogValidator component
 - [ ] Implement course catalog validation
 - [ ] Create ReportGenerator component
 - [ ] Implement detailed reporting
 - [ ] Add remote repository support
-- [ ] Add security validation for Dockerfiles
+- [ ] Add security validation for Podmanfiles
 - [ ] Implement error handling and user feedback
 
 ## Testing Requirements
 - [ ] Unit tests for CourseValidator
 - [ ] Unit tests for RepositoryValidator
 - [ ] Unit tests for StructureValidator
-- [ ] Unit tests for DockerfileValidator
+- [ ] Unit tests for PodmanfileValidator
 - [ ] Unit tests for CatalogValidator
 - [ ] Unit tests for ReportGenerator
 - [ ] Integration tests for repository validation
 - [ ] Integration tests for course structure validation
-- [ ] Integration tests for Dockerfile validation
+- [ ] Integration tests for Podmanfile validation
 - [ ] Integration tests for catalog validation
 - [ ] Integration tests for remote repository access
 - [ ] Integration tests for error handling
 - [ ] End-to-end tests for complete validation workflow
 - [ ] Performance tests for large repositories
-- [ ] Security tests for Dockerfile validation
+- [ ] Security tests for Podmanfile validation
 
 ## Documentation Updates
 - [ ] Update README with validation tool information

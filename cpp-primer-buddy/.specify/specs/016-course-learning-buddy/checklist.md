@@ -15,7 +15,7 @@
 - [ ] Metadata customization approach
 - [ ] Branding integration strategy
 - [ ] Repository URL embedding
-- [ ] Dockerfile integration
+- [ ] Podmanfile integration
 - [ ] Multi-course discovery support
 
 ## Implementation Tasks
@@ -24,7 +24,7 @@
 - [ ] Implement metadata customization during build
 - [ ] Add branding integration support
 - [ ] Implement repository URL embedding
-- [ ] Add Dockerfile integration
+- [ ] Add Podmanfile integration
 - [ ] Implement multi-course discovery support
 - [ ] Add configuration validation
 - [ ] Implement error handling and user feedback

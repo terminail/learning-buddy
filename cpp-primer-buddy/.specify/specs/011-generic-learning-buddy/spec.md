@@ -59,7 +59,7 @@ As a course creator, I want the Learning Buddy to load the course structure dyna
 
 ### User Story 4 - Support Multiple Courses Within Same Extension (Priority: P1)
 
-As a learner using a specific Learning Buddy extension, I want to see the default course大纲 for that extension and be able to switch to other courses without installing new extensions, with the extension restoring to its default course on restart.
+As a learner using a specific Learning Buddy extension, I want to see the default course outline for that extension and be able to switch to other courses without installing new extensions, with the extension restoring to its default course on restart.
 
 **Why this priority**: This is essential for creating a comprehensive learning platform without extension proliferation.
 
@@ -67,40 +67,40 @@ As a learner using a specific Learning Buddy extension, I want to see the defaul
 
 **Acceptance Scenarios**:
 
-1. **Given** a "C++ Primer 5th Buddy" extension installation, **When** the extension is opened, **Then** the C++ Primer 5th Edition大纲 should be displayed by default.
-2. **Given** promotional course positions, **When** the user clicks on one, **Then** the大纲 for that course should be loaded within the same extension.
-3. **Given** a user who has switched courses, **When** they restart VS Code, **Then** the extension should restore to its default course大纲.
+1. **Given** a "C++ Primer 5th Buddy" extension installation, **When** the extension is opened, **Then** the C++ Primer 5th Edition outline should be displayed by default.
+2. **Given** promotional course positions, **When** the user clicks on one, **Then** the outline for that course should be loaded within the same extension.
+3. **Given** a user who has switched courses, **When** they restart VS Code, **Then** the extension should restore to its default course outline.
 
 ---
 
-### User Story 5 - Deliver Content Through Docker Environment (Priority: P1)
+### User Story 5 - Deliver Content Through Podman Environment (Priority: P1)
 
-As a course creator, I want protected content to be delivered directly to a secure Docker development environment so that learning materials are protected from unauthorized copying.
+As a course creator, I want protected content to be delivered directly to a secure Podman development environment so that learning materials are protected from unauthorized copying.
 
-**Why this priority**: This is essential for content protection - all protected materials must be stored within Docker containers rather than on the host filesystem.
+**Why this priority**: This is essential for content protection - all protected materials must be stored within Podman containers rather than on the host filesystem.
 
-**Independent Test**: Can be fully tested by accessing protected content and verifying that files are downloaded directly into the Docker container rather than the host filesystem.
+**Independent Test**: Can be fully tested by accessing protected content and verifying that files are downloaded directly into the Podman container rather than the host filesystem.
 
 **Acceptance Scenarios**:
 
-1. **Given** a user with valid license access, **When** they access protected content, **Then** the Docker container should handle downloading materials directly from Gitee or other sources.
+1. **Given** a user with valid license access, **When** they access protected content, **Then** the Podman container should handle downloading materials directly from Gitee or other sources.
 2. **Given** downloaded content in the container, **When** a user tries to access files from the host system, **Then** they should not find the protected materials.
 
 ---
 
 ### User Story 6 - Provide Course-Specific Development Environments (Priority: P1)
 
-As a course creator, I want my course to provide a Dockerfile that defines the specific development environment needed for my course's exercises so that learners can automatically get the right tools without manual setup.
+As a course creator, I want my course to provide a Podmanfile that defines the specific development environment needed for my course's exercises so that learners can automatically get the right tools without manual setup.
 
 **Why this priority**: This is essential for ensuring learners have the right environment for course exercises.
 
-**Independent Test**: Can be fully tested by providing a Dockerfile with course and verifying that learners get the appropriate development environment.
+**Independent Test**: Can be fully tested by providing a Podmanfile with course and verifying that learners get the appropriate development environment.
 
 **Acceptance Scenarios**:
 
-1. **Given** a course with a Dockerfile specifying C++ compiler requirements, **When** a learner accesses the course, **Then** the Docker environment should contain the correct C++ compiler.
-2. **Given** a course with a Dockerfile specifying Python dependencies, **When** a learner accesses the course, **Then** the Docker environment should contain the required Python libraries.
-3. **Given** a course without a Dockerfile, **When** a learner accesses the course, **Then** the extension should provide a default development environment.
+1. **Given** a course with a Podmanfile specifying C++ compiler requirements, **When** a learner accesses the course, **Then** the Podman environment should contain the correct C++ compiler.
+2. **Given** a course with a Podmanfile specifying Python dependencies, **When** a learner accesses the course, **Then** the Podman environment should contain the required Python libraries.
+3. **Given** a course without a Podmanfile, **When** a learner accesses the course, **Then** the extension should provide a default development environment.
 
 ---
 
@@ -136,7 +136,7 @@ As a current user of C++ Primer Buddy, I want the upgrade to maintain backward c
 
 ### User Story 9 - Implement Secure Caching Policy (Priority: P1)
 
-As a course creator and learner, I want the extension to implement a secure caching policy that caches only non-protected metadata locally while delivering protected content directly to Docker containers so that content remains secure.
+As a course creator and learner, I want the extension to implement a secure caching policy that caches only non-protected metadata locally while delivering protected content directly to Podman containers so that content remains secure.
 
 **Why this priority**: This is essential for maintaining content security while providing good performance.
 
@@ -145,7 +145,7 @@ As a course creator and learner, I want the extension to implement a secure cach
 **Acceptance Scenarios**:
 
 1. **Given** a user accessing course content, **When** the extension loads course structures, **Then** only metadata should be cached locally.
-2. **Given** a user accessing protected content, **When** the extension delivers content, **Then** it should be delivered directly to Docker containers without caching on the host.
+2. **Given** a user accessing protected content, **When** the extension delivers content, **Then** it should be delivered directly to Podman containers without caching on the host.
 3. **Given** cached metadata, **When** the user goes offline, **Then** they should still be able to access previously loaded course outlines.
 
 ---
@@ -160,7 +160,7 @@ As a course creator and learner, I want the extension to implement a secure cach
 - How does the system handle network connectivity issues when loading course structure?
 - What happens when the course catalog is unavailable?
 - How does the system handle very large numbers of courses?
-- What happens when Docker is not installed on the user's system?
+- What happens when Podman is not installed on the user's system?
 
 ## Requirements *(mandatory)*
 
@@ -180,20 +180,20 @@ As a course creator and learner, I want the extension to implement a secure cach
 - **FR-012**: System MUST load course structure dynamically from the configured repository on extension activation
 - **FR-013**: System MUST support a refresh mechanism to reload course structure from the repository
 - **FR-014**: System MUST NOT cache protected content on the host filesystem
-- **FR-015**: System MUST deliver protected content directly to the Docker development environment through container-based downloaders
-- **FR-016**: System MAY cache non-protected metadata (course structures, catalogs, Dockerfiles) locally for performance (Docker images are managed by Docker daemon)
-- **FR-017**: System MUST display the大纲 for the specific course associated with the extension by default
-- **FR-018**: System MUST show promotional positions for other courses at the bottom of the大纲
+- **FR-015**: System MUST deliver protected content directly to the Podman development environment through container-based downloaders
+- **FR-016**: System MAY cache non-protected metadata (course structures, catalogs, Podmanfiles) locally for performance (Podman images are managed by Podman daemon)
+- **FR-017**: System MUST display the outline for the specific course associated with the extension by default
+- **FR-018**: System MUST show promotional positions for other courses at the bottom of the outline
 - **FR-019**: System MUST allow users to switch to different courses within the same extension instance
-- **FR-020**: System MUST restore the default course大纲 when VS Code is restarted
+- **FR-020**: System MUST restore the default course outline when VS Code is restarted
 - **FR-021**: System MUST NOT require installation of new extensions for course switching
-- **FR-022**: System MUST integrate with VS Code Dev Containers for seamless access to Docker environment
+- **FR-022**: System MUST integrate with VS Code Dev Containers for seamless access to Podman environment
 - **FR-023**: System MUST clearly distinguish between cached metadata and protected content in its implementation
 - **FR-024**: System MUST ensure that cached metadata does not contain any protected content
-- **FR-025**: System MUST support course-specific Dockerfiles for development environment configuration
-- **FR-026**: System MUST automatically build Docker environments from course-provided Dockerfiles
-- **FR-027**: System MUST provide fallback to default development environment when course Dockerfiles are unavailable
-- **FR-028**: System MUST validate course Dockerfiles for correctness and security
+- **FR-025**: System MUST support course-specific Podmanfiles for development environment configuration
+- **FR-026**: System MUST automatically build Podman environments from course-provided Podmanfiles
+- **FR-027**: System MUST provide fallback to default development environment when course Podmanfiles are unavailable
+- **FR-028**: System MUST validate course Podmanfiles for correctness and security
 - **FR-029**: System MUST support course catalogs following the standardized catalog structure
 - **FR-030**: System MUST validate that course repositories follow the required structure as defined in the course catalog specification
 - **FR-031**: System SHOULD provide a validation tool for course creators to check repository compliance
@@ -209,12 +209,12 @@ As a course creator and learner, I want the extension to implement a secure cach
 - **StructureLoader**: Component responsible for loading course structure from remote repositories
 - **CourseCatalog**: Collection of all available courses with their metadata following the standardized catalog structure
 - **PromotionalPosition**: Display position for promoting other courses
-- **DockerEnvironmentManager**: Manages Docker container for secure content delivery
+- **PodmanEnvironmentManager**: Manages Podman container for secure content delivery
 - **MetadataCache**: Manages caching of non-protected course metadata for performance
-- **ContentDeliveryManager**: Ensures protected content is delivered directly to Docker containers without host caching
-- **DockerfileManager**: Manages downloading and caching of course-specific Dockerfiles
-- **EnvironmentBuilder**: Handles building Docker environments from course-specific Dockerfiles
-- **DockerfileValidator**: Validates Dockerfiles for correctness and security
+- **ContentDeliveryManager**: Ensures protected content is delivered directly to Podman containers without host caching
+- **PodmanfileManager**: Manages downloading and caching of course-specific Podmanfiles
+- **EnvironmentBuilder**: Handles building Podman environments from course-specific Podmanfiles
+- **PodmanfileValidator**: Validates Podmanfiles for correctness and security
 
 ## Success Criteria *(mandatory)*
 
@@ -230,7 +230,7 @@ As a course creator and learner, I want the extension to implement a secure cach
 - **SC-008**: Course structure is loaded dynamically from Gitee repository in 95% of cases with network connectivity
 - **SC-009**: Course structure refresh works correctly in 100% of cases
 - **SC-010**: Error handling for missing/malformed course structure files works in 99% of cases
-- **SC-011**: Default course大纲 is displayed correctly in 100% of cases
+- **SC-011**: Default course outline is displayed correctly in 100% of cases
 - **SC-012**: Promotional positions for other courses are displayed in 100% of cases
 - **SC-013**: Course switching works correctly within the same extension in 99% of cases
 - **SC-014**: Extension restores to default course on VS Code restart in 100% of cases
@@ -240,10 +240,10 @@ As a course creator and learner, I want the extension to implement a secure cach
 - **SC-018**: Non-protected metadata may be cached locally for performance
 - **SC-019**: Protected content is never cached on the host filesystem in 100% of cases
 - **SC-020**: Cached metadata does not contain any protected content in 100% of cases
-- **SC-021**: Course-specific Dockerfiles are downloaded successfully in 95% of cases
+- **SC-021**: Course-specific Podmanfiles are downloaded successfully in 95% of cases
 - **SC-022**: Course-specific development environments are built and initialized in 90% of cases
-- **SC-023**: Default development environments are provided as fallback in 99% of cases when Dockerfiles are unavailable
-- **SC-024**: Dockerfile validation provides clear error messages in 95% of error cases
+- **SC-023**: Default development environments are provided as fallback in 99% of cases when Podmanfiles are unavailable
+- **SC-024**: Podmanfile validation provides clear error messages in 95% of error cases
 - **SC-025**: Course catalogs following the standardized structure are loaded successfully in 95% of cases
 - **SC-026**: Course repositories following the required structure are validated successfully in 95% of cases
 - **SC-027**: Course repository validation tool correctly identifies compliance issues in 95% of cases

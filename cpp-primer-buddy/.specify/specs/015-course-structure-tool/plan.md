@@ -1,7 +1,7 @@
 # Implementation Plan: Course Validation Tool
 
 ## Overview
-This plan outlines the implementation approach for creating a course validation tool that helps course creators verify their course repositories comply with Learning Buddy requirements. The tool will automatically scan course structure, validate required files, check Dockerfile compliance, and report any issues.
+This plan outlines the implementation approach for creating a course validation tool that helps course creators verify their course repositories comply with Learning Buddy requirements. The tool will automatically scan course structure, validate required files, check Podmanfile compliance, and report any issues.
 
 ## Phase 1: Foundation Components (Week 1)
 
@@ -25,10 +25,10 @@ This plan outlines the implementation approach for creating a course validation 
 
 ## Phase 2: Advanced Validation (Week 2)
 
-### Week 2, Days 1-2: Dockerfile Validation
-- Create DockerfileValidator component
-- Implement Dockerfile compliance validation
-- Add security validation for Dockerfiles
+### Week 2, Days 1-2: Podmanfile Validation
+- Create PodmanfileValidator component
+- Implement Podmanfile compliance validation
+- Add security validation for Podmanfiles
 - Implement best practices checking
 
 ### Week 2, Days 3-4: Catalog Validation
@@ -52,7 +52,7 @@ This plan outlines the implementation approach for creating a course validation 
 - Add network error handling
 
 ### Week 3, Days 3-4: Security and Performance
-- Enhance Dockerfile security validation
+- Enhance Podmanfile security validation
 - Optimize validation performance
 - Add caching for remote repositories
 - Implement progress indicators
@@ -87,7 +87,7 @@ This plan outlines the implementation approach for creating a course validation 
 
 ### Technical Risks
 - **Remote repository access complexity**: Implement robust error handling and retry mechanisms
-- **Dockerfile validation accuracy**: Start with basic validation, enhance with security checks over time
+- **Podmanfile validation accuracy**: Start with basic validation, enhance with security checks over time
 - **Performance with large repositories**: Implement progress indicators and optimize validation logic
 - **Cross-platform compatibility**: Test on multiple platforms during development
 

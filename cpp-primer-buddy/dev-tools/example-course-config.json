@@ -42,7 +42,7 @@
     "defaultId": "my-course",
     "defaultName": "My Course",
     "repository": "https://gitee.com/my-course/my-course-repo",
-    "dockerfile": "Dockerfile"
+    "podmanfile": "Podmanfile"
   },
   "branding": {
     "primaryColor": "#3498db",

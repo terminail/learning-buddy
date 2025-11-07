@@ -13,7 +13,7 @@ Both specifications support the same multi-course licensing model where licenses
 
 ## Implementation Summary
 
-This feature implements license management functionality that runs within the Learning Buddy Docker Environment. It is responsible for verifying license authenticity, enforcing download limits, and tracking license usage to prevent unauthorized access to protected content. The License Management component works in conjunction with the extension-level license management (023-license-management) and other components in the Course Content Provider to deliver a complete learning experience.
+This feature implements license management functionality that runs within the Learning Buddy Podman Environment. It is responsible for verifying license authenticity, enforcing download limits, and tracking license usage to prevent unauthorized access to protected content. The License Management component works in conjunction with the extension-level license management (023-license-management) and other components in the Course Content Provider to deliver a complete learning experience.
 
 With the multi-course support in Learning Buddy, licenses are now course-specific, allowing some courses to be free while others are paid. Each course can have its own licensing model, and users can manage licenses for multiple courses independently.
 
@@ -26,13 +26,13 @@ The License Management component handles:
 - Supporting both free and paid courses within the same extension
 - Communicating license status back to the extension-level license manager
 
-**Note**: Docker is a mandatory requirement for this extension. The License Management component runs exclusively within the Learning Buddy Docker Environment. Users must have Docker installed and running to access any course content.
+**Note**: Podman is a mandatory requirement for this extension. The License Management component runs exclusively within the Learning Buddy Podman Environment. Users must have Podman installed and running to access any course content.
 
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Course-Specific License Verification in Containers (Priority: P1)
 
-As a course creator, I want license verification to happen in Docker containers so that content access is secure and the extension doesn't handle sensitive license data, with each course having its own licensing model.
+As a course creator, I want license verification to happen in Podman containers so that content access is secure and the extension doesn't handle sensitive license data, with each course having its own licensing model.
 
 **Why this priority**: This is essential for security - keeping license data within containers while supporting multiple courses with different licensing models.
 
@@ -46,7 +46,7 @@ As a course creator, I want license verification to happen in Docker containers 
 
 ### User Story 2 - Course-Specific Download Limit Enforcement (Priority: P1)
 
-As a course creator, I want download limits to be enforced per course within Docker containers so that license sharing is prevented for paid courses while free courses can have different or no limits.
+As a course creator, I want download limits to be enforced per course within Podman containers so that license sharing is prevented for paid courses while free courses can have different or no limits.
 
 **Why this priority**: This is essential for protecting revenue for paid courses while allowing flexibility for free courses.
 
@@ -99,8 +99,8 @@ As a learner using the Learning Buddy extension, I want to manage licenses for m
 
 ### Key Entities
 
-- **ContainerLicenseManager**: Handles license verification within Docker containers for each course
-- **ContainerUsageTracker**: Enforces download limits within Docker containers per course
+- **ContainerLicenseManager**: Handles license verification within Podman containers for each course
+- **ContainerUsageTracker**: Enforces download limits within Podman containers per course
 - **LicenseValidator**: Verifies license authenticity for each course
 - **UsageTracker**: Tracks license usage in a centralized repository per course
 - **PrivacyManager**: Anonymizes user identification for privacy protection

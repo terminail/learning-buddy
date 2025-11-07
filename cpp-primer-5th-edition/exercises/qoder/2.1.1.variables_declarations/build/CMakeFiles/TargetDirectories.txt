@@ -1,0 +1,6 @@
+D:/git/programming-learning-vscode-buddy/cpp_primer_5th_deepseek/exercises/qoder/2.1.1.variables_declarations/build/CMakeFiles/variables_declarations_exercises.dir
+D:/git/programming-learning-vscode-buddy/cpp_primer_5th_deepseek/exercises/qoder/2.1.1.variables_declarations/build/CMakeFiles/variables_declarations_solutions.dir
+D:/git/programming-learning-vscode-buddy/cpp_primer_5th_deepseek/exercises/qoder/2.1.1.variables_declarations/build/CMakeFiles/test_variables_declarations_basics.dir
+D:/git/programming-learning-vscode-buddy/cpp_primer_5th_deepseek/exercises/qoder/2.1.1.variables_declarations/build/CMakeFiles/test_variables_declarations_practice.dir
+D:/git/programming-learning-vscode-buddy/cpp_primer_5th_deepseek/exercises/qoder/2.1.1.variables_declarations/build/CMakeFiles/edit_cache.dir
+D:/git/programming-learning-vscode-buddy/cpp_primer_5th_deepseek/exercises/qoder/2.1.1.variables_declarations/build/CMakeFiles/rebuild_cache.dir

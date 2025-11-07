@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-crash-course-exercises"
+description = "Python exercises based on Python Crash Course, 3rd Edition by Eric Matthes"
+readme = "README.md"
+authors = [
+    {name = "Python Learner", email = "python.learner@example.com"}
+]
+license = {text = "MIT"}
+requires-python = ">=3.8"
+dependencies = [
+    "pytest>=6.0.0",
+    "jupyter>=1.0.0",
+    "ipython>=7.0.0",
+    "matplotlib>=3.0.0",
+    "numpy>=1.18.0",
+    "django>=4.0.0",
+    "pygame>=2.0.0"
+]
+version = "0.1.0"
+
+[project.optional-dependencies]
+notebooks = [
+    "jupyter>=1.0.0",
+    "ipython>=7.0.0"
+]
+visualization = [
+    "matplotlib>=3.0.0",
+    "numpy>=1.18.0"
+]
+web = [
+    "django>=4.0.0"
+]
+games = [
+    "pygame>=2.0.0"
+]
+dev = [
+    "black>=21.0.0",
+    "flake8>=3.8.0",
+    "mypy>=0.812"
+]
+
+[tool.pytest.ini_options]
+testpaths = [
+    "1.1_variables_strings",
+    "1.2_numbers_operations"
+]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.mypy]
+python_version = "3.8"
+check_untyped_defs = true
+ignore_missing_imports = true

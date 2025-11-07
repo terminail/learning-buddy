@@ -20,7 +20,7 @@
 
 ### Repository Integration
 - [ ] Implement embedRepositoryUrl(config) method
-- [ ] Add support for course-specific Dockerfiles
+- [ ] Add support for course-specific Podmanfiles
 - [ ] Implement default course setting
 - [ ] Add repository URL validation
 - [ ] Implement repository embedding in extension

@@ -1,0 +1,77 @@
+{
+  "name": "python-3rd-edition-buddy",
+  "displayName": "Python 3rd Edition Buddy",
+  "description": "A VS Code extension that helps Python 3rd Edition learners navigate their project files with a directory tree view",
+  "publisher": "python-learning-dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/conanchen/python_3rd_edition.git"
+  },
+  "content": {
+    "source": "github",
+    "repository": "https://github.com/conanchen/python_3rd_edition",
+    "branch": "main"
+  },
+  "chapters": [
+    {
+      "id": "1_introduction",
+      "title": "1. Introduction to Python",
+      "protected": false
+    },
+    {
+      "id": "2_variables",
+      "title": "2. Variables and Data Types",
+      "protected": false
+    },
+    {
+      "id": "3_control_flow",
+      "title": "3. Control Flow",
+      "protected": false
+    },
+    {
+      "id": "4_functions",
+      "title": "4. Functions",
+      "protected": false
+    },
+    {
+      "id": "5_data_structures",
+      "title": "5. Data Structures",
+      "protected": false
+    },
+    {
+      "id": "6_modules",
+      "title": "6. Modules and Packages",
+      "protected": false
+    },
+    {
+      "id": "7_oop",
+      "title": "7. Object-Oriented Programming",
+      "protected": true
+    },
+    {
+      "id": "8_advanced",
+      "title": "8. Advanced Topics",
+      "protected": true
+    }
+  ],
+  "protectedChapters": [
+    "7_oop",
+    "8_advanced"
+  ],
+  "extension": {
+    "name": "Python 3rd Edition Buddy",
+    "displayName": "Python 3rd Edition Buddy",
+    "description": "Learning Buddy extension for Python Programming by John Zelle",
+    "icon": "icons/python-icon.png"
+  },
+  "course": {
+    "defaultId": "python-3rd",
+    "defaultName": "Python 3rd Edition",
+    "repository": "https://gitee.com/learning-buddy/python-3rd-course",
+    "podmanfile": "Podmanfile"
+  },
+  "branding": {
+    "primaryColor": "#3776ab",
+    "promotionalBanner": "icons/python-banner.png"
+  }
+}

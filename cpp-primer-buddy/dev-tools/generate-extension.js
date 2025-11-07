@@ -139,7 +139,7 @@ function demonstrateUsage() {
             "defaultId": "python-data-science",
             "defaultName": "Python Data Science",
             "repository": "https://gitee.com/learning-buddy/python-data-science-course",
-            "dockerfile": "Dockerfile"
+            "podmanfile": "Podmanfile"
         },
         "branding": {
             "primaryColor": "#3776ab",
