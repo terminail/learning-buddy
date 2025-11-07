@@ -1,0 +1,10 @@
+{
+  "name": "my-learning-buddy",
+  "displayName": "My Learning Buddy",
+  "description": "A VS Code extension that helps learners navigate their project files with a directory tree view",
+  "publisher": "my-learning-dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/my-learning/my-course.git"
+  }
+}

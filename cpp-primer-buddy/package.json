@@ -1,0 +1,138 @@
+{
+  "name": "cpp-primer-buddy",
+  "displayName": "C++ Primer 5th Edition Buddy",
+  "description": "A VS Code extension that helps C++ Primer 5th Edition learners navigate their project files with a directory tree view",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Education"
+  ],
+  "activationEvents": [
+    "onView:cppPrimerBuddyView"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "cpp-primer-buddy-view",
+          "title": "C++ Primer Buddy",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "cpp-primer-buddy-view": [
+        {
+          "id": "cppPrimerBuddyView",
+          "name": "Study Plan"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "cppPrimerBuddy.studySelected",
+        "title": "I want to study this",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "cppPrimerBuddy.checkSolution",
+        "title": "Check Solution"
+      },
+      {
+        "command": "cppPrimerBuddy.viewSolution",
+        "title": "View Solution"
+      },
+      {
+        "command": "cppPrimerBuddy.showHint",
+        "title": "Show Hint"
+      },
+      {
+        "command": "cppPrimerBuddy.openLicenseManager",
+        "title": "License Manager"
+      },
+      {
+        "command": "cppPrimerBuddy.openWeChatContact",
+        "title": "Contact Instructor"
+      },
+      {
+        "command": "cppPrimerBuddy.refresh",
+        "title": "Refresh Content",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "cppPrimerBuddy.changeWorkingDirectory",
+        "title": "Change Working Directory"
+      }
+    ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "cppPrimerBuddy.studySelected",
+          "when": "view == cppPrimerBuddyView && viewItem == studyItem",
+          "group": "inline"
+        },
+        {
+          "command": "cppPrimerBuddy.studySelected",
+          "when": "view == cppPrimerBuddyView && viewItem == lockedItem",
+          "group": "inline"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "cppPrimerBuddy.openLicenseManager",
+          "when": "false"
+        },
+        {
+          "command": "cppPrimerBuddy.openWeChatContact",
+          "when": "false"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "package-extension": "node package-extension.js",
+    "package-custom": "node build-custom-extension.js",
+    "validate-course": "node validate-course.js",
+    "generate-license": "node generate-test-license.js",
+    "generate-extension": "node dev-tools/generate-extension.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^16.18.126",
+    "@types/node-fetch": "^2.6.13",
+    "@types/vscode": "^1.100.0",
+    "@vscode/vsce": "^2.19.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.5",
+    "typescript": "^4.9.5"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cpp-primer-buddy/cpp-primer-buddy.git"
+  },
+  "type": "commonjs",
+  "files": [
+    "out/**/*",
+    "package.json",
+    "README.md",
+    "LICENSE.md",
+    "media/**/*",
+    "licence-keys/public-key.txt"
+  ],
+  "publisher": "cpp-primer-buddy-dev",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
