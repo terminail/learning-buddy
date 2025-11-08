@@ -24,7 +24,7 @@ A test license has been generated and saved to `test-license.txt` in this direct
 Run the following command in your terminal:
 
 ```
-node create-test-license.js
+node generate-test-license.js
 ```
 
 This will generate a new license and save it to `test-license.txt`, overwriting the previous one.

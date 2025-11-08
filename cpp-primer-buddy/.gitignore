@@ -1,6 +1,7 @@
 # Build directories
 build/
 cmake-build-*/
+*.vsix
 
 # Compiled object files
 *.o

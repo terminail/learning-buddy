@@ -5,11 +5,15 @@
 **Status**: Draft  
 **Input**: User description: "Course creators need to provide course structure information and Podmanfile that meets Learning Buddy requirements. Learning Buddy should provide a tool to automatically scan course content, validate compliance, generate compliant course-structure.json files, and quickly check if course content and Podmanfile exist and are compliant."
 
-**See Also**: [Course-Specific Extension specification](../019-course-specific-extension/spec.md) for details on building course-specific extensions.
+**See Also**: 
+- [Course-Specific Extension specification](../019-course-specific-extension/spec.md) for details on building course-specific extensions.
+- [Dynamic Course Structure Generation specification](../014e-dynamic-course-structure/spec.md) for details on how the Course Content Provider automatically scans downloaded course materials at runtime.
 
 ## Implementation Summary
 
 This feature provides a command-line tool that course creators can use to both validate their course repositories and automatically generate course-structure.json files that comply with Learning Buddy requirements. The tool automatically scans course content, validates required files, checks Podmanfile compliance, generates compliant course structures, and reports any issues. This helps course creators quickly identify and fix problems before distributing their courses, while also automating the creation of properly formatted course structure files.
+
+For runtime course structure generation, see the [Dynamic Course Structure Generation specification](../014e-dynamic-course-structure/spec.md) which describes how the Course Content Provider automatically scans downloaded course materials to generate course structure information at runtime.
 
 ## User Scenarios & Testing *(mandatory)*
 

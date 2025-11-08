@@ -33,41 +33,54 @@
     },
     "commands": [
       {
-        "command": "cppPrimerBuddy.studySelected",
-        "title": "I want to study this",
-        "icon": "$(cloud-download)"
-      },
-      {
-        "command": "cppPrimerBuddy.checkSolution",
-        "title": "Check Solution"
-      },
-      {
-        "command": "cppPrimerBuddy.viewSolution",
-        "title": "View Solution"
-      },
-      {
-        "command": "cppPrimerBuddy.showHint",
-        "title": "Show Hint"
-      },
-      {
-        "command": "cppPrimerBuddy.openLicenseManager",
-        "title": "License Manager"
-      },
-      {
-        "command": "cppPrimerBuddy.openWeChatContact",
-        "title": "Contact Instructor"
+        "command": "cppPrimerBuddy.openCourseCatalog",
+        "title": "Open Course Catalog",
+        "icon": "$(book)"
       },
       {
         "command": "cppPrimerBuddy.refresh",
-        "title": "Refresh Content",
+        "title": "Refresh",
         "icon": "$(refresh)"
       },
       {
-        "command": "cppPrimerBuddy.changeWorkingDirectory",
-        "title": "Change Working Directory"
+        "command": "cppPrimerBuddy.toggleMockPodmanStatus",
+        "title": "Toggle Mock Podman Status",
+        "icon": "$(vm)"
+      },
+      {
+        "command": "cppPrimerBuddy.previewExercise",
+        "title": "Preview Exercise",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "cppPrimerBuddy.downloadExercise",
+        "title": "Download Exercise",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "cppPrimerBuddy.previewContent",
+        "title": "Preview Content",
+        "icon": "$(open-preview)"
       }
     ],
     "menus": {
+      "view/title": [
+        {
+          "command": "cppPrimerBuddy.openCourseCatalog",
+          "when": "view == cppPrimerBuddyView",
+          "group": "navigation"
+        },
+        {
+          "command": "cppPrimerBuddy.refresh",
+          "when": "view == cppPrimerBuddyView",
+          "group": "navigation"
+        },
+        {
+          "command": "cppPrimerBuddy.toggleMockPodmanStatus",
+          "when": "view == cppPrimerBuddyView",
+          "group": "navigation"
+        }
+      ],
       "view/item/context": [
         {
           "command": "cppPrimerBuddy.studySelected",
@@ -77,6 +90,26 @@
         {
           "command": "cppPrimerBuddy.studySelected",
           "when": "view == cppPrimerBuddyView && viewItem == lockedItem",
+          "group": "inline"
+        },
+        {
+          "command": "cppPrimerBuddy.courseItemSelect",
+          "when": "view == cppPrimerBuddyView && viewItem == courseItem",
+          "group": "inline"
+        },
+        {
+          "command": "cppPrimerBuddy.previewExercise",
+          "when": "view == cppPrimerBuddyView && viewItem == studyItem",
+          "group": "inline"
+        },
+        {
+          "command": "cppPrimerBuddy.downloadExercise",
+          "when": "view == cppPrimerBuddyView && viewItem == exerciseItem",
+          "group": "inline"
+        },
+        {
+          "command": "cppPrimerBuddy.previewContent",
+          "when": "view == cppPrimerBuddyView && viewItem == readmeItem || viewItem == studyItem || viewItem == solutionItem || viewItem == hintItem || viewItem == pageItem",
           "group": "inline"
         }
       ],
@@ -88,6 +121,26 @@
         {
           "command": "cppPrimerBuddy.openWeChatContact",
           "when": "false"
+        },
+        {
+          "command": "cppPrimerBuddy.changePodmanLocation",
+          "when": "false"
+        },
+        {
+          "command": "cppPrimerBuddy.openCourseCatalog",
+          "when": "view == cppPrimerBuddyView"
+        },
+        {
+          "command": "cppPrimerBuddy.previewExercise",
+          "when": "view == cppPrimerBuddyView"
+        },
+        {
+          "command": "cppPrimerBuddy.downloadExercise",
+          "when": "view == cppPrimerBuddyView"
+        },
+        {
+          "command": "cppPrimerBuddy.previewContent",
+          "when": "view == cppPrimerBuddyView"
         }
       ]
     }
@@ -110,7 +163,7 @@
     "@types/node": "^16.18.126",
     "@types/node-fetch": "^2.6.13",
     "@types/vscode": "^1.100.0",
-    "@vscode/vsce": "^2.19.0",
+    "@vscode/vsce": "^3.7.0",
     "jest": "^30.2.0",
     "ts-jest": "^29.4.5",
     "typescript": "^4.9.5"

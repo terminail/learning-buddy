@@ -23,6 +23,8 @@ The Course Content Provider manages different types of learning materials includ
 
 **Note**: Podman is a mandatory requirement for this extension. The Course Content Provider runs exclusively within the Learning Buddy Podman Environment, and all course content (protected and non-protected) is managed through this infrastructure container. Users must have Podman installed and running to access any course content.
 
+**Important Clarification**: The Course Content Provider is a standalone application that provides an API for content delivery, license management, and security measures. It is designed to run within a container environment (specifically Podman) but does not need to know about or manage containerization itself. The containerization is handled entirely by the infrastructure layer. See the [Course Content Provider Application Specification](../014-course-content-provider/application-spec.md) for details on the application's container-agnostic design.
+
 **Critical Requirement**: The Learning Buddy extension MUST perform comprehensive Podman environment checks at startup and before any Podman operations to ensure Podman is properly installed and actively running. This is a critical requirement for the proper functioning of the extension.
 
 **Architecture Note**: The Course Content Provider operates within the Learning Buddy Podman Environment and has a distinct role from course-specific Podman environments:
@@ -30,6 +32,28 @@ The Course Content Provider manages different types of learning materials includ
 2. **Course-Specific Podman Environments**: Created based on course Podmanfiles to provide development tools and runtime environments. These are orchestrated by the Course Content Provider but have no content management responsibilities.
 
 The Course Content Provider securely mounts course materials into Course-Specific Podman Environments as read-only volumes, ensuring content protection while providing development access.
+
+## Updates to Implementation
+
+### Persistent Download Icons with Conditional Actions (2025-11-09)
+
+The Learning Buddy extension now implements a key user experience improvement where download icons are always visible for first-level items (chapters) regardless of license status. When users click these icons:
+
+1. **With Valid License**: Content is downloaded to the workspace
+2. **Without Valid License**: Users are directed to the license purchase page
+
+This ensures users can always identify downloadable content while still enforcing license requirements for actual downloads.
+
+### License Status Bar Integration (2025-11-09)
+
+The extension now includes a license status bar that:
+- Shows current license status ("License active" or "License required")
+- Opens appropriate license information page when clicked
+- Uses mock Podman status for testing different scenarios
+
+### Content Preview Without License (2025-11-09)
+
+All content remains previewable regardless of license status, allowing users to evaluate course materials before purchasing while still protecting actual downloads.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -152,6 +176,33 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 2. **Given** a system with Podman installed but not running, **When** the extension starts, **Then** it should immediately display a clear error message with instructions to start Podman.
 3. **Given** a system with Podman installed and running, **When** the extension starts, **Then** it should proceed with normal initialization without any Podman-related warnings.
 
+### User Story 10 - Persistent Download Icons with Conditional Actions (Priority: P1)
+
+As a learner using the Learning Buddy extension, I want to always see download icons for downloadable content so that I can easily identify what content I can access, with the action depending on my license status.
+
+**Why this priority**: This is essential for user experience - clear indication of what content is downloadable.
+
+**Independent Test**: Can be fully tested by verifying that download icons are always visible regardless of license status.
+
+**Acceptance Scenarios**:
+
+1. **Given** a user without a valid license, **When** they view the course structure, **Then** download icons should be visible for all downloadable content.
+2. **Given** a user with a valid license, **When** they view the course structure, **Then** download icons should be visible for all downloadable content.
+3. **Given** any user, **When** they click a download icon, **Then** the action should be appropriate based on their license status.
+
+### User Story 11 - Content Preview Without License (Priority: P2)
+
+As a learner, I want to preview content even when I don't have a valid license so that I can evaluate the course before purchasing.
+
+**Why this priority**: This enhances user experience by allowing content evaluation.
+
+**Independent Test**: Can be tested by accessing content preview functionality without a valid license.
+
+**Acceptance Scenarios**:
+
+1. **Given** a user without a valid license, **When** they preview content, **Then** they should be able to view the content in read-only mode.
+2. **Given** a user with a valid license, **When** they preview content, **Then** they should be able to view the content in read-only mode.
+
 ### Edge Cases
 
 - What happens when Podman is not installed on the user's system? (Answer: Extension must display clear installation requirements and guidance immediately at startup)
@@ -170,6 +221,8 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 - What happens when course catalog validation fails?
 - How does the system handle repository version conflicts?
 - What happens when a user declines to update course materials?
+- How does the system handle users clicking download icons without valid licenses? (Answer: Direct them to purchase page)
+- How does the system handle users clicking download icons with valid licenses? (Answer: Proceed with download)
 
 ## Requirements *(mandatory)*
 
@@ -230,6 +283,12 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 - **FR-053**: Course Content Provider MUST automatically refresh course structure when updates are detected
 - **FR-054**: Course Content Provider MUST handle version conflicts gracefully
 - **FR-055**: Course Content Provider MUST preserve user progress data during content updates
+- **FR-056**: Learning Buddy extension MUST always show download icons for first-level items regardless of license status
+- **FR-057**: Learning Buddy extension MUST check license status when users click download icons
+- **FR-058**: Learning Buddy extension MUST direct users without valid licenses to the purchase page when they click download icons
+- **FR-059**: Learning Buddy extension MUST allow content preview regardless of license status
+- **FR-060**: Learning Buddy extension MUST provide a license status bar that shows current license status
+- **FR-061**: Learning Buddy extension MUST allow users to click the license status bar to view license information or purchase options
 
 ### Key Entities
 
@@ -239,7 +298,6 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 - **ExtensionContainerInterface**: Simplified interface in the extension for communicating with containers
 - **ContainerContentCache**: Storage for downloaded content within Podman containers (replaces ContentCache)
 - **ContainerErrorReporter**: Handles error reporting from containers to the extension (replaces GiteeAPIHandler)
-- **ContainerAPIHandler**: Handles API requests with error handling and rate limiting within containers
 - **PodmanStatusChecker**: Critical component that verifies Podman installation and active status at startup and during operation
 - **AntiBulkCopyingController**: Coordinates all anti-bulk copying measures within the Course Content Provider
 - **CatalogManager**: Manages course catalog loading, caching, and validation within the Course Content Provider
@@ -252,6 +310,9 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 - **ContentAccessController**: Manages access to learning materials based on chapter unlock status
 - **ProtectedContent**: Content that requires a valid license for access
 - **FreeContent**: Content that is accessible without any license requirements
+- **LicenseStatusBar**: Status bar item that shows current license status and provides access to license management
+- **DownloadActionHandler**: Component that handles download icon clicks with appropriate license checking
+- **ContentPreviewer**: Component that allows content preview regardless of license status
 
 ## Success Criteria *(mandatory)*
 
@@ -287,3 +348,8 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 - **SC-028**: Course material updates complete successfully in 90% of cases
 - **SC-029**: User progress data is preserved during content updates in 99% of cases
 - **SC-030**: Course structure automatically refreshes when updates are detected in 95% of cases
+- **SC-031**: Download icons are visible for all downloadable content in 100% of cases
+- **SC-032**: Users without valid licenses are directed to purchase page when clicking download icons in 100% of cases
+- **SC-033**: Users with valid licenses can download content when clicking download icons in 95% of cases
+- **SC-034**: Content preview works for all users regardless of license status in 100% of cases
+- **SC-035**: License status bar accurately reflects current license status in 100% of cases

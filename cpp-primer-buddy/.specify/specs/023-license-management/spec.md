@@ -9,6 +9,29 @@
 
 This specification has been enhanced to support multi-course licensing where licenses are now course-specific. Some courses may be free while others are paid, allowing for flexible licensing models within the same Learning Buddy extension.
 
+## Updates to Implementation (2025-11-09)
+
+### Persistent Download Icons with Conditional Actions
+
+The license management system now integrates with the course structure navigation to provide a better user experience:
+
+1. **Persistent Download Icons**: Download icons are always visible for first-level items (chapters) regardless of license status
+2. **Conditional Actions**: When users click download icons:
+   - With Valid License: Content is downloaded to the workspace
+   - Without Valid License: Users are directed to the license purchase page
+3. **License Status Bar**: Provides immediate visibility into current license status
+
+### License Status Bar Integration
+
+The extension now includes a license status bar that:
+- Shows current license status ("License active" or "License required, pay now")
+- Opens appropriate license information page when clicked
+- Uses mock Podman status for testing different scenarios
+
+### Content Preview Without License
+
+All content remains previewable regardless of license status, allowing users to evaluate course materials before purchasing while still protecting actual downloads.
+
 ## Implementation Summary
 
 The license management system has been implemented with a web-based UI that allows users to add, view, and remove license keys. Licenses are verified using RSA public key cryptography within Podman containers. The system includes development tools for generating test licenses. Enhanced licenses now support Gitee content delivery with download limits (see feature 008-gitee-content-delivery).
@@ -83,6 +106,47 @@ As a learner, I want to remove licenses for specific courses from the extension 
 1. **Given** a user with an active license for Course A, **When** they remove it from the extension, **Then** associated protected content for Course A should become inaccessible while other courses remain accessible.
 2. **Given** a user viewing their license management interface, **When** they select to remove a license for Course B, **Then** they should be prompted to confirm the action for Course B only.
 
+### User Story 5 - Persistent Download Icons with Conditional Actions (Priority: P1)
+
+As a learner, I want to always see download icons for downloadable content so that I can easily identify what content I can access, with the action depending on my license status.
+
+**Why this priority**: This is essential for user experience - clear indication of what content is downloadable.
+
+**Independent Test**: Can be fully tested by verifying that download icons are always visible regardless of license status.
+
+**Acceptance Scenarios**:
+
+1. **Given** a user without a valid license, **When** they view the course structure, **Then** download icons should be visible for all downloadable content.
+2. **Given** a user with a valid license, **When** they view the course structure, **Then** download icons should be visible for all downloadable content.
+3. **Given** any user, **When** they click a download icon, **Then** the action should be appropriate based on their license status.
+
+### User Story 6 - License Status Awareness (Priority: P1)
+
+As a learner, I want to easily see my current license status so that I understand whether I can access protected content.
+
+**Why this priority**: This is essential for user experience - clear indication of access rights.
+
+**Independent Test**: Can be tested by viewing the license status bar and verifying that it accurately reflects the current license status.
+
+**Acceptance Scenarios**:
+
+1. **Given** a user with a valid license, **When** they view the extension, **Then** the license status bar should show "License active".
+2. **Given** a user without a valid license, **When** they view the extension, **Then** the license status bar should show "License required, pay now".
+3. **Given** any user, **When** they click the license status bar, **Then** they should be directed to appropriate license information.
+
+### User Story 7 - Content Preview Without License (Priority: P2)
+
+As a learner, I want to preview content even when I don't have a valid license so that I can evaluate the course before purchasing.
+
+**Why this priority**: This enhances user experience by allowing content evaluation.
+
+**Independent Test**: Can be tested by accessing content preview functionality without a valid license.
+
+**Acceptance Scenarios**:
+
+1. **Given** a user without a valid license, **When** they preview content, **Then** they should be able to view the content in read-only mode.
+2. **Given** a user with a valid license, **When** they preview content, **Then** they should be able to view the content in read-only mode.
+
 ### Edge Cases
 
 - What happens when a user enters a license that has been revoked by the issuer for a specific course?
@@ -90,6 +154,8 @@ As a learner, I want to remove licenses for specific courses from the extension 
 - What happens when a user tries to enter a license while offline for a specific course?
 - How does the system handle malformed or corrupted license keys for different courses?
 - How does the system handle users who have licenses for some courses but not others?
+- How does the system handle users clicking download icons without valid licenses?
+- How does the system handle users clicking download icons with valid licenses?
 
 ## Requirements *(mandatory)*
 
@@ -114,6 +180,12 @@ As a learner, I want to remove licenses for specific courses from the extension 
 - **FR-017**: Extension MUST track license usage per course in a centralized repository
 - **FR-018**: Extension MUST anonymize user identification for privacy protection
 - **FR-019**: Extension MUST support multiple repositories for tracking per course
+- **FR-020**: Extension MUST always show download icons for downloadable content regardless of license status
+- **FR-021**: Extension MUST check license status when users click download icons
+- **FR-022**: Extension MUST direct users without valid licenses to the purchase page when they click download icons
+- **FR-023**: Extension MUST provide a license status bar that shows current license status
+- **FR-024**: Extension MUST allow users to click the license status bar to view license information or purchase options
+- **FR-025**: Extension MUST allow content preview regardless of license status
 
 ### Key Entities
 
@@ -126,6 +198,9 @@ As a learner, I want to remove licenses for specific courses from the extension 
 - **ContainerUsageTracker**: Enforces download limits within Podman containers per course
 - **UsageTracker**: Tracks license usage in a centralized repository per course
 - **PrivacyManager**: Anonymizes user identification for privacy protection
+- **LicenseStatusBar**: Status bar item that shows current license status and provides access to license management
+- **DownloadActionHandler**: Component that handles download icon clicks with appropriate license checking
+- **ContentPreviewer**: Component that allows content preview regardless of license status
 
 ## Success Criteria *(mandatory)*
 
@@ -144,3 +219,8 @@ As a learner, I want to remove licenses for specific courses from the extension 
 - **SC-011**: License usage is tracked centrally per course with 99% accuracy
 - **SC-012**: User identification is anonymized for privacy protection in 100% of cases
 - **SC-013**: Error handling for license issues provides appropriate feedback in 95% of error cases
+- **SC-014**: Download icons are visible for all downloadable content in 100% of cases
+- **SC-015**: Users without valid licenses are directed to purchase page when clicking download icons in 100% of cases
+- **SC-016**: Users with valid licenses can download content when clicking download icons in 95% of cases
+- **SC-017**: License status bar accurately reflects current license status in 100% of cases
+- **SC-018**: Content preview works for all users regardless of license status in 100% of cases

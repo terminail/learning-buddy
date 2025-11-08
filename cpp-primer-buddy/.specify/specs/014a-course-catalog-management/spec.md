@@ -23,6 +23,8 @@ The Course Content Provider manages different types of learning materials includ
 
 **Note**: Podman is a mandatory requirement for this extension. The Course Content Provider runs exclusively within the Learning Buddy Podman Environment, and all course content (protected and non-protected) is managed through this infrastructure container. Users must have Podman installed and running to access any course content.
 
+**Important Clarification**: The Course Content Provider is a standalone application that provides an API for content delivery, license management, and security measures. It is designed to run within a container environment (specifically Podman) but does not need to know about or manage containerization itself. The containerization is handled entirely by the infrastructure layer. See the [Course Content Provider Application Specification](../014-course-content-provider/application-spec.md) for details on the application's container-agnostic design.
+
 **Critical Requirement**: The Learning Buddy extension MUST perform comprehensive Podman environment checks at startup and before any Podman operations to ensure Podman is properly installed and actively running. This is a critical requirement for the proper functioning of the extension.
 
 **Architecture Note**: The Course Content Provider operates within the Learning Buddy Podman Environment and has a distinct role from course-specific Podman environments:

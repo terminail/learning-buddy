@@ -3,7 +3,9 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as https from 'https';
 import { ContentProtectionManager, LicenseInfo } from './contentProtection';
-import { GiteeContentDelivery } from './giteeContentDelivery';
+// Import the Course Content Provider client instead of the deprecated GiteeContentDelivery
+import { CourseContentProviderClient } from './courseContentProvider';
+import { PodmanEnvironmentManager } from './podmanEnvironmentManager';
 
 // Simple HTTPS request function as an alternative to fetch
 function httpsRequest(url: string, options: any = {}): Promise<any> {
@@ -109,13 +111,22 @@ export class StudyItem extends vscode.TreeItem {
 		public readonly fullPath: string,
 		public readonly isLocked: boolean = false,
 		public readonly isDirectory: boolean = false,
-		public readonly itemType: 'exercise' | 'solution' | 'hint' | 'readme' | 'directory' | 'promotion' | 'courseCatalog' = 'exercise'
+		public readonly itemType: 'exercise' | 'solution' | 'hint' | 'readme' | 'directory' | 'promotion' = 'exercise'
 	) {
 		super(label, collapsibleState);
 		
 		(this as any).tooltip = this.label;
 		// Remove locked indicator to make locked items appear identical to free items
 		(this as any).description = '';
+		
+		// Set command for certain items
+		if (fullPath === 'podman_location' || fullPath === 'change_podman_location') {
+			(this as any).command = {
+				command: 'cppprimer5thbuddy.itemClicked',
+				title: 'Item Clicked',
+				arguments: [this]
+			};
+		}
 		
 		// Use the same context value for all items to maintain consistent UI
 		switch (itemType) {
@@ -136,9 +147,6 @@ export class StudyItem extends vscode.TreeItem {
 				break;
 			case 'promotion':
 				(this as any).contextValue = 'promotionItem';
-				break;
-			case 'courseCatalog':
-				(this as any).contextValue = 'courseCatalogItem';
 				break;
 		}
 		
@@ -162,9 +170,6 @@ export class StudyItem extends vscode.TreeItem {
 				case 'promotion':
 					(this as any).iconPath = new vscode.ThemeIcon('megaphone');
 					break;
-				case 'courseCatalog':
-					(this as any).iconPath = new vscode.ThemeIcon('library');
-					break;
 				default:
 					(this as any).iconPath = new vscode.ThemeIcon('file');
 			}
@@ -172,22 +177,74 @@ export class StudyItem extends vscode.TreeItem {
 	}
 }
 
-export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyItem> {
+export class LearningTreeViewProvider implements vscode.TreeDataProvider<StudyItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<StudyItem | undefined | void> = new vscode.EventEmitter<StudyItem | undefined | void>();
 	readonly onDidChangeTreeData: vscode.Event<StudyItem | undefined | void> = this._onDidChangeTreeData.event;
 	private protectionManager: ContentProtectionManager;
-	private giteeContentDelivery: GiteeContentDelivery;
+	// Use CourseContentProviderClient instead of GiteeContentDelivery
+	private courseContentProvider: CourseContentProviderClient;
 	private defaultCourseStructure: CourseStructure | null = null;
 	private defaultCourseCatalog: CourseCatalog | null = null;
-	// Remove currentCourseStructure and currentCourseId since we're not switching courses anymore
+	private podmanNotAvailable: boolean = false;
+	private podmanManager: PodmanEnvironmentManager;
 
-	constructor(private context: vscode.ExtensionContext) {
+	constructor(private context: vscode.ExtensionContext, podmanManager: PodmanEnvironmentManager) {
+		this.podmanManager = podmanManager;
 		this.protectionManager = new ContentProtectionManager(context);
-		this.giteeContentDelivery = new GiteeContentDelivery(context);
+		// Initialize the Course Content Provider client
+		this.courseContentProvider = new CourseContentProviderClient(context);
 		// Load default course structure and catalog when the provider is initialized
 		this.loadDefaultCourseStructure();
 		this.loadDefaultCourseCatalog();
-		// No need to set current course structure since we're not switching courses
+		
+		// FOR TESTING: Force show installation guide
+		// Remove this line for production
+		// this.podmanNotAvailable = true;
+	}
+
+	/**
+	 * Set whether Podman is not available
+	 */
+	public setPodmanNotAvailable(notAvailable: boolean): void {
+		console.log('Setting podmanNotAvailable to:', notAvailable);
+		this.podmanNotAvailable = notAvailable;
+		this._onDidChangeTreeData.fire();
+	}
+
+	/**
+	 * Handle click on tree items
+	 */
+	public async onItemClicked(item: StudyItem): Promise<void> {
+		if (item.fullPath === 'change_podman_location') {
+			// User wants to change Podman location
+			await this.changePodmanLocation();
+		} else if (item.fullPath === 'podman_location') {
+			// User clicked on Podman location, show options
+			const selection = await vscode.window.showInformationMessage(
+				'Podman Location Options',
+				'Change Location',
+				'Copy Path'
+			);
+			
+			switch (selection) {
+				case 'Change Location':
+					await this.changePodmanLocation();
+					break;
+				case 'Copy Path':
+					const podmanExecutable = this.podmanManager.getPodmanExecutable();
+					if (podmanExecutable) {
+						await vscode.env.clipboard.writeText(podmanExecutable);
+						vscode.window.showInformationMessage('Podman path copied to clipboard');
+					}
+					break;
+			}
+		} else if (item.fullPath === 'podman_not_found') {
+			// User clicked on "Podman not found" item, show installation instructions
+			this.setPodmanNotAvailable(true);
+		} else if (item.fullPath === 'installation_link') {
+			// User clicked on installation link, open Podman website
+			vscode.env.openExternal(vscode.Uri.parse('https://podman.io/getting-started/installation'));
+		}
 	}
 
 	getTreeItem(element: StudyItem): vscode.TreeItem {
@@ -195,25 +252,414 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 	}
 
 	getChildren(element?: StudyItem): vscode.ProviderResult<StudyItem[]> {
+		console.log('getChildren called with podmanNotAvailable:', this.podmanNotAvailable);
+		// If Podman is not available, show installation instructions
+
+		if (this.podmanNotAvailable) {
+
+			console.log('Showing Podman installation instructions');
+
+			if (!element) {
+
+				// Root level - show Podman installation instructions
+
+				return Promise.resolve([
+
+					new StudyItem(
+
+						'🔒 Podman Required for Learning Buddy',
+
+						vscode.TreeItemCollapsibleState.None,
+
+						'podman_required',
+
+						false,
+
+						false,
+
+						'readme'
+
+					),
+
+					new StudyItem(
+
+						'📦 Why Podman is Required',
+
+						vscode.TreeItemCollapsibleState.Collapsed,
+
+						'why_podman_required',
+
+						false,
+
+						false,
+
+						'readme'
+
+					),
+
+					new StudyItem(
+
+						'📝 Installation Steps',
+
+						vscode.TreeItemCollapsibleState.Collapsed,
+
+						'installation_instructions',
+
+						false,
+
+						false,
+
+						'readme'
+
+					),
+
+					new StudyItem(
+
+						'1. Install Podman on Your System',
+
+						vscode.TreeItemCollapsibleState.None,
+
+						'install_step_1',
+
+						false,
+
+						false,
+
+						'readme'
+
+					),
+
+					new StudyItem(
+
+						'2. Restart VS Code After Installation',
+
+						vscode.TreeItemCollapsibleState.None,
+
+						'install_step_2',
+
+						false,
+
+						false,
+
+						'readme'
+
+					),
+
+					new StudyItem(
+
+						'🔗 Platform-Specific Installation Guides',
+
+						vscode.TreeItemCollapsibleState.Collapsed,
+
+						'platform_guides',
+
+						false,
+
+						false,
+
+						'readme'
+
+					),
+
+					new StudyItem(
+
+						'Need Help? Contact Support',
+
+						vscode.TreeItemCollapsibleState.None,
+
+						'support_contact',
+
+						false,
+
+						false,
+
+						'promotion'
+
+					)
+
+				]);
+
+			} else {
+
+				// Handle clicks on installation instruction items
+
+				switch (element.fullPath) {
+
+					case 'support_contact':
+
+						// Open WeChat contact for support
+
+						vscode.commands.executeCommand('cppprimer5thbuddy.openWeChatContact');
+
+						return Promise.resolve([]);
+
+					case 'why_podman_required':
+
+						// Show details about why Podman is required
+
+						return Promise.resolve([
+
+							new StudyItem(
+
+								'• Secure content delivery through containerization',
+
+								vscode.TreeItemCollapsibleState.None,
+
+								'why_podman_detail_1',
+
+								false,
+
+								false,
+
+								'readme'
+
+							),
+
+							new StudyItem(
+
+								'• Daemonless operation for lightweight experience',
+
+								vscode.TreeItemCollapsibleState.None,
+
+								'why_podman_detail_2',
+
+								false,
+
+								false,
+
+								'readme'
+
+							),
+
+							new StudyItem(
+
+								'• Content protection from unauthorized access',
+
+								vscode.TreeItemCollapsibleState.None,
+
+								'why_podman_detail_3',
+
+								false,
+
+								false,
+
+								'readme'
+
+							),
+
+							new StudyItem(
+
+								'• Isolated development environment management',
+
+								vscode.TreeItemCollapsibleState.None,
+
+								'why_podman_detail_4',
+
+								false,
+
+								false,
+
+								'readme'
+
+							)
+
+						]);
+
+					case 'platform_guides':
+
+						// Show platform-specific installation guides
+
+						return Promise.resolve([
+
+							new StudyItem(
+
+								'Windows: Podman Desktop + WSL2',
+
+								vscode.TreeItemCollapsibleState.None,
+
+								'installation_link_windows',
+
+								false,
+
+								false,
+
+								'readme'
+
+							),
+
+							new StudyItem(
+
+								'macOS: Homebrew Installation',
+
+								vscode.TreeItemCollapsibleState.None,
+
+								'installation_link_macos',
+
+								false,
+
+								false,
+
+								'readme'
+
+							),
+
+							new StudyItem(
+
+								'Linux: Distribution Package Managers',
+
+								vscode.TreeItemCollapsibleState.None,
+
+								'installation_link_linux',
+
+								false,
+
+								false,
+
+								'readme'
+
+							)
+
+						]);
+
+					case 'installation_link_windows':
+
+						// Open Windows installation guide
+
+						vscode.env.openExternal(vscode.Uri.parse('https://podman.io/getting-started/installation#windows'));
+
+						return Promise.resolve([]);
+
+					case 'installation_link_macos':
+
+						// Open macOS installation guide
+
+						vscode.env.openExternal(vscode.Uri.parse('https://podman.io/getting-started/installation#macos'));
+
+						return Promise.resolve([]);
+
+					case 'installation_link_linux':
+
+						// Open Linux installation guide
+
+						vscode.env.openExternal(vscode.Uri.parse('https://podman.io/getting-started/installation#linux'));
+
+						return Promise.resolve([]);
+
+					default:
+
+						// Show detailed information for each instruction item
+
+						return Promise.resolve([
+
+							new StudyItem(
+
+								this.getInstallationInstructionDetails(element.fullPath),
+
+								vscode.TreeItemCollapsibleState.None,
+
+								`${element.fullPath}_details`,
+
+								false,
+
+								false,
+
+								'readme'
+
+							)
+
+						]);
+
+				}
+
+			}
+
+		}
+
+		console.log('Showing normal course content');
+
 		if (!element) {
-			// Root level items - chapters + promotional courses
+
+			// Root level items - organize like a split panel with clear sections
+
 			const items: StudyItem[] = [];
-			
-			// Add course chapters
-			items.push(...this.getRootItems());
-			
-			// Add promotional courses section
+
+			// TOP SECTION: Course Content (like the top part of a split panel)
+			// Add a header for the course section
 			items.push(new StudyItem(
-				'Discover More Courses',
+				'📚 Course Structure',
+				vscode.TreeItemCollapsibleState.Expanded,
+				'course_section_header',
+				false,
+				true,
+				'directory'
+			));
+
+			// Add course chapters under the course section
+			const courseItems = this.getRootItems();
+			items.push(...courseItems);
+
+			// Add a separator between sections
+			items.push(new StudyItem(
+				'',
+				vscode.TreeItemCollapsibleState.None,
+				'separator',
+				false,
+				false,
+				'readme'
+			));
+
+			// BOTTOM SECTION: Podman Information (like the bottom part of a split panel)
+			// Add a header for the Podman section
+			items.push(new StudyItem(
+				'🔧 Podman Environment',
+				vscode.TreeItemCollapsibleState.Expanded,
+				'podman_section_header',
+				false,
+				true,
+				'readme'
+			));
+
+			// Check if Podman is available
+			const podmanExecutable = this.podmanManager.getPodmanExecutable();
+			if (podmanExecutable) {
+				// Add Podman installation information with option to change location
+				const podmanItem = new StudyItem(
+					`✅ Podman: ${podmanExecutable}`,
+					vscode.TreeItemCollapsibleState.None,
+					'podman_location',
+					false,
+					false,
+					'readme'
+				);
+				items.push(podmanItem);
+			} else {
+				// If Podman is not available but podmanNotAvailable flag is not set,
+				// we should still show some information about Podman requirement
+				const installItem = new StudyItem(
+					'❌ Podman Required - Click to Install/Configure',
+					vscode.TreeItemCollapsibleState.None,
+					'podman_not_found',
+					false,
+					false,
+					'readme'
+				);
+				items.push(installItem);
+			}
+
+			// Add promotional courses section at the very end
+			items.push(new StudyItem(
+				'🎯 Discover More Courses',
 				vscode.TreeItemCollapsibleState.None,
 				'promotional_courses',
 				false,
 				false,
 				'promotion'
 			));
-			
+
 			return Promise.resolve(items);
+
 		} else {
+
 			// Handle different types of items
 			if (element.fullPath === 'promotional_courses') {
 				// Show promotion for generic Learning Buddy extension
@@ -225,10 +671,50 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 					false,
 					'promotion'
 				)]);
+			} else if (element.fullPath === 'podman_section_header') {
+				// Podman section header - show nothing as children since we show podman info directly
+				return Promise.resolve([]);
+			} else if (element.fullPath === 'course_section_header') {
+				// Course section header - show nothing as children since we show course info directly
+				return Promise.resolve([]);
+			} else if (element.fullPath === 'separator') {
+				// Separator - no children
+				return Promise.resolve([]);
+			} else if (element.fullPath === 'podman_location') {
+				// Handle click on Podman location - allow user to change it
+				return Promise.resolve([
+					new StudyItem(
+						'Click to change Podman installation location',
+						vscode.TreeItemCollapsibleState.None,
+						'change_podman_location',
+						false,
+						false,
+						'readme'
+					)
+				]);
+			} else if (element.fullPath === 'podman_not_found') {
+				// Handle click on Podman not found item - show installation instructions
+				// Set the podmanNotAvailable flag to true and refresh the view
+				this.podmanNotAvailable = true;
+				this._onDidChangeTreeData.fire();
+				return Promise.resolve([]);
+			} else if (element.fullPath === 'view_installation_instructions') {
+				// Show detailed installation instructions
+				return Promise.resolve([
+					new StudyItem(
+						'Visit podman.io for installation instructions',
+						vscode.TreeItemCollapsibleState.None,
+						'installation_link',
+						false,
+						false,
+						'readme'
+					)
+				]);
 			} else {
 				// Child items - exercises and materials
 				return Promise.resolve(this.getChildItems(element));
 			}
+
 		}
 	}
 
@@ -488,6 +974,12 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 	}
 
 	studyItem(item: StudyItem): void {
+		// If Podman is not available, show installation instructions
+		if (this.podmanNotAvailable) {
+			this.showPodmanInstallationInstructions();
+			return;
+		}
+
 		if (item.itemType === 'promotion' && item.fullPath === 'promotional_courses') {
 			// Handle promotional course click - show promotion for generic Learning Buddy extension
 			vscode.window.showInformationMessage(
@@ -519,7 +1011,7 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 		}
 
 		if (item.isLocked) {
-			// Try to fetch content from Gitee first, fall back to WeChat contact
+			// Try to fetch content through Course Content Provider first, fall back to WeChat contact
 			this.getWorkingDirectory().then(workingDir => {
 				if (workingDir) {
 					this.fetchContentFromGitee(item, 'exercise', workingDir);
@@ -533,8 +1025,14 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 	}
 
 	checkSolution(item: StudyItem): void {
+		// If Podman is not available, show installation instructions
+		if (this.podmanNotAvailable) {
+			this.showPodmanInstallationInstructions();
+			return;
+		}
+
 		if (item.isLocked) {
-			// Try to fetch content from Gitee first, fall back to WeChat contact
+			// Try to fetch content through Course Content Provider first, fall back to WeChat contact
 			this.getWorkingDirectory().then(workingDir => {
 				if (workingDir) {
 					this.fetchContentFromGitee(item, 'solution', workingDir);
@@ -554,8 +1052,14 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 	}
 
 	viewSolution(item: StudyItem): void {
+		// If Podman is not available, show installation instructions
+		if (this.podmanNotAvailable) {
+			this.showPodmanInstallationInstructions();
+			return;
+		}
+
 		if (item.isLocked) {
-			// Try to fetch content from Gitee first, fall back to WeChat contact
+			// Try to fetch content through Course Content Provider first, fall back to WeChat contact
 			this.getWorkingDirectory().then(workingDir => {
 				if (workingDir) {
 					this.fetchContentFromGitee(item, 'solution', workingDir);
@@ -569,9 +1073,15 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 	}
 
 	showHint(item: StudyItem): void {
+		// If Podman is not available, show installation instructions
+		if (this.podmanNotAvailable) {
+			this.showPodmanInstallationInstructions();
+			return;
+		}
+
 		if (item.isLocked) {
 			// For hints, we'll still use WeChat contact as they're typically short text
-			vscode.commands.executeCommand('cppPrimerBuddy.openWeChatContact');
+			vscode.commands.executeCommand('cppprimer5thbuddy.openWeChatContact');
 			return;
 		}
 		
@@ -597,7 +1107,7 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 				return;
 			}
 			
-			// For locked content, try to fetch from Gitee first
+			// For locked content, try to fetch through Course Content Provider first
 			if (item.isLocked) {
 				this.fetchContentFromGitee(item, contentType, workingDir);
 				return;
@@ -609,7 +1119,40 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 	}
 	
 	/**
-	 * Fetch content from Gitee for locked items
+	 * Fetch content from the Course Content Provider running in the Podman environment
+	 * @param licenseInfo License information for content access
+	 * @param filePath Path to the file in the course repository
+	 * @param contentType Type of content (exercise, solution, etc.)
+	 * @returns Content as string, or null if failed
+	 */
+	private async fetchContentFromProvider(licenseInfo: LicenseInfo, filePath: string, _contentType: string): Promise<string | null> {
+		try {
+			// Use the Course Content Provider client to fetch content
+			// This implements the specification requirement that all content delivery
+			// happens within the Learning Buddy Podman Environment
+			const content = await this.courseContentProvider.fetchContent(licenseInfo, filePath);
+			
+			if (content === null) {
+				// The Course Content Provider is not available or the Podman environment is not running
+				vscode.window.showErrorMessage(
+					'Course Content Provider is not available. ' +
+					'Please ensure the Learning Buddy Podman Environment is running. ' +
+					'Refer to the installation guide for setup instructions.'
+				);
+			}
+			
+			return content;
+		} catch (error) {
+			console.error('Error communicating with Course Content Provider:', error);
+			vscode.window.showErrorMessage(`Failed to communicate with Course Content Provider: ${error}`);
+			return null;
+		}
+	}
+	
+	/**
+	 * Fetch content through the Course Content Provider for locked items
+	 * This implements the specification requirement that all content delivery
+	 * happens within the Learning Buddy Podman Environment
 	 */
 	private async fetchContentFromGitee(item: StudyItem, contentType: 'exercise' | 'solution', workingDir: string): Promise<void> {
 		try {
@@ -625,48 +1168,47 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 			// Get valid licenses
 			const licenses = this.protectionManager.getValidLicenses();
 			
-			// Find a license with Gitee access
-			let giteeLicense: LicenseInfo | null = null;
+			// Find a license with content access
+			let validLicense: LicenseInfo | null = null;
 			for (const license of licenses) {
-				if (license.gitee) {
-					giteeLicense = license;
-					break;
-				}
+				// Any valid license can be used for content access through the Course Content Provider
+				validLicense = license;
+				break;
 			}
 			
-			if (!giteeLicense) {
-				// No license with Gitee access, fall back to WeChat contact
-				vscode.commands.executeCommand('cppPrimerBuddy.openWeChatContact');
+			if (!validLicense) {
+				// No valid license, fall back to WeChat contact
+				vscode.commands.executeCommand('cppprimer5thbuddy.openWeChatContact');
 				return;
 			}
 			
-			// Determine the file path in the Gitee repository
+			// Determine the file path in the course repository
 			const pathParts = item.fullPath.split('/');
 			const chapterDir = pathParts[0];
 			const fileName = pathParts[1];
 			
-			// Map chapter directories to Gitee paths
-			const chapterGiteePathMap: { [key: string]: string } = {
+			// Map chapter directories to repository paths
+			const chapterPathMap: { [key: string]: string } = {
 				'7_classes': 'chapter7',
 				'8_io': 'chapter8'
 			};
 			
-			const giteeChapterPath = chapterGiteePathMap[chapterDir];
-			if (!giteeChapterPath) {
-				vscode.window.showErrorMessage(`No Gitee path found for chapter: ${chapterDir}`);
+			const chapterPath = chapterPathMap[chapterDir];
+			if (!chapterPath) {
+				vscode.window.showErrorMessage(`No repository path found for chapter: ${chapterDir}`);
 				return;
 			}
 			
-			// Construct the file path in the Gitee repository
-			let giteeFilePath: string;
+			// Construct the file path in the course repository
+			let contentPath: string;
 			if (contentType === 'solution') {
-				giteeFilePath = `${giteeChapterPath}/solutions/${fileName}`;
+				contentPath = `${chapterPath}/solutions/${fileName}`;
 			} else {
-				giteeFilePath = `${giteeChapterPath}/exercises/${fileName}`;
+				contentPath = `${chapterPath}/exercises/${fileName}`;
 			}
 			
-			// Fetch content from Gitee
-			const content = await this.giteeContentDelivery.fetchContent(giteeLicense, giteeFilePath);
+			// Fetch content from the Course Content Provider
+			const content = await this.fetchContentFromProvider(validLicense, contentPath, contentType);
 			
 			if (content) {
 				// Determine destination file path
@@ -693,14 +1235,20 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 					vscode.window.showTextDocument(doc);
 				});
 			} else {
-				// Failed to fetch content, fall back to WeChat contact
-				vscode.commands.executeCommand('cppPrimerBuddy.openWeChatContact');
+				// Failed to fetch content through Course Content Provider
+				vscode.window.showErrorMessage(
+					'Failed to fetch content through Course Content Provider. ' +
+					'Please ensure the Learning Buddy Podman Environment is running and try again. ' +
+					'If the problem persists, contact the instructor through WeChat for assistance.'
+				);
+				// Fall back to WeChat contact as a last resort
+				vscode.commands.executeCommand('cppprimer5thbuddy.openWeChatContact');
 			}
 		} catch (error) {
-			console.error('Error fetching content from Gitee:', error);
-			vscode.window.showErrorMessage(`Failed to fetch content from Gitee: ${error}`);
+			console.error('Error fetching content through Course Content Provider:', error);
+			vscode.window.showErrorMessage(`Failed to fetch content through Course Content Provider: ${error}`);
 			// Fall back to WeChat contact
-			vscode.commands.executeCommand('cppPrimerBuddy.openWeChatContact');
+			vscode.commands.executeCommand('cppprimer5thbuddy.openWeChatContact');
 		}
 	}
 	
@@ -882,7 +1430,7 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 	 */
 	private async getWorkingDirectory(): Promise<string | undefined> {
 		// First, try to get the working directory from settings
-		let workingDir = this.context.globalState.get<string>('cppPrimerBuddy.workingDirectory');
+		let workingDir = this.context.globalState.get<string>('cppprimer5thbuddy.workingDirectory');
 		
 		// If not set, ask user to specify one
 		if (!workingDir) {
@@ -896,7 +1444,7 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 			if (selectedUri && selectedUri.length > 0) {
 				workingDir = selectedUri[0].fsPath;
 				// Save the working directory for future use
-				this.context.globalState.update('cppPrimerBuddy.workingDirectory', workingDir);
+				this.context.globalState.update('cppprimer5thbuddy.workingDirectory', workingDir);
 			} else {
 				// User cancelled the dialog
 				return undefined;
@@ -919,7 +1467,7 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 		
 		if (selectedUri && selectedUri.length > 0) {
 			const workingDir = selectedUri[0].fsPath;
-			this.context.globalState.update('cppPrimerBuddy.workingDirectory', workingDir);
+			this.context.globalState.update('cppprimer5thbuddy.workingDirectory', workingDir);
 			vscode.window.showInformationMessage(`Working directory updated to: ${workingDir}`);
 		}
 	}
@@ -934,5 +1482,135 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<StudyI
 		await this.loadDefaultCourseCatalog();
 		// Refresh the tree view
 		this._onDidChangeTreeData.fire();
+	}
+
+	/**
+
+	 * Get detailed installation instruction text based on the item path
+
+	 */
+
+	private getInstallationInstructionDetails(itemPath: string): string {
+
+		switch (itemPath) {
+
+			case 'podman_required':
+
+				return '🔒 Learning Buddy requires Podman to securely deliver course content and manage licenses. ' +
+
+				       'Podman runs in a lightweight, daemonless container environment that ensures content protection.';
+
+			case 'installation_instructions':
+
+				return '📝 Please follow these steps to install Podman on your system:';
+
+			case 'install_step_1':
+
+				return '1. Visit the official Podman website (podman.io) and download the installer for your operating system. ' +
+
+				       'Follow the installation instructions for your platform.';
+
+			case 'install_step_2':
+
+				return '2. After installing Podman, completely close and restart VS Code to ensure the Learning Buddy extension can detect it.';
+
+			case 'support_contact':
+
+				return '💬 If you need help with installation, click here to contact our support team via WeChat.';
+
+			default:
+
+				return 'Please follow the installation instructions above to use the Learning Buddy extension.';
+
+		}
+
+	}
+
+	/**
+	 * Show Podman installation instructions to the user
+	 */
+	private showPodmanInstallationInstructions(): void {
+		vscode.window.showInformationMessage(
+			'Learning Buddy requires Podman to function properly. ' +
+			'Please install Podman on your system and restart VS Code. ' +
+			'Visit podman.io for installation instructions.',
+			'Install Podman',
+			'More Information'
+		).then(selection => {
+			switch (selection) {
+				case 'Install Podman':
+					// Open Podman installation page
+					vscode.env.openExternal(vscode.Uri.parse('https://podman.io/getting-started/installation'));
+					break;
+				case 'More Information':
+					// Open documentation
+					vscode.env.openExternal(vscode.Uri.parse('https://github.com/conanchen/programming-learning-vscode-buddy'));
+					break;
+			}
+		});
+	}
+	
+	/**
+
+	 * Allow user to change the Podman installation location
+
+	 */
+
+	public async changePodmanLocation(): Promise<void> {
+
+		// Ask user to select the Podman executable file directly instead of the directory
+
+		const selectedUri = await vscode.window.showOpenDialog({
+
+			canSelectFiles: true,
+
+			canSelectFolders: false,
+
+			canSelectMany: false,
+
+			openLabel: 'Select Podman Executable',
+
+			filters: process.platform === 'win32' ? { 'Executable': ['exe'] } : { 'Executable': ['*'] }
+
+		});
+
+		
+
+		if (selectedUri && selectedUri.length > 0) {
+
+			const podmanPath = selectedUri[0].fsPath;
+
+			// Save the custom Podman path
+
+			this.context.globalState.update('customPodmanPath', podmanPath);
+
+			vscode.window.showInformationMessage(`Podman executable updated to: ${podmanPath}. Please restart VS Code to apply changes.`);
+
+		} else {
+
+			// User cancelled, offer to install Podman automatically
+
+			vscode.window.showInformationMessage(
+
+				'Would you like to install Podman automatically?',
+
+				'Yes, Install Podman',
+
+				'No, I will install manually'
+
+			).then(selection => {
+
+				if (selection === 'Yes, Install Podman') {
+
+					// Open Podman installation page
+
+					vscode.env.openExternal(vscode.Uri.parse('https://podman.io/getting-started/installation'));
+
+				}
+
+			});
+
+		}
+
 	}
 }

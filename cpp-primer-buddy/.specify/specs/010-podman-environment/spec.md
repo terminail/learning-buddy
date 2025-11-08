@@ -5,10 +5,6 @@
 **Status**: Draft  
 **Input**: User description: "Replace Docker with Podman for enhanced security and rootless operation."
 
-**See Also**: 
-- [Course Podmanfile Support specification](./013-course-podmanfile-support/spec.md) which extends this feature to provide automatic, course-specific environment setup.
-- [Course Validation Tool specification](./018-course-validation-tool/spec.md) for details on validating Podmanfile compliance.
-
 ## Implementation Summary
 
 This feature implements integration with an embedded Podman development environment that is packaged with the extension for lightweight, daemonless operation. The embedded Podman environment provides a secure, isolated infrastructure environment where the Course Content Provider runs to manage learning materials. Content downloading functionality has been moved to Podman containers (see feature 014b-content-downloading) where built-in content providers fetch content directly from Gitee or other sources. This approach enhances content protection by keeping materials within the container filesystem rather than on the host system, while also simplifying installation and improving startup performance.
@@ -17,7 +13,7 @@ For course-specific development environments, see the [Course Podmanfile Support
 
 For container-based content downloading, see the [Course Content Provider specification](../014-course-content-provider/spec.md) which moves content downloading functionality into Podman containers to simplify the extension architecture.
 
-**Note**: Podman is a mandatory requirement for this extension. All course content, including both protected and non-protected materials, is delivered through Podman containers. The extension includes embedded Podman functionality for lightweight, daemonless operation, eliminating the need for separate Podman installation.
+**Note**: Podman is a **mandatory requirement** for this extension. All course content, including both protected and non-protected materials, is delivered through Podman containers. The extension includes embedded Podman functionality for lightweight, daemonless operation, eliminating the need for separate Podman installation.
 
 **Critical Requirement**: The Learning Buddy extension MUST perform comprehensive Podman environment checks at startup and before any Podman operations to ensure the embedded Podman functionality is properly initialized and actively running. This is a critical requirement for the proper functioning of the extension.
 
@@ -26,6 +22,18 @@ For container-based content downloading, see the [Course Content Provider specif
 2. **Course-Specific Podman Environments**: These are development containers that are created based on course-specific Podmanfiles. They provide the development tools and runtime environments needed for specific courses. These environments are orchestrated by the Learning Buddy Podman Environment and are isolated from the infrastructure container.
 
 The Learning Buddy Podman Environment handles content delivery and orchestrates Course-Specific Podman Environments without interference. Course-Specific Podman Environments are purely for development and exercise work, with course materials securely mounted from the Learning Buddy Podman Environment.
+
+## Enhancement: Persistent Installation Instructions
+
+When Podman is not installed or not available on the user's system, the extension now displays persistent installation instructions directly in the Learning Buddy panel instead of transient popup dialogs. This enhancement improves the user experience by providing clear, always-visible guidance on how to resolve the Podman dependency issue.
+
+The panel shows:
+- Clear explanation of why Podman is required
+- Step-by-step installation instructions
+- Direct links to platform-specific installation guides
+- Contact support option for additional help
+
+This approach ensures users always know what to do when Podman is missing, rather than having to remember transient error messages.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -104,18 +112,62 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 
 **Acceptance Scenarios**:
 
-1. **Given** a system where embedded Podman fails to initialize, **When** the extension starts, **Then** it should immediately display a clear error message with troubleshooting instructions.
-2. **Given** a system with embedded Podman initialized but not running, **When** the extension starts, **Then** it should immediately display a clear error message with instructions to start embedded Podman.
+1. **Given** a system where embedded Podman fails to initialize, **When** the extension starts, **Then** it should immediately display a clear error message with troubleshooting instructions and prevent all functionality.
+2. **Given** a system with embedded Podman initialized but not running, **When** the extension starts, **Then** it should immediately display a clear error message with instructions to start embedded Podman and prevent all functionality.
 3. **Given** a system with embedded Podman initialized and running, **When** the extension starts, **Then** it should proceed with normal initialization without any embedded Podman-related warnings.
+
+### User Story 7 - Specify Custom Podman Installation Folder (Priority: P2)
+
+As a system administrator or advanced user, I want to specify a custom Podman installation folder so that I can use Podman installed in non-standard locations or enterprise-managed installations.
+
+**Why this priority**: This enhances flexibility for enterprise environments and advanced users but is not core functionality for typical users.
+
+**Independent Test**: Can be tested by installing Podman in a non-standard location and verifying that the extension can use it when the folder is specified.
+
+**Acceptance Scenarios**:
+
+1. **Given** Podman installed in a non-standard directory, **When** the extension starts and cannot find Podman in standard locations, **Then** it should prompt the user to specify an installation folder.
+2. **Given** a user specifies a custom Podman folder, **When** the folder contains a valid Podman executable, **Then** the extension should use that Podman installation.
+3. **Given** a user specifies a custom Podman folder, **When** the folder does not contain a valid Podman executable, **Then** the extension should show an appropriate error message.
+
+### User Story 8 - Cross-Platform Podman Support (Priority: P1)
+
+As a learner using the Learning Buddy extension, I want the extension to work consistently across Windows, macOS, and Linux so that I can use it regardless of my operating system.
+
+**Why this priority**: This is essential for broad user adoption and accessibility.
+
+**Independent Test**: Can be tested by running the extension on different operating systems and verifying consistent behavior.
+
+**Acceptance Scenarios**:
+
+1. **Given** a user on Windows, **When** they install and run the extension, **Then** it should properly detect and use Podman.
+2. **Given** a user on macOS, **When** they install and run the extension, **Then** it should properly detect and use Podman.
+3. **Given** a user on Linux, **When** they install and run the extension, **Then** it should properly detect and use Podman.
+
+### User Story 9 - Persistent Installation Instructions (Priority: P0)
+
+As a learner using the Learning Buddy extension, I want to see persistent installation instructions in the panel when Podman is not available so that I always know what to do to resolve the issue.
+
+**Why this priority**: This is critical for user experience - users must have clear, always-visible guidance when Podman is missing.
+
+**Independent Test**: Can be tested by running the extension on systems without Podman installed and verifying that installation instructions are displayed in the panel.
+
+**Acceptance Scenarios**:
+
+1. **Given** a system where Podman is not installed, **When** the extension starts, **Then** it should display persistent installation instructions in the Learning Buddy panel.
+2. **Given** a system where Podman is not installed, **When** the user clicks on installation instruction items, **Then** they should see detailed guidance.
+3. **Given** a system where Podman is not installed, **When** the user clicks the support contact option, **Then** they should be directed to contact support.
 
 ### Edge Cases
 
-- What happens when embedded Podman fails to initialize? (Answer: Extension must display clear error and guidance immediately at startup)
+- What happens when embedded Podman fails to initialize? (Answer: Extension must display clear error and guidance immediately at startup and prevent all functionality)
 - How does the system handle network issues during environment initialization?
-- What happens when the embedded Podman is not running? (Answer: Extension must detect and notify user immediately at startup)
+- What happens when the embedded Podman is not running? (Answer: Extension must detect and notify user immediately at startup and prevent all functionality)
 - How does the system handle container initialization failures?
 - What happens when there's insufficient disk space for the container?
 - How does the system handle updates to the Podman environment?
+- What happens when a custom Podman installation becomes invalid? (Answer: Extension must detect and prompt user for new location)
+- How does the system handle platform-specific command syntax and file paths?
 
 ## Requirements *(mandatory)*
 
@@ -136,6 +188,25 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 - **FR-013**: Extension MUST immediately block all functionality and display clear error messages if embedded Podman is not properly initialized or running
 - **FR-014**: Extension MUST provide specific troubleshooting guidance for embedded Podman issues
 - **FR-015**: Extension MUST continuously monitor Podman status during operation and handle Podman daemon stoppages gracefully
+- **FR-016**: Extension MUST provide cross-platform support for Windows, macOS, and Linux
+- **FR-017**: Extension MUST handle platform-specific command syntax and file paths
+- **FR-018**: Extension MUST provide platform-appropriate error messages and installation guidance
+- **FR-019**: Extension MUST prompt user to specify custom Podman installation folder when Podman is not found in standard locations
+- **FR-020**: Extension MUST validate that the specified folder contains a valid Podman executable
+- **FR-021**: Extension MUST remember the custom Podman installation folder between VS Code sessions
+- **FR-022**: Extension MUST NOT provide a "Continue Anyway" option when Podman is not available as it is a mandatory requirement
+- **FR-023**: Extension MUST support Podman Desktop and WSL2-based Podman on Windows
+- **FR-024**: Extension MUST support Homebrew-installed Podman on macOS
+- **FR-025**: Extension MUST support distribution package managers (apt, dnf, pacman) on Linux
+- **FR-026**: Extension MUST handle case-sensitive file systems on macOS
+- **FR-027**: Extension MUST support both Intel and Apple Silicon architectures on macOS
+- **FR-028**: Extension MUST handle various shell environments (bash, zsh, etc.) on Linux
+- **FR-029**: Extension MUST support systemd-based and non-systemd systems on Linux
+- **FR-030**: Extension MUST handle user permissions for rootless Podman on Linux
+- **FR-031**: Extension MUST display persistent installation instructions in the panel when Podman is not available
+- **FR-032**: Extension MUST provide detailed installation guidance when users click on installation instruction items
+- **FR-033**: Extension MUST provide a contact support option when Podman is not available
+- **FR-034**: Extension MUST include platform-specific installation links in the installation guidance
 
 ### Key Entities
 
@@ -161,3 +232,16 @@ As a learner using the Learning Buddy extension, I want the extension to immedia
 - **SC-009**: Clear error messages are displayed for Podman issues in 100% of cases
 - **SC-010**: Extension blocks all functionality when Podman is not available in 100% of cases
 - **SC-011**: Podman status monitoring detects changes in daemon status in 95% of cases within 5 seconds
+- **SC-012**: Cross-platform functionality works on Windows, macOS, and Linux in 95% of cases
+- **SC-013**: Platform-specific error messages are displayed in 100% of error cases
+- **SC-014**: Installation guidance leads to successful installation in 90% of cases
+- **SC-015**: Custom Podman folder specification works on 100% of supported platforms
+- **SC-016**: Custom Podman path is correctly saved and loaded in 100% of cases
+- **SC-017**: Extension prevents all functionality when Podman is not available in 100% of cases
+- **SC-018**: Windows-specific Podman support works in 95% of cases
+- **SC-019**: macOS-specific Podman support works in 95% of cases
+- **SC-020**: Linux-specific Podman support works in 95% of cases
+- **SC-021**: Persistent installation instructions are displayed in 100% of cases when Podman is not available
+- **SC-022**: Detailed installation guidance is provided in 100% of cases when users click on installation instruction items
+- **SC-023**: Contact support option works in 100% of cases when Podman is not available
+- **SC-024**: Platform-specific installation links work in 100% of cases

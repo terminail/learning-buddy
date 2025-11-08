@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Development Tool: Extension Generator
+ * Development Tool: Extension Generator (Podman Edition)
  * 
  * This script demonstrates how developers can generate both generic learning buddy
- * and course learning buddy extensions using the development tools.
+ * and course learning buddy extensions using the development tools with Podman support.
  */
 
 const fs = require('fs');
@@ -24,7 +24,7 @@ function generateGenericExtension(config) {
     
     try {
         // Use the existing build script to generate the extension
-        execSync(`node build-custom-extension.js ${configPath}`, { 
+        execSync(`node build-buddy.js ${configPath}`, { 
             stdio: 'inherit',
             cwd: path.join(__dirname, '..')
         });
@@ -53,7 +53,7 @@ function generateCourseExtension(config) {
     
     try {
         // Use the existing build script to generate the extension
-        execSync(`node build-custom-extension.js ${configPath}`, { 
+        execSync(`node build-buddy.js ${configPath}`, { 
             stdio: 'inherit',
             cwd: path.join(__dirname, '..')
         });
@@ -70,100 +70,53 @@ function generateCourseExtension(config) {
 }
 
 /**
- * Sample usage of the development tools
+ * Build both generic and course extensions
  */
-function demonstrateUsage() {
-    console.log('=== Learning Buddy Development Tools Demo ===\n');
+function buildBothExtensions() {
+    console.log('=== Building Both Learning Buddy Extensions ===\n');
     
-    // Example 1: Generate a generic learning buddy extension
+    // Build generic extension
     const genericConfig = {
-        "name": "java-fundamentals-buddy",
-        "displayName": "Java Fundamentals Buddy",
-        "description": "A VS Code extension that helps Java Fundamentals learners navigate their project files with a directory tree view",
-        "publisher": "java-learning-dev",
+        "name": "learning-buddy-generic",
+        "displayName": "Learning Buddy",
+        "description": "A generic VS Code extension platform that provides secure, containerized learning environments for programming courses with embedded Podman support",
+        "publisher": "learning-buddy-dev",
         "repository": {
             "type": "git",
-            "url": "https://github.com/learning-buddy/java-fundamentals.git"
+            "url": "https://github.com/learning-buddy/learning-buddy.git"
         }
     };
     
-    console.log('Example 1: Generating Generic Learning Buddy Extension');
-    console.log('Configuration:', JSON.stringify(genericConfig, null, 2));
-    console.log('');
+    console.log('Building Generic Learning Buddy Extension...');
+    generateGenericExtension(genericConfig);
     
-    // Uncomment the next line to actually generate the extension
-    // generateGenericExtension(genericConfig);
-    
-    // Example 2: Generate a course learning buddy extension
-    const courseConfig = {
-        "name": "python-data-science-buddy",
-        "displayName": "Python Data Science Buddy",
-        "description": "A VS Code extension for Python Data Science learners",
-        "publisher": "data-science-dev",
-        "repository": {
-            "type": "git",
-            "url": "https://github.com/learning-buddy/python-data-science.git"
-        },
-        "content": {
-            "source": "github",
-            "repository": "https://github.com/learning-buddy/python-data-science",
-            "branch": "main"
-        },
-        "chapters": [
-            {
-                "id": "1_introduction",
-                "title": "1. Introduction to Data Science",
-                "protected": false
-            },
-            {
-                "id": "2_data_analysis",
-                "title": "2. Data Analysis with Pandas",
-                "protected": false
-            },
-            {
-                "id": "3_visualization",
-                "title": "3. Data Visualization",
-                "protected": true
-            }
-        ],
-        "protectedChapters": [
-            "3_visualization"
-        ],
-        "extension": {
-            "name": "Python Data Science Buddy",
-            "displayName": "Python Data Science Buddy",
-            "description": "Learning Buddy extension for Python Data Science by Jake VanderPlas",
-            "icon": "icons/python-ds-icon.png"
-        },
-        "course": {
-            "defaultId": "python-data-science",
-            "defaultName": "Python Data Science",
-            "repository": "https://gitee.com/learning-buddy/python-data-science-course",
-            "podmanfile": "Podmanfile"
-        },
-        "branding": {
-            "primaryColor": "#3776ab",
-            "promotionalBanner": "icons/python-ds-banner.png"
+    // Build C++ Primer 5th Edition extension
+    const courseConfigPath = path.join(__dirname, '..', 'examples', 'cpp-primer-5th-config.json');
+    if (fs.existsSync(courseConfigPath)) {
+        console.log('\nBuilding C++ Primer 5th Edition Buddy Extension...');
+        try {
+            execSync(`node build-buddy.js ${courseConfigPath}`, { 
+                stdio: 'inherit',
+                cwd: path.join(__dirname, '..')
+            });
+            console.log('C++ Primer 5th Edition Buddy Extension generated successfully!');
+        } catch (error) {
+            console.error('Error generating C++ Primer 5th Edition extension:', error.message);
         }
-    };
+    } else {
+        console.error('C++ Primer 5th Edition configuration file not found!');
+    }
     
-    console.log('Example 2: Generating Course Learning Buddy Extension');
-    console.log('Configuration:', JSON.stringify(courseConfig, null, 2));
-    console.log('');
-    
-    // Uncomment the next line to actually generate the extension
-    // generateCourseExtension(courseConfig);
-    
-    console.log('=== End of Demo ===');
-    console.log('\nTo generate actual extensions, uncomment the generate functions above and provide valid configurations.');
+    console.log('\n=== Build Process Complete ===');
 }
 
-// Run the demonstration
+// Run the build process
 if (require.main === module) {
-    demonstrateUsage();
+    buildBothExtensions();
 }
 
 module.exports = {
     generateGenericExtension,
-    generateCourseExtension
+    generateCourseExtension,
+    buildBothExtensions
 };

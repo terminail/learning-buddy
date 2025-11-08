@@ -2,16 +2,22 @@ import * as vscode from 'vscode';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+import { CourseContentProviderClient } from './courseContentProvider';
 
 /**
  * ContentProtectionManager handles the protection and access control for course content.
  * It manages license verification and determines which content is accessible.
+ * 
+ * NOTE: License verification is now handled by the Course Content Provider running in the
+ * Learning Buddy Podman Environment as per specification 014c-license-management.
+ * This class now acts as a coordinator between the extension and the Course Content Provider.
  */
 export class ContentProtectionManager {
     private context: vscode.ExtensionContext;
     private protectedChapters: Set<string>;
     private validLicenses: Map<string, LicenseInfo>;
     private publicKey: string;
+    private courseContentProvider: CourseContentProviderClient;
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
@@ -21,6 +27,9 @@ export class ContentProtectionManager {
             // Additional protected chapters can be added here
         ]);
         this.validLicenses = new Map();
+        
+        // Initialize the Course Content Provider client
+        this.courseContentProvider = new CourseContentProviderClient(context);
         
         // Load the public key for license verification
         this.publicKey = this.loadPublicKey();
@@ -79,17 +88,52 @@ export class ContentProtectionManager {
     public async addLicense(licenseKey: string): Promise<boolean> {
         try {
             console.log('Attempting to add license key');
-            const licenseInfo = await this.verifyLicense(licenseKey);
-            if (licenseInfo) {
-                console.log('License verified successfully');
+            
+            // Verify the license through the Course Content Provider
+            // This implements the specification requirement that license verification
+            // happens within the Learning Buddy Podman Environment
+            const verificationResult = await this.courseContentProvider.verifyLicense(licenseKey);
+            
+            if (verificationResult.valid) {
+                // Create a LicenseInfo object from the verification result
+                const licenseData = verificationResult.data;
+                const licenseInfo: LicenseInfo = {
+                    id: licenseData.id,
+                    key: licenseKey,
+                    createdAt: new Date(licenseData.created_at),
+                    expiresAt: new Date(licenseData.expires_at),
+                    contentPermissions: licenseData.content_permissions || ['all_chapters']
+                };
+                
+                console.log('License verified successfully through Course Content Provider');
                 this.validLicenses.set(licenseInfo.id, licenseInfo);
                 this.saveLicenses();
                 return true;
             } else {
-                console.log('License verification failed');
+                console.log('License verification failed through Course Content Provider:', verificationResult.error);
+                // Fall back to local verification for backward compatibility
+                const licenseInfo = await this.verifyLicenseLocally(licenseKey);
+                if (licenseInfo) {
+                    console.log('License verified successfully through local verification');
+                    this.validLicenses.set(licenseInfo.id, licenseInfo);
+                    this.saveLicenses();
+                    return true;
+                }
             }
         } catch (error) {
             console.error('Error adding license:', error);
+            // Fall back to local verification for backward compatibility
+            try {
+                const licenseInfo = await this.verifyLicenseLocally(licenseKey);
+                if (licenseInfo) {
+                    console.log('License verified successfully through local verification (fallback)');
+                    this.validLicenses.set(licenseInfo.id, licenseInfo);
+                    this.saveLicenses();
+                    return true;
+                }
+            } catch (localError) {
+                console.error('Error in local license verification:', localError);
+            }
         }
         return false;
     }
@@ -108,7 +152,10 @@ export class ContentProtectionManager {
      * @returns Array of valid licenses
      */
     public getValidLicenses(): LicenseInfo[] {
-        return Array.from(this.validLicenses.values());
+        const licenses = Array.from(this.validLicenses.values());
+        console.log('getValidLicenses called, returning licenses:', licenses);
+        console.log('getValidLicenses count:', licenses.length);
+        return licenses;
     }
 
     /**
@@ -120,13 +167,14 @@ export class ContentProtectionManager {
     }
 
     /**
-     * Verify a license key using cryptographic signature verification
+     * Verify a license key using cryptographic signature verification (local method)
+     * This is kept for backward compatibility when the Course Content Provider is not available
      * @param licenseKey The license key to verify
      * @returns LicenseInfo if valid, null otherwise
      */
-    private async verifyLicense(licenseKey: string): Promise<LicenseInfo | null> {
+    private async verifyLicenseLocally(licenseKey: string): Promise<LicenseInfo | null> {
         try {
-            console.log('Verifying license key, length:', licenseKey.length);
+            console.log('Verifying license key locally, length:', licenseKey.length);
             
             // Parse the license key (format: data|signature)
             const parts = licenseKey.split('|');
@@ -192,9 +240,14 @@ export class ContentProtectionManager {
     private loadLicenses(): void {
         try {
             const licenses = this.context.globalState.get<LicenseInfo[]>('validLicenses', []);
+            console.log('=== ContentProtection Debug Info ===');
+            console.log('Loaded licenses from storage:', licenses);
+            console.log('Loaded licenses count:', licenses.length);
             licenses.forEach(license => {
                 this.validLicenses.set(license.id, license);
             });
+            console.log('Valid licenses map size:', this.validLicenses.size);
+            console.log('====================================');
         } catch (error) {
             console.error('Error loading licenses:', error);
         }

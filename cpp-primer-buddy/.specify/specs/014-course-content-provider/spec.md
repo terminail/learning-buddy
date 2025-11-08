@@ -13,12 +13,15 @@ This specification has been deprecated and its functionality split into smaller,
 - [Content Downloading](../014b-content-downloading/spec.md) (014b-content-downloading)
 - [License Management](../014c-license-management/spec.md) (014c-license-management)
 - [Anti-Bulk Copying](../014d-anti-bulk-copying/spec.md) (014d-anti-bulk-copying)
+- [Course Content Provider Application](./application-spec.md) (014-course-content-provider-application)
 
 ## Original Implementation Summary
 
 This feature implements a Course Content Provider that runs within the Learning Buddy Podman Environment to provide an API for the Learning Buddy extension to access course content. Instead of the extension directly handling Gitee API calls and content downloads, the Course Content Provider (residing in the Learning Buddy Podman Environment) fetches content directly from Gitee or other sources and provides a clean API for the extension to access. The Learning Buddy extension interacts with the Course Content Provider to manage content access, simplifying the extension architecture and improving security.
 
 **Note**: Podman is a mandatory requirement for this extension. The Course Content Provider runs exclusively within the Learning Buddy Podman Environment, and all course content (protected and non-protected) is managed through this infrastructure container. Users must have Podman installed and running to access any course content.
+
+**Important Clarification**: The Course Content Provider is a standalone application that provides an API for content delivery, license management, and security measures. It is designed to run within a container environment (specifically Podman) but does not need to know about or manage containerization itself. The containerization is handled entirely by the infrastructure layer. See the [Course Content Provider Application Specification](./application-spec.md) for details on the application's container-agnostic design.
 
 **Critical Requirement**: The Learning Buddy extension MUST perform comprehensive Podman environment checks at startup and before any Podman operations to ensure Podman is properly installed and actively running. This is a critical requirement for the proper functioning of the extension.
 
