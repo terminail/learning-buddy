@@ -76,19 +76,21 @@ function buildBothExtensions() {
     console.log('=== Building Both Learning Buddy Extensions ===\n');
     
     // Build generic extension
-    const genericConfig = {
-        "name": "learning-buddy-generic",
-        "displayName": "Learning Buddy",
-        "description": "A generic VS Code extension platform that provides secure, containerized learning environments for programming courses with embedded Podman support",
-        "publisher": "learning-buddy-dev",
-        "repository": {
-            "type": "git",
-            "url": "https://github.com/learning-buddy/learning-buddy.git"
+    const genericConfigPath = path.join(__dirname, '..', 'learning-buddy-generic-config.json');
+    if (fs.existsSync(genericConfigPath)) {
+        console.log('Building Generic Learning Buddy Extension...');
+        try {
+            execSync(`node build-buddy.js ${genericConfigPath}`, { 
+                stdio: 'inherit',
+                cwd: path.join(__dirname, '..')
+            });
+            console.log('Generic Learning Buddy Extension generated successfully!');
+        } catch (error) {
+            console.error('Error generating generic extension:', error.message);
         }
-    };
-    
-    console.log('Building Generic Learning Buddy Extension...');
-    generateGenericExtension(genericConfig);
+    } else {
+        console.error('Generic Learning Buddy configuration file not found!');
+    }
     
     // Build C++ Primer 5th Edition extension
     const courseConfigPath = path.join(__dirname, '..', 'examples', 'cpp-primer-5th-config.json');
