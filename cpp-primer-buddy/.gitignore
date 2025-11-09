@@ -51,3 +51,6 @@ test-config.json
 
 # Test course structure
 test-course-structure.json
+
+# Coverage reports
+coverage/
