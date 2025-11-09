@@ -224,8 +224,8 @@
   "files": [
     "out/**/*",
     "package.json",
-    "doc/README.md",
-    "doc/LICENSE.md",
+    "README.md",
+    "LICENSE.md",
     "media/**/*",
     "licence-keys/public-key.txt"
   ],
