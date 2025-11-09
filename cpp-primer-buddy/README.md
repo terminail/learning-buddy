@@ -1,5 +1,33 @@
 # Programming Learning VS Code Buddy - Learning Buddy Extension Platform
 
+## Quick Start
+
+### Testing
+```bash
+npm test
+npm run test:watch
+npm run test:coverage
+
+```
+
+### Development
+```bash
+npm install
+npm run compile
+```
+
+### Building
+```bash
+npm run build
+```
+
+### Packaging
+```bash
+npm run package
+```
+
+This will create a `.vsix` file that can be installed in VS Code.
+
 The Learning Buddy Extension Platform is an innovative educational system that transforms how students learn programming directly within Visual Studio Code. This platform consists of multiple components working together to provide a secure, efficient, and engaging learning experience.
 
 ## Platform Architecture
@@ -219,7 +247,7 @@ npm test
 ### Building Course-Specific Extensions
 
 ```bash
-node build-buddy.js --config examples/cpp-primer-5th-config.json
+node build-buddy.js --config examples/learning-primer-5th-config.json
 ```
 
 ### Building Generic Learning Buddy Extensions
