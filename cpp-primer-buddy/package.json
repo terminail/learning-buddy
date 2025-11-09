@@ -1,7 +1,7 @@
 {
-  "name": "cpp-primer-buddy",
-  "displayName": "C++ Primer 5th Edition Buddy",
-  "description": "A VS Code extension that helps C++ Primer 5th Edition learners navigate their project files with a directory tree view",
+  "name": "learning-primer-buddy",
+  "displayName": "Learning Buddy",
+  "description": "A VS Code extension that helps Learning learners navigate their project files with a directory tree view",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.100.0"
@@ -10,7 +10,7 @@
     "Education"
   ],
   "activationEvents": [
-    "onView:cppPrimerBuddyView",
+    "onView:learningPrimerBuddyView",
     "onView:learning-buddy.chat"
   ],
   "main": "./out/extension.js",
@@ -18,8 +18,8 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "cppPrimerBuddy",
-          "title": "C++ Primer Buddy",
+          "id": "learningPrimerBuddy",
+          "title": "Learning Buddy",
           "icon": "media/icon.svg"
         }
       ],
@@ -32,10 +32,10 @@
       ]
     },
     "views": {
-      "cppPrimerBuddy": [
+      "learningPrimerBuddy": [
         {
-          "id": "cppPrimerBuddyView",
-          "name": "Study Plan"
+          "id": "learningPrimerBuddyView",
+          "name": "C++ Primer 5th Edition"
         }
       ],
       "learning-buddy-panel": [
@@ -48,57 +48,57 @@
     },
     "commands": [
       {
-        "command": "cppPrimerBuddy.openCourseCatalog",
+        "command": "learningPrimerBuddy.openCourseCatalog",
         "title": "Open Course Catalog",
         "icon": "$(book)"
       },
       {
-        "command": "cppPrimerBuddy.refresh",
+        "command": "learningPrimerBuddy.refresh",
         "title": "Refresh",
         "icon": "$(refresh)"
       },
       {
-        "command": "cppPrimerBuddy.toggleMockPodmanStatus",
+        "command": "learningPrimerBuddy.toggleMockPodmanStatus",
         "title": "Toggle Mock Podman Status",
         "icon": "$(vm)"
       },
       {
-        "command": "cppPrimerBuddy.previewExercise",
+        "command": "learningPrimerBuddy.previewExercise",
         "title": "Preview Exercise",
         "icon": "$(open-preview)"
       },
       {
-        "command": "cppPrimerBuddy.downloadExercise",
+        "command": "learningPrimerBuddy.downloadExercise",
         "title": "Download Exercise",
         "icon": "$(cloud-download)"
       },
       {
-        "command": "cppPrimerBuddy.previewContent",
+        "command": "learningPrimerBuddy.previewContent",
         "title": "Preview Content",
         "icon": "$(open-preview)"
       },
       {
-        "command": "cppPrimerBuddy.studySelected",
+        "command": "learningPrimerBuddy.studySelected",
         "title": "Study Selected Item",
         "icon": "$(play)"
       },
       {
-        "command": "cppPrimerBuddy.courseItemSelect",
+        "command": "learningPrimerBuddy.courseItemSelect",
         "title": "Select Course Item",
         "icon": "$(folder-opened)"
       },
       {
-        "command": "cppPrimerBuddy.openLicenseManager",
+        "command": "learningPrimerBuddy.openLicenseManager",
         "title": "Open License Manager",
         "icon": "$(key)"
       },
       {
-        "command": "cppPrimerBuddy.openWeChatContact",
+        "command": "learningPrimerBuddy.openWeChatContact",
         "title": "Open WeChat Contact",
         "icon": "$(account)"
       },
       {
-        "command": "cppPrimerBuddy.changePodmanLocation",
+        "command": "learningPrimerBuddy.changePodmanLocation",
         "title": "Change Podman Location",
         "icon": "$(gear)"
       },
@@ -111,81 +111,81 @@
     "menus": {
       "view/title": [
         {
-          "command": "cppPrimerBuddy.openCourseCatalog",
-          "when": "view == cppPrimerBuddyView",
+          "command": "learningPrimerBuddy.openCourseCatalog",
+          "when": "view == learningPrimerBuddyView",
           "group": "navigation"
         },
         {
-          "command": "cppPrimerBuddy.refresh",
-          "when": "view == cppPrimerBuddyView",
+          "command": "learningPrimerBuddy.refresh",
+          "when": "view == learningPrimerBuddyView",
           "group": "navigation"
         },
         {
-          "command": "cppPrimerBuddy.toggleMockPodmanStatus",
-          "when": "view == cppPrimerBuddyView",
+          "command": "learningPrimerBuddy.toggleMockPodmanStatus",
+          "when": "view == learningPrimerBuddyView",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "cppPrimerBuddy.studySelected",
-          "when": "view == cppPrimerBuddyView && viewItem == studyItem",
+          "command": "learningPrimerBuddy.studySelected",
+          "when": "view == learningPrimerBuddyView && viewItem == studyItem",
           "group": "inline"
         },
         {
-          "command": "cppPrimerBuddy.studySelected",
-          "when": "view == cppPrimerBuddyView && viewItem == lockedItem",
+          "command": "learningPrimerBuddy.studySelected",
+          "when": "view == learningPrimerBuddyView && viewItem == lockedItem",
           "group": "inline"
         },
         {
-          "command": "cppPrimerBuddy.courseItemSelect",
-          "when": "view == cppPrimerBuddyView && viewItem == courseItem",
+          "command": "learningPrimerBuddy.courseItemSelect",
+          "when": "view == learningPrimerBuddyView && viewItem == courseItem",
           "group": "inline"
         },
         {
-          "command": "cppPrimerBuddy.previewExercise",
-          "when": "view == cppPrimerBuddyView && viewItem == studyItem",
+          "command": "learningPrimerBuddy.previewExercise",
+          "when": "view == learningPrimerBuddyView && viewItem == studyItem",
           "group": "inline"
         },
         {
-          "command": "cppPrimerBuddy.downloadExercise",
-          "when": "view == cppPrimerBuddyView && viewItem == exerciseItem",
+          "command": "learningPrimerBuddy.downloadExercise",
+          "when": "view == learningPrimerBuddyView && viewItem == exerciseItem",
           "group": "inline"
         },
         {
-          "command": "cppPrimerBuddy.previewContent",
-          "when": "view == cppPrimerBuddyView && viewItem == readmeItem || viewItem == studyItem || viewItem == solutionItem || viewItem == hintItem || viewItem == pageItem",
+          "command": "learningPrimerBuddy.previewContent",
+          "when": "view == learningPrimerBuddyView && viewItem == readmeItem || viewItem == studyItem || viewItem == solutionItem || viewItem == hintItem || viewItem == pageItem",
           "group": "inline"
         }
       ],
       "commandPalette": [
         {
-          "command": "cppPrimerBuddy.openLicenseManager",
+          "command": "learningPrimerBuddy.openLicenseManager",
           "when": "false"
         },
         {
-          "command": "cppPrimerBuddy.openWeChatContact",
+          "command": "learningPrimerBuddy.openWeChatContact",
           "when": "false"
         },
         {
-          "command": "cppPrimerBuddy.changePodmanLocation",
+          "command": "learningPrimerBuddy.changePodmanLocation",
           "when": "false"
         },
         {
-          "command": "cppPrimerBuddy.openCourseCatalog",
-          "when": "view == cppPrimerBuddyView"
+          "command": "learningPrimerBuddy.openCourseCatalog",
+          "when": "view == learningPrimerBuddyView"
         },
         {
-          "command": "cppPrimerBuddy.previewExercise",
-          "when": "view == cppPrimerBuddyView"
+          "command": "learningPrimerBuddy.previewExercise",
+          "when": "view == learningPrimerBuddyView"
         },
         {
-          "command": "cppPrimerBuddy.downloadExercise",
-          "when": "view == cppPrimerBuddyView"
+          "command": "learningPrimerBuddy.downloadExercise",
+          "when": "view == learningPrimerBuddyView"
         },
         {
-          "command": "cppPrimerBuddy.previewContent",
-          "when": "view == cppPrimerBuddyView"
+          "command": "learningPrimerBuddy.previewContent",
+          "when": "view == learningPrimerBuddyView"
         }
       ]
     }
@@ -218,7 +218,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cpp-primer-buddy/cpp-primer-buddy.git"
+    "url": "https://github.com/learning-primer-buddy/learning-primer-buddy.git"
   },
   "type": "commonjs",
   "files": [
@@ -229,7 +229,7 @@
     "media/**/*",
     "licence-keys/public-key.txt"
   ],
-  "publisher": "cpp-primer-buddy-dev",
+  "publisher": "learning-primer-buddy-dev",
   "dependencies": {
     "node-fetch": "^3.3.2"
   }

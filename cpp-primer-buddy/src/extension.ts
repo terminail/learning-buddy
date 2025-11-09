@@ -27,7 +27,7 @@ class PreviewContentProvider implements vscode.TextDocumentContentProvider {
 // Function to generate view ID based on extension name
 function getViewId(): string {
     // For this specific extension, always return the correct view ID that matches package.json
-    return 'cppPrimerBuddyView';
+    return 'learningPrimerBuddyView';
 }
 
 // Function to generate command prefix based on view ID
@@ -339,17 +339,23 @@ export function activate(context: vscode.ExtensionContext) {
 	} catch (error) {
 		console.error('Error checking global state directly:', error);
 	}
-	console.log('====================================');
-	
-	// Create the course structure provider
-	const courseStructureProvider = new CourseStructureProvider(context, protectionManager);
-	
-	// Create the Learning Buddy view provider
+	console.log('====================================');
+
+	
+
+	// Create the course structure provider
+
+	const courseStructureProvider = new CourseStructureProvider(context, protectionManager);
+
+	
+
+	// Create the Learning Buddy view provider
+
 	const learningBuddyViewProvider = new LearningBuddyViewProvider(context.extensionUri);
 	
 	// Create the preview content provider
 	const previewContentProvider = new PreviewContentProvider();
-	const previewContentProviderRegistration = vscode.workspace.registerTextDocumentContentProvider('cpp-primer-buddy-preview', previewContentProvider);
+	const previewContentProviderRegistration = vscode.workspace.registerTextDocumentContentProvider('learning-primer-buddy-preview', previewContentProvider);
 	
 	// Create a status bar item for license information
 	const licenseStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
@@ -373,20 +379,30 @@ export function activate(context: vscode.ExtensionContext) {
 	// Initial update of the license status bar
 	updateLicenseStatusBar();
 
-	// Register the course structure view
-	const courseStructureView = vscode.window.createTreeView('cppPrimerBuddyView', {
-		treeDataProvider: courseStructureProvider,
-		showCollapseAll: true
-	});
-	
-	// Register the Learning Buddy view in the panel area
-	const learningBuddyViewDisposable = vscode.window.registerWebviewViewProvider(
-		'learning-buddy.chat',
-		learningBuddyViewProvider
+	// Register the course structure view
+
+	const courseStructureView = vscode.window.createTreeView('learningPrimerBuddyView', {
+
+		treeDataProvider: courseStructureProvider,
+
+		showCollapseAll: true
+
+	});
+
+	
+
+	// Register the Learning Buddy view in the panel area
+
+	const learningBuddyViewDisposable = vscode.window.registerWebviewViewProvider(
+
+		'learning-buddy.chat',
+
+		learningBuddyViewProvider
+
 	);
 	
 	// Register commands
-	const openCourseCatalogCommand = vscode.commands.registerCommand('cppPrimerBuddy.openCourseCatalog', () => {
+	const openCourseCatalogCommand = vscode.commands.registerCommand('learningPrimerBuddy.openCourseCatalog', () => {
 		if (courseCatalogPanel) {
 			courseCatalogPanel.reveal(vscode.ViewColumn.One);
 		} else {
@@ -408,7 +424,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 	
-	const showPodmanInstallationGuideCommand = vscode.commands.registerCommand('cppPrimerBuddy.showPodmanInstallationGuide', () => {
+	const showPodmanInstallationGuideCommand = vscode.commands.registerCommand('learningPrimerBuddy.showPodmanInstallationGuide', () => {
 		const panel = vscode.window.createWebviewPanel(
 			'podmanInstallationGuide',
 			'Podman Installation Guide',
@@ -423,7 +439,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	// Command to toggle mock Podman status for testing
-	let toggleMockPodmanStatusCommand = vscode.commands.registerCommand('cppPrimerBuddy.toggleMockPodmanStatus', () => {
+	let toggleMockPodmanStatusCommand = vscode.commands.registerCommand('learningPrimerBuddy.toggleMockPodmanStatus', () => {
 		courseStructureProvider.toggleMockPodmanStatus();
 		const status = courseStructureProvider.getMockPodmanStatus() ? "installed" : "not installed";
 		vscode.window.showInformationMessage(`Mock Podman status toggled: ${status}`);
@@ -433,7 +449,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	
 	// Command to preview exercises
-	let previewExerciseCommand = vscode.commands.registerCommand('cppPrimerBuddy.previewExercise', async (item: any) => {
+	let previewExerciseCommand = vscode.commands.registerCommand('learningPrimerBuddy.previewExercise', async (item: any) => {
 		if (!item || !item.fullPath) {
 			vscode.window.showErrorMessage('Invalid exercise item');
 			return;
@@ -455,7 +471,7 @@ export function activate(context: vscode.ExtensionContext) {
 		
 		const previewDoc = await vscode.workspace.openTextDocument({
 			content: previewContent,
-			language: 'cpp'
+			language: 'learning'
 		});
 		
 		await vscode.window.showTextDocument(previewDoc, {
@@ -465,7 +481,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	
 	// Command to download exercises
-	let downloadExerciseCommand = vscode.commands.registerCommand('cppPrimerBuddy.downloadExercise', async (item: any) => {
+	let downloadExerciseCommand = vscode.commands.registerCommand('learningPrimerBuddy.downloadExercise', async (item: any) => {
 		if (!item || !item.fullPath) {
 			vscode.window.showErrorMessage('Invalid exercise item');
 			return;
@@ -495,7 +511,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	
 	// Command to preview content (for section items)
-	let previewContentCommand = vscode.commands.registerCommand('cppPrimerBuddy.previewContent', async (item: any) => {
+	let previewContentCommand = vscode.commands.registerCommand('learningPrimerBuddy.previewContent', async (item: any) => {
 		if (!item || !item.fullPath) {
 			vscode.window.showErrorMessage('Invalid content item');
 			return;
@@ -602,7 +618,7 @@ int main() {
 		}
 		
 		// Create a virtual URI for the preview
-		const previewUri = vscode.Uri.parse(`cpp-primer-buddy-preview://${contentPath}`);
+		const previewUri = vscode.Uri.parse(`learning-primer-buddy-preview://${contentPath}`);
 		
 		// Set the content in our provider
 		previewContentProvider.setPreviewContent(previewUri, previewContent);
@@ -612,29 +628,48 @@ int main() {
 		await vscode.window.showTextDocument(doc, { preview: true });
 	});
 	
-	// Command to open the license manager
-	let openLicenseManagerCommand = vscode.commands.registerCommand('cppPrimerBuddy.openLicenseManager', async () => {
-		// Check for valid license using the protection manager
-		const hasValidLicense = protectionManager.getValidLicenses().length > 0;
-		
-		const licenseManager = new LicenseManager(protectionManager);
-		if (hasValidLicense) {
-			// Show license information page for users with valid licenses
-			await licenseManager.showLicenseInfoPage();
-		} else {
-			// Show license purchase page for users without valid licenses
-			await licenseManager.showLicensePurchasePage();
-		}
-	});
-
-	// Command to open WeChat contact
-	let openWeChatContactCommand = vscode.commands.registerCommand('cppPrimerBuddy.openWeChatContact', async () => {
-		const weChatIntegration = new WeChatIntegration(context);
-		await weChatIntegration.showWeChatPanel();
+	// Command to open the license manager
+
+	let openLicenseManagerCommand = vscode.commands.registerCommand('learningPrimerBuddy.openLicenseManager', async () => {
+
+		// Check for valid license using the protection manager
+
+		const hasValidLicense = protectionManager.getValidLicenses().length > 0;
+
+		
+
+		const licenseManager = new LicenseManager(protectionManager);
+
+		if (hasValidLicense) {
+
+			// Show license information page for users with valid licenses
+
+			await licenseManager.showLicenseInfoPage();
+
+		} else {
+
+			// Show license purchase page for users without valid licenses
+
+			await licenseManager.showLicensePurchasePage();
+
+		}
+
+	});
+
+
+
+	// Command to open WeChat contact
+
+	let openWeChatContactCommand = vscode.commands.registerCommand('learningPrimerBuddy.openWeChatContact', async () => {
+
+		const weChatIntegration = new WeChatIntegration(context);
+
+		await weChatIntegration.showWeChatPanel();
+
 	});
 
 		// Command to change Podman location
-	let changePodmanLocationCommand = vscode.commands.registerCommand('cppPrimerBuddy.changePodmanLocation', async () => {
+	let changePodmanLocationCommand = vscode.commands.registerCommand('learningPrimerBuddy.changePodmanLocation', async () => {
 		// Ask user to select the Podman executable file directly instead of the directory
 		const selectedUri = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
@@ -665,7 +700,7 @@ int main() {
 	});
 
 	// Command for study selected item
-	let studySelectedCommand = vscode.commands.registerCommand('cppPrimerBuddy.studySelected', async (item: any) => {
+	let studySelectedCommand = vscode.commands.registerCommand('learningPrimerBuddy.studySelected', async (item: any) => {
 		if (!item) {
 			vscode.window.showErrorMessage('Invalid item selected');
 			return;
@@ -676,7 +711,7 @@ int main() {
 	});
 
 	// Command for course item selection
-	let courseItemSelectCommand = vscode.commands.registerCommand('cppPrimerBuddy.courseItemSelect', async (item: any) => {
+	let courseItemSelectCommand = vscode.commands.registerCommand('learningPrimerBuddy.courseItemSelect', async (item: any) => {
 		if (!item) {
 			vscode.window.showErrorMessage('Invalid course item selected');
 			return;
@@ -687,7 +722,7 @@ int main() {
 	});
 
 	// Command to clear all licenses (for testing)
-	let clearLicensesCommand = vscode.commands.registerCommand('cppPrimerBuddy.clearLicenses', async () => {
+	let clearLicensesCommand = vscode.commands.registerCommand('learningPrimerBuddy.clearLicenses', async () => {
 		try {
 			// Clear licenses from protection manager
 			const protectionManager = new ContentProtectionManager(context);
@@ -708,22 +743,37 @@ int main() {
 	});
 
 	// Set the command for the status bar item
-	licenseStatusBarItem.command = "cppPrimerBuddy.openLicenseManager";
+	licenseStatusBarItem.command = "learningPrimerBuddy.openLicenseManager";
 
-	// Add to context subscriptions
-	context.subscriptions.push(courseStructureView);
-	context.subscriptions.push(learningBuddyViewDisposable);
-	context.subscriptions.push(openCourseCatalogCommand);
-	context.subscriptions.push(showPodmanInstallationGuideCommand);
-	context.subscriptions.push(toggleMockPodmanStatusCommand);
-	context.subscriptions.push(previewExerciseCommand);
-	context.subscriptions.push(downloadExerciseCommand);
-	context.subscriptions.push(openLicenseManagerCommand);
-	context.subscriptions.push(openWeChatContactCommand);
-	context.subscriptions.push(changePodmanLocationCommand);
-	context.subscriptions.push(studySelectedCommand);
-	context.subscriptions.push(courseItemSelectCommand);
-	context.subscriptions.push(clearLicensesCommand);
-	context.subscriptions.push(previewContentProviderRegistration);
+	// Add to context subscriptions
+
+	context.subscriptions.push(courseStructureView);
+
+	context.subscriptions.push(learningBuddyViewDisposable);
+
+	context.subscriptions.push(openCourseCatalogCommand);
+
+	context.subscriptions.push(showPodmanInstallationGuideCommand);
+
+	context.subscriptions.push(toggleMockPodmanStatusCommand);
+
+	context.subscriptions.push(previewExerciseCommand);
+
+	context.subscriptions.push(downloadExerciseCommand);
+
+	context.subscriptions.push(openLicenseManagerCommand);
+
+	context.subscriptions.push(openWeChatContactCommand);
+
+	context.subscriptions.push(changePodmanLocationCommand);
+
+	context.subscriptions.push(studySelectedCommand);
+
+	context.subscriptions.push(courseItemSelectCommand);
+
+	context.subscriptions.push(clearLicensesCommand);
+
+	context.subscriptions.push(previewContentProviderRegistration);
+
 	context.subscriptions.push(licenseStatusBarItem);
 }

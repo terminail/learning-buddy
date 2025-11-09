@@ -37,7 +37,7 @@ export class WeChatIntegration {
             (message) => {
                 switch (message.command) {
                     case 'openLicenseManager':
-                        vscode.commands.executeCommand('cppPrimerBuddy.openLicenseManager');
+                        vscode.commands.executeCommand('learningPrimerBuddy.openLicenseManager');
                         break;
                 }
             },

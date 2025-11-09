@@ -114,7 +114,7 @@ export class CourseItem extends vscode.TreeItem {
 		if (!isDirectory) {
 			// Add a command to preview the content
 			(this as any).command = {
-				command: 'cppPrimerBuddy.previewContent',
+				command: 'learningPrimerBuddy.previewContent',
 				title: 'Preview Content',
 				arguments: [this]
 			};

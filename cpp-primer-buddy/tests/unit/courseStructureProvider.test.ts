@@ -26,7 +26,7 @@ jest.mock('vscode', () => {
         extensions: {
             all: [
                 {
-                    id: 'test.cpp-primer-buddy'
+                    id: 'test.learning-primer-buddy'
                 }
             ]
         },

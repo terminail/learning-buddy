@@ -86,7 +86,7 @@ export class CourseStructureProvider implements vscode.TreeDataProvider<CourseIt
 					// Add description for better visibility
 					(podmanInfoItem as any).description = "Click to view installation instructions";
 					(podmanInfoItem as any).command = {
-						command: 'cppPrimerBuddy.showPodmanInstallationGuide',
+						command: 'learningPrimerBuddy.showPodmanInstallationGuide',
 						title: 'Show Podman Installation Guide',
 						arguments: []
 					};

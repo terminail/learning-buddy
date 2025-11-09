@@ -78,7 +78,7 @@ export class LicenseManager {
                         this.protectionManager.removeLicense(message.licenseId);
                         vscode.window.showInformationMessage('License removed successfully!');
                         // Refresh the tree view to show locked content again
-                        vscode.commands.executeCommand('cppPrimerBuddy.refresh');
+                        vscode.commands.executeCommand('learningPrimerBuddy.refresh');
                         break;
                 }
             },
@@ -113,7 +113,7 @@ export class LicenseManager {
                         if (success) {
                             vscode.window.showInformationMessage('License added successfully!');
                             // Refresh the tree view to show unlocked content
-                            vscode.commands.executeCommand('cppPrimerBuddy.refresh');
+                            vscode.commands.executeCommand('learningPrimerBuddy.refresh');
                             // Close the purchase page
                             panel.dispose();
                         } else {
@@ -200,7 +200,7 @@ export class LicenseManager {
                         if (success) {
                             vscode.window.showInformationMessage('License added successfully!');
                             // Refresh the tree view to show unlocked content
-                            vscode.commands.executeCommand('cppPrimerBuddy.refresh');
+                            vscode.commands.executeCommand('learningPrimerBuddy.refresh');
                         } else {
                             vscode.window.showErrorMessage(
                                 'Invalid license key. Please check your key and try again. ' +
@@ -212,7 +212,7 @@ export class LicenseManager {
                         this.protectionManager.removeLicense(message.licenseId);
                         vscode.window.showInformationMessage('License removed successfully!');
                         // Refresh the tree view to show locked content again
-                        vscode.commands.executeCommand('cppPrimerBuddy.refresh');
+                        vscode.commands.executeCommand('learningPrimerBuddy.refresh');
                         break;
                 }
             },

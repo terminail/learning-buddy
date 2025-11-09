@@ -69,7 +69,7 @@ function buildLearningBuddy(configPath) {
         if (packageJson.contributes && packageJson.contributes.commands) {
             packageJson.contributes.commands = packageJson.contributes.commands.map(cmd => {
                 // Update command names to use custom prefix
-                cmd.command = cmd.command.replace('cppPrimerBuddy', customId);
+                cmd.command = cmd.command.replace('learningPrimerBuddy', customId);
                 return cmd;
             });
         }
@@ -80,8 +80,8 @@ function buildLearningBuddy(configPath) {
             if (packageJson.contributes.menus['view/item/context']) {
                 packageJson.contributes.menus['view/item/context'] = 
                     packageJson.contributes.menus['view/item/context'].map(menu => {
-                        menu.command = menu.command.replace('cppPrimerBuddy', customId);
-                        menu.when = menu.when.replace('cppPrimerBuddyView', `${customId}View`);
+                        menu.command = menu.command.replace('learningPrimerBuddy', customId);
+                        menu.when = menu.when.replace('learningPrimerBuddyView', `${customId}View`);
                         return menu;
                     });
             }
@@ -90,7 +90,7 @@ function buildLearningBuddy(configPath) {
             if (packageJson.contributes.menus.commandPalette) {
                 packageJson.contributes.menus.commandPalette = 
                     packageJson.contributes.menus.commandPalette.map(menu => {
-                        menu.command = menu.command.replace('cppPrimerBuddy', customId);
+                        menu.command = menu.command.replace('learningPrimerBuddy', customId);
                         return menu;
                     });
             }
@@ -104,7 +104,7 @@ function buildLearningBuddy(configPath) {
         let extensionContent = fs.readFileSync(extensionPath, 'utf8');
         
         // Replace identifiers
-        extensionContent = extensionContent.replace(/cppPrimerBuddy/g, customId);
+        extensionContent = extensionContent.replace(/learningPrimerBuddy/g, customId);
         extensionContent = extensionContent.replace(/CppPrimer/g, getClassName(config.displayName));
         extensionContent = extensionContent.replace(/C\+\+ Primer Buddy/g, config.displayName);
         
@@ -123,7 +123,7 @@ function buildLearningBuddy(configPath) {
         }
         
         // Replace identifiers
-        treeViewProviderContent = treeViewProviderContent.replace(/cppPrimerBuddy/g, customId);
+        treeViewProviderContent = treeViewProviderContent.replace(/learningPrimerBuddy/g, customId);
         treeViewProviderContent = treeViewProviderContent.replace(/CppPrimer/g, getClassName(config.displayName));
         treeViewProviderContent = treeViewProviderContent.replace(/C\+\+ Primer Buddy/g, config.displayName);
         

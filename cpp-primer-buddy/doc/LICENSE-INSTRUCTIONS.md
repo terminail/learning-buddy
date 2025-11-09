@@ -10,7 +10,7 @@ A test license has been generated and saved to `test-license.txt` in this direct
 2. Install the extension (if not already installed):
    - Go to Extensions (Ctrl+Shift+X)
    - Click on the "..." menu and select "Install from VSIX"
-   - Select the `cpp-primer-buddy-0.0.1.vsix` file
+   - Select the `learning-primer-buddy-0.0.1.vsix` file
 3. Open the License Manager:
    - Open the C++ Primer Buddy panel
    - Click on the "License Manager" button

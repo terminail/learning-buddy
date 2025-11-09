@@ -122,7 +122,7 @@ export class StudyItem extends vscode.TreeItem {
 		// Set command for certain items
 		if (fullPath === 'podman_location' || fullPath === 'change_podman_location') {
 			(this as any).command = {
-				command: 'cppprimer5thbuddy.itemClicked',
+				command: 'learningprimer5thbuddy.itemClicked',
 				title: 'Item Clicked',
 				arguments: [this]
 			};
@@ -389,7 +389,7 @@ export class LearningTreeViewProvider implements vscode.TreeDataProvider<StudyIt
 
 						// Open WeChat contact for support
 
-						vscode.commands.executeCommand('cppprimer5thbuddy.openWeChatContact');
+						vscode.commands.executeCommand('learningprimer5thbuddy.openWeChatContact');
 
 						return Promise.resolve([]);
 
@@ -1004,7 +1004,7 @@ export class LearningTreeViewProvider implements vscode.TreeDataProvider<StudyIt
 			).then(selection => {
 				if (selection === 'Get Generic Learning Buddy') {
 					// Open VS Code marketplace page for the generic Learning Buddy extension
-					vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items?itemName=cpp-primer-buddy-dev.learning-buddy'));
+					vscode.env.openExternal(vscode.Uri.parse('https://marketplace.visualstudio.com/items?itemName=learning-primer-buddy-dev.learning-buddy'));
 				}
 			});
 			return;
@@ -1081,7 +1081,7 @@ export class LearningTreeViewProvider implements vscode.TreeDataProvider<StudyIt
 
 		if (item.isLocked) {
 			// For hints, we'll still use WeChat contact as they're typically short text
-			vscode.commands.executeCommand('cppprimer5thbuddy.openWeChatContact');
+			vscode.commands.executeCommand('learningprimer5thbuddy.openWeChatContact');
 			return;
 		}
 		
@@ -1178,7 +1178,7 @@ export class LearningTreeViewProvider implements vscode.TreeDataProvider<StudyIt
 			
 			if (!validLicense) {
 				// No valid license, fall back to WeChat contact
-				vscode.commands.executeCommand('cppprimer5thbuddy.openWeChatContact');
+				vscode.commands.executeCommand('learningprimer5thbuddy.openWeChatContact');
 				return;
 			}
 			
@@ -1242,13 +1242,13 @@ export class LearningTreeViewProvider implements vscode.TreeDataProvider<StudyIt
 					'If the problem persists, contact the instructor through WeChat for assistance.'
 				);
 				// Fall back to WeChat contact as a last resort
-				vscode.commands.executeCommand('cppprimer5thbuddy.openWeChatContact');
+				vscode.commands.executeCommand('learningprimer5thbuddy.openWeChatContact');
 			}
 		} catch (error) {
 			console.error('Error fetching content through Course Content Provider:', error);
 			vscode.window.showErrorMessage(`Failed to fetch content through Course Content Provider: ${error}`);
 			// Fall back to WeChat contact
-			vscode.commands.executeCommand('cppprimer5thbuddy.openWeChatContact');
+			vscode.commands.executeCommand('learningprimer5thbuddy.openWeChatContact');
 		}
 	}
 	
@@ -1430,7 +1430,7 @@ export class LearningTreeViewProvider implements vscode.TreeDataProvider<StudyIt
 	 */
 	private async getWorkingDirectory(): Promise<string | undefined> {
 		// First, try to get the working directory from settings
-		let workingDir = this.context.globalState.get<string>('cppprimer5thbuddy.workingDirectory');
+		let workingDir = this.context.globalState.get<string>('learningprimer5thbuddy.workingDirectory');
 		
 		// If not set, ask user to specify one
 		if (!workingDir) {
@@ -1444,7 +1444,7 @@ export class LearningTreeViewProvider implements vscode.TreeDataProvider<StudyIt
 			if (selectedUri && selectedUri.length > 0) {
 				workingDir = selectedUri[0].fsPath;
 				// Save the working directory for future use
-				this.context.globalState.update('cppprimer5thbuddy.workingDirectory', workingDir);
+				this.context.globalState.update('learningprimer5thbuddy.workingDirectory', workingDir);
 			} else {
 				// User cancelled the dialog
 				return undefined;
@@ -1467,7 +1467,7 @@ export class LearningTreeViewProvider implements vscode.TreeDataProvider<StudyIt
 		
 		if (selectedUri && selectedUri.length > 0) {
 			const workingDir = selectedUri[0].fsPath;
-			this.context.globalState.update('cppprimer5thbuddy.workingDirectory', workingDir);
+			this.context.globalState.update('learningprimer5thbuddy.workingDirectory', workingDir);
 			vscode.window.showInformationMessage(`Working directory updated to: ${workingDir}`);
 		}
 	}
