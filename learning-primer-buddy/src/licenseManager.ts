@@ -300,17 +300,23 @@ export class LicenseManager {
         <h1>License Information</h1>
         
         <div class="podman-notice">
-            <h2>Active License</h2>
-            <p>You have an active license for Learning Buddy. Thank you for supporting our educational platform!</p>
+            <h2>License Status</h2>
+            <p>Learning Buddy supports three license types:</p>
+            <ul>
+                <li><strong>License Free</strong> - Free courses available to all users</li>
+                <li><strong>License Paid</strong> - Paid courses requiring valid license</li>
+                <li><strong>License Required</strong> - Podman environment required for verification</li>
+            </ul>
+            <p>Your current status is determined by course requirements and your license state.</p>
         </div>
         
         <div class="instructions">
             <h2>Your Licenses</h2>
-            <p>Below are your active licenses:</p>
+            <p>Below are your active licenses for paid courses:</p>
         </div>
         
         <div class="license-list">
-            ${licensesHtml || '<p>No active licenses found.</p>'}
+            ${licensesHtml || '<p>No active paid licenses found. You can still access free courses.</p>'}
         </div>
     </div>
     
@@ -439,8 +445,14 @@ export class LicenseManager {
         </div>
         
         <div class="instructions">
-            <h2>How to Get a License</h2>
-            <p>To access protected content, you need to purchase a license:</p>
+            <h2>License Types</h2>
+            <p>Learning Buddy supports three license types:</p>
+            <ul>
+                <li><strong>License Free</strong> - Free courses available to all users without any license</li>
+                <li><strong>License Paid</strong> - Paid courses requiring valid license for access</li>
+                <li><strong>License Required</strong> - Podman environment required for license verification</li>
+            </ul>
+            <p>To access paid content, you need to purchase a license:</p>
             <ol>
                 <li>Scan the WeChat QR code in the extension</li>
                 <li>Contact the instructor to purchase access</li>
@@ -604,8 +616,14 @@ export class LicenseManager {
         </div>
         
         <div class="instructions">
-            <h2>How to Get a License</h2>
-            <p>To access protected content, you need to purchase a license:</p>
+            <h2>License Types</h2>
+            <p>Learning Buddy supports three license types:</p>
+            <ul>
+                <li><strong>License Free</strong> - Free courses available to all users without any license</li>
+                <li><strong>License Paid</strong> - Paid courses requiring valid license for access</li>
+                <li><strong>License Required</strong> - Podman environment required for license verification</li>
+            </ul>
+            <p>To access paid content, you need to purchase a license:</p>
             <ol>
                 <li>Scan the WeChat QR code in the extension</li>
                 <li>Contact the instructor to purchase access</li>

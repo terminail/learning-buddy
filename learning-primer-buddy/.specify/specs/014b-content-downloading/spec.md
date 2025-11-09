@@ -47,7 +47,7 @@ This ensures users can always identify downloadable content while still enforcin
 ### License Status Bar Integration (2025-11-09)
 
 The extension now includes a license status bar that:
-- Shows current license status ("License active" or "License required")
+- Shows current license status ("License Free", "License Paid", or "License Required")
 - Opens appropriate license information page when clicked
 - Uses mock Podman status for testing different scenarios
 

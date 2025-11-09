@@ -391,6 +391,13 @@ export class CourseStructureProvider implements vscode.TreeDataProvider<CourseIt
 	}
 
 	/**
+	 * Get the current course structure
+	 */
+	public getCurrentCourseStructure(): CourseStructure | null {
+		return this.defaultCourseStructure;
+	}
+
+	/**
 	 * Get Podman installation information item
 	 */
 	private getPodmanInfoItem(): CourseItem {

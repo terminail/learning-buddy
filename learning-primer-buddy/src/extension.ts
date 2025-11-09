@@ -362,19 +362,32 @@ export function activate(context: vscode.ExtensionContext) {
 	licenseStatusBarItem.tooltip = "Manage your Learning Buddy license";
 	
 	// Function to update the license status bar item
-	function updateLicenseStatusBar() {
-		// For testing purposes, link license status to Podman installation status
-		// When Podman is installed (mock status is true), show license as active
-		// When Podman is not installed (mock status is false), show license as required
-		const isPodmanInstalled = courseStructureProvider.getMockPodmanStatus();
-		
-		if (isPodmanInstalled) {
-			licenseStatusBarItem.text = "$(check) License active";
-		} else {
-			licenseStatusBarItem.text = "$(warning) License required, pay now";
-		}
-		licenseStatusBarItem.show();
-	}
+    function updateLicenseStatusBar() {
+        // Determine license status based on user's license state and course requirements
+        const hasValidLicense = protectionManager.getValidLicenses().length > 0;
+        
+        // Get current course structure to check for protected content
+        const courseStructure = courseStructureProvider.getCurrentCourseStructure();
+        const hasProtectedContent = courseStructure && 
+            courseStructure.protectedChapters && 
+            courseStructure.protectedChapters.length > 0;
+        
+        // Show appropriate license status based on license state and course requirements
+        if (hasValidLicense) {
+            // User has a valid license - show paid status
+            licenseStatusBarItem.text = "$(check) License Paid";
+            licenseStatusBarItem.tooltip = "Active paid license for course content access";
+        } else if (hasProtectedContent) {
+            // Course has protected content but user has no license - show required status
+            licenseStatusBarItem.text = "$(warning) License Required";
+            licenseStatusBarItem.tooltip = "This course has protected content that requires a license";
+        } else {
+            // User has no valid license and course has no protected content - show free status
+            licenseStatusBarItem.text = "$(info) License Free";
+            licenseStatusBarItem.tooltip = "Free course content available";
+        }
+        licenseStatusBarItem.show();
+    }
 	
 	// Initial update of the license status bar
 	updateLicenseStatusBar();
@@ -443,7 +456,26 @@ export function activate(context: vscode.ExtensionContext) {
 		courseStructureProvider.toggleMockPodmanStatus();
 		const status = courseStructureProvider.getMockPodmanStatus() ? "installed" : "not installed";
 		vscode.window.showInformationMessage(`Mock Podman status toggled: ${status}`);
-		// Update license status bar when Podman status changes
+		// Note: License status is independent of Podman status, so no need to update license status bar
+	});
+	
+	// Command to toggle mock license status for testing
+	let toggleMockLicenseStatusCommand = vscode.commands.registerCommand('learningPrimerBuddy.toggleMockLicenseStatus', async () => {
+		// Toggle between having a mock license and not having one
+		const hasLicense = protectionManager.getValidLicenses().length > 0;
+		
+		if (hasLicense) {
+			// Clear mock licenses
+			protectionManager.clearMockLicenses();
+			vscode.window.showInformationMessage('Mock license status: License Free (no valid license)');
+		} else {
+			// Add a mock license
+			const mockLicenseKey = 'mock-license-' + Date.now();
+			protectionManager.addMockLicense(mockLicenseKey);
+			vscode.window.showInformationMessage('Mock license status: License Paid (valid license)');
+		}
+		
+		// Update the status bar to reflect the new license status
 		updateLicenseStatusBar();
 	});
 	

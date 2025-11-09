@@ -24,7 +24,7 @@ The license management system now integrates with the course structure navigatio
 ### License Status Bar Integration
 
 The extension now includes a license status bar that:
-- Shows current license status ("License active" or "License required, pay now")
+- Shows current license status ("License Free", "License Paid", or "License Required")
 - Opens appropriate license information page when clicked
 - Uses mock Podman status for testing different scenarios
 
@@ -34,20 +34,30 @@ All content remains previewable regardless of license status, allowing users to 
 
 ## Implementation Summary
 
-The license management system has been implemented with a web-based UI that allows users to add, view, and remove license keys. Licenses are verified using RSA public key cryptography within Podman containers. The system includes development tools for generating test licenses. Enhanced licenses now support Gitee content delivery with download limits (see feature 008-gitee-content-delivery).
+This feature implements the extension-level license management functionality for Learning Buddy. It provides the user interface for license management, communicates with the Course Content Provider for license verification, and displays license status information to users.
 
-With the multi-course support in Learning Buddy, licenses are now course-specific:
-- Each course can have its own licensing model (free or paid)
-- Users can manage licenses for multiple courses independently
-- Free courses require no license verification
-- Paid courses require valid course-specific licenses
-- License management is handled per course rather than globally
-- License verification is performed securely within Podman containers without exposing sensitive data to the extension
-- Download limits are enforced per course within Podman containers to prevent license sharing
-- License usage is tracked centrally per course in a centralized repository
-- User identification is anonymized for privacy protection
+With the multi-course support in Learning Buddy, licenses are now course-specific, allowing some courses to be free while others are paid. Each course can have its own licensing model, and users can manage licenses for multiple courses independently.
 
-**Note**: Podman is a mandatory requirement for this extension. The License Management component runs exclusively within the Learning Buddy Podman Environment. Users must have Podman installed and running to access any course content.
+### License Status Definitions
+
+The system now supports three distinct license statuses:
+
+1. **License Free** - For courses that do not require any license verification. These courses are freely accessible to all users without restrictions.
+
+2. **License Paid** - For courses that require a valid paid license. Users must have an active, valid license to access protected content in these courses.
+
+3. **License Required** - For courses that require a license but the user does not have an active license. This status indicates that access is restricted until a valid license is obtained.
+
+The License Management component handles:
+- Displaying license status information in the status bar using the three status definitions
+- Providing UI for users to add, remove, and manage licenses
+- Communicating with the Course Content Provider for license verification
+- Enforcing license requirements before allowing content downloads
+- Supporting all three license statuses (Free, Paid, Required) within the same extension
+- Providing clear indication of which courses require licenses
+- Handling license-related errors and providing user guidance
+
+**Note**: Podman is a mandatory requirement for this extension. The License Management component communicates with the Course Content Provider running in the Learning Buddy Podman Environment. Users must have Podman installed and running to access any course content.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -130,8 +140,9 @@ As a learner, I want to easily see my current license status so that I understan
 
 **Acceptance Scenarios**:
 
-1. **Given** a user with a valid license, **When** they view the extension, **Then** the license status bar should show "License active".
-2. **Given** a user without a valid license, **When** they view the extension, **Then** the license status bar should show "License required, pay now".
+1. **Given** a user with a valid license, **When** they view the extension, **Then** the license status bar should show "License Paid".
+2. **Given** a user without a valid license but with Podman installed, **When** they view the extension, **Then** the license status bar should show "License Free".
+3. **Given** a user without Podman installed, **When** they view the extension, **Then** the license status bar should show "License Required".
 3. **Given** any user, **When** they click the license status bar, **Then** they should be directed to appropriate license information.
 
 ### User Story 7 - Content Preview Without License (Priority: P2)

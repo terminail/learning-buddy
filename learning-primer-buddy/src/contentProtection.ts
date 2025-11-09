@@ -264,6 +264,34 @@ export class ContentProtectionManager {
             console.error('Error saving licenses:', error);
         }
     }
+
+    /**
+     * Add a mock license for testing purposes
+     * @param licenseKey The mock license key to add
+     */
+    public addMockLicense(licenseKey: string): void {
+        const mockLicense: LicenseInfo = {
+            id: 'mock-license-' + Date.now(),
+            key: licenseKey,
+            createdAt: new Date(),
+            expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+            contentPermissions: ['all_chapters']
+        };
+        this.validLicenses.set(mockLicense.id, mockLicense);
+        this.saveLicenses();
+        console.log('Mock license added:', mockLicense.id);
+    }
+
+    /**
+     * Clear all mock licenses for testing purposes
+     */
+    public clearMockLicenses(): void {
+        // Remove only mock licenses (those with 'mock-license-' prefix)
+        const mockLicenseIds = Array.from(this.validLicenses.keys()).filter(id => id.startsWith('mock-license-'));
+        mockLicenseIds.forEach(id => this.validLicenses.delete(id));
+        this.saveLicenses();
+        console.log('Mock licenses cleared, remaining licenses:', this.validLicenses.size);
+    }
 }
 
 /**

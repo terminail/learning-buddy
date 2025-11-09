@@ -88,4 +88,63 @@ describe('ContentProtectionManager', () => {
             expect(licenseInfo.limits).toBeUndefined();
         });
     });
+
+    describe('Mock license management', () => {
+        it('should add a mock license', () => {
+            const mockLicenseKey = 'mock-license-test';
+            
+            protectionManager.addMockLicense(mockLicenseKey);
+            
+            const licenses = protectionManager.getValidLicenses();
+            expect(licenses.length).toBe(1);
+            expect(licenses[0].id).toMatch(/^mock-license-/);
+            expect(licenses[0].key).toBe(mockLicenseKey);
+            expect(licenses[0].contentPermissions).toEqual(['all_chapters']);
+        });
+
+        it('should clear mock licenses', () => {
+            // Add a mock license
+            protectionManager.addMockLicense('mock-license-1');
+            
+            // Verify license was added
+            let licenses = protectionManager.getValidLicenses();
+            expect(licenses.length).toBe(1);
+            
+            // Clear mock licenses
+            protectionManager.clearMockLicenses();
+            
+            // Verify license was cleared
+            licenses = protectionManager.getValidLicenses();
+            expect(licenses.length).toBe(0);
+        });
+
+        it('should clear only mock licenses', () => {
+            // Add both mock and non-mock licenses
+            protectionManager.addMockLicense('mock-license-1');
+            
+            // Simulate adding a non-mock license (using the internal validLicenses map)
+            const nonMockLicense: LicenseInfo = {
+                id: 'real-license-1',
+                key: 'real-key-1',
+                createdAt: new Date(),
+                expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                contentPermissions: ['all_chapters']
+            };
+            
+            // Access the internal validLicenses map to add a non-mock license
+            (protectionManager as any).validLicenses.set(nonMockLicense.id, nonMockLicense);
+            
+            // Verify both licenses exist
+            let licenses = protectionManager.getValidLicenses();
+            expect(licenses.length).toBe(2);
+            
+            // Clear mock licenses
+            protectionManager.clearMockLicenses();
+            
+            // Verify only mock license was cleared
+            licenses = protectionManager.getValidLicenses();
+            expect(licenses.length).toBe(1);
+            expect(licenses[0].id).toBe('real-license-1');
+        });
+    });
 });

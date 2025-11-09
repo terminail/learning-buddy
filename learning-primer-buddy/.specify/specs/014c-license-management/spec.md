@@ -17,13 +17,23 @@ This feature implements license management functionality that runs within the Le
 
 With the multi-course support in Learning Buddy, licenses are now course-specific, allowing some courses to be free while others are paid. Each course can have its own licensing model, and users can manage licenses for multiple courses independently.
 
+### License Status Definitions
+
+The system now supports three distinct license statuses:
+
+1. **License Free** - For courses that do not require any license verification. These courses are freely accessible to all users without restrictions.
+
+2. **License Paid** - For courses that require a valid paid license. Users must have an active, valid license to access protected content in these courses.
+
+3. **License Required** - For courses that require a license but the user does not have an active license. This status indicates that access is restricted until a valid license is obtained.
+
 The License Management component handles:
 - Course-specific license verification without exposing sensitive data to the extension
 - Enforcement of download limits per course to prevent license sharing
 - Tracking license usage per course in a centralized repository
 - Verifying license authenticity before allowing content access for each course
 - Anonymizing user identification for privacy protection
-- Supporting both free and paid courses within the same extension
+- Supporting all three license statuses (Free, Paid, Required) within the same extension
 - Communicating license status back to the extension-level license manager
 
 **Note**: Podman is a mandatory requirement for this extension. The License Management component runs exclusively within the Learning Buddy Podman Environment. Users must have Podman installed and running to access any course content.

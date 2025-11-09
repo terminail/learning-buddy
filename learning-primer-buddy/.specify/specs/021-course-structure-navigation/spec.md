@@ -140,9 +140,10 @@ As a learner using the generic Learning Buddy extension, I want to easily see my
 
 **Acceptance Scenarios**:
 
-1. **Given** a user with a valid license, **When** they view the extension, **Then** the license status bar should show "License active".
-2. **Given** a user without a valid license, **When** they view the extension, **Then** the license status bar should show "License required".
-3. **Given** any user, **When** they click the license status bar, **Then** they should be directed to appropriate license information.
+1. **Given** a user with a valid license, **When** they view the extension, **Then** the license status bar should show "License Paid".
+2. **Given** a user without a valid license and the course has no protected content, **When** they view the extension, **Then** the license status bar should show "License Free".
+3. **Given** a user without a valid license and the course has protected content, **When** they view the extension, **Then** the license status bar should show "License Required".
+4. **Given** any user, **When** they click the license status bar, **Then** they should be directed to appropriate license information.
 
 ### Edge Cases
 
