@@ -197,7 +197,7 @@
     "package": "vsce package",
     "package-extension": "node package-extension.js",
     "package-custom": "node build-custom-extension.js",
-    "validate-course": "node validate-course.js",
+    "validate-course": "node dev-tools/validate-course.js",
     "generate-license": "node generate-test-license.js",
     "generate-extension": "node dev-tools/generate-extension.js",
     "test": "jest",
