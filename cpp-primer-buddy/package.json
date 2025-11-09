@@ -11,7 +11,7 @@
   ],
   "activationEvents": [
     "onView:cppPrimerBuddyView",
-    "onView:learningBuddyView"
+    "onView:learning-buddy.chat"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -21,9 +21,11 @@
           "id": "cppPrimerBuddy",
           "title": "C++ Primer Buddy",
           "icon": "media/icon.svg"
-        },
+        }
+      ],
+      "panel": [
         {
-          "id": "learningBuddy",
+          "id": "learning-buddy-panel",
           "title": "Learning Buddy",
           "icon": "media/icon.svg"
         }
@@ -36,11 +38,11 @@
           "name": "Study Plan"
         }
       ],
-      "learningBuddy": [
+      "learning-buddy-panel": [
         {
-          "id": "learningBuddyView",
+          "id": "learning-buddy.chat",
           "name": "Learning Buddy",
-          "when": "true"
+          "type": "webview"
         }
       ]
     },

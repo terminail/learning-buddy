@@ -379,9 +379,9 @@ export function activate(context: vscode.ExtensionContext) {
 		showCollapseAll: true
 	});
 	
-	// Register the Learning Buddy view in the activity bar area
+	// Register the Learning Buddy view in the panel area
 	const learningBuddyViewDisposable = vscode.window.registerWebviewViewProvider(
-		LearningBuddyViewProvider.viewType,
+		'learning-buddy.chat',
 		learningBuddyViewProvider
 	);
 	

@@ -8,8 +8,8 @@ export interface AIContact {
     icon: string;
 }
 
-export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
-    public static readonly viewType = 'learningBuddyView';
+export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
+    public static readonly viewType = 'learning-buddy.chat';
     
     private _view?: vscode.WebviewView;
     private _currentUrl?: string;
@@ -80,9 +80,9 @@ export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
                             ${this._getContactListHtml()}
                         </ul>
                     </div>
-                    <div class="content">
-                    ${this._currentUrl ? `<iframe src="${this._currentUrl}" frameborder="0"></iframe>` : '<div class="welcome-message">Select an AI assistant from the list to get started</div>'}
-                </div>
+                    <div class="content">
+                        ${this._currentUrl ? `<iframe src="${this._currentUrl}" frameborder="0"></iframe>` : '<div class="welcome-message">Select an AI assistant from the list to get started</div>'}
+                    </div>
                 </div>
                 <script nonce="${nonce}">
                     const vscode = acquireVsCodeApi();
@@ -162,15 +162,10 @@ export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
                 icon: 'google'
             },
             {
-
                 id: 'copilot',
-
                 name: 'Microsoft Copilot',
-
                 url: 'https://copilot.microsoft.com',
-
                 icon: 'windows'
-
             },
             {
                 id: 'perplexity',
