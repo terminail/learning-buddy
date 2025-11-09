@@ -225,7 +225,7 @@
     "out/**/*",
     "package.json",
     "doc/README.md",
-    "LICENSE.md",
+    "doc/LICENSE.md",
     "media/**/*",
     "licence-keys/public-key.txt"
   ],
