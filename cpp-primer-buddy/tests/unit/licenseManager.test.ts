@@ -135,6 +135,6 @@ describe('LicenseManager', () => {
         licenseManager.dispose();
         
         // Check that the panel's dispose method was called
-        expect(mockPanel.dispose).toHaveBeenCalled();
+        expect(mockPanel.dispose).toHaveBeenCalledTimes(1);
     });
 });
