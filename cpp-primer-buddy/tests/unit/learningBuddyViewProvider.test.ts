@@ -17,6 +17,13 @@ jest.mock('vscode', () => {
     };
 });
 
+// Mock the template engine
+jest.mock('../../src/templates/index', () => ({
+    templateEngine: {
+        renderMainTemplate: jest.fn().mockResolvedValue('<!DOCTYPE html><html><head></head><body>Mock HTML</body></html>')
+    }
+}));
+
 describe('LearningBuddyViewProvider', () => {
     let learningBuddyViewProvider: LearningBuddyViewProvider;
     let mockExtensionUri: vscode.Uri;
@@ -71,14 +78,14 @@ describe('LearningBuddyViewProvider', () => {
         expect(mockWebviewView.webview.options.enableScripts).toBe(true);
     });
 
-    test('should generate HTML for webview', () => {
+    test('should generate HTML for webview', async () => {
         const mockWebview = {
             cspSource: 'vscode-webview://test',
             asWebviewUri: jest.fn().mockImplementation((uri) => uri)
         } as any;
 
         // Access private method through instance
-        const html = (learningBuddyViewProvider as any)._getHtmlForWebview(mockWebview);
+        const html = await (learningBuddyViewProvider as any)._getHtmlForWebview(mockWebview);
         
         expect(typeof html).toBe('string');
         expect(html.length).toBeGreaterThan(0);
@@ -87,44 +94,12 @@ describe('LearningBuddyViewProvider', () => {
         expect(html).toContain('</html>');
     });
 
-    test('should generate contact list HTML', () => {
-        // Access private method through instance
-        const contactListHtml = (learningBuddyViewProvider as any)._getContactListHtml();
-        
-        expect(typeof contactListHtml).toBe('string');
-        expect(contactListHtml.length).toBeGreaterThan(0);
-        // Check for some expected content
-        expect(contactListHtml).toContain('Doubao');
-        expect(contactListHtml).toContain('Qwen');
-        expect(contactListHtml).toContain('ChatGPT');
-    });
-
-    test('should generate icon HTML', () => {
-        // Access private method through instance
-        const iconHtml = (learningBuddyViewProvider as any)._getIconHtml('heart');
-        
-        expect(typeof iconHtml).toBe('string');
-        expect(iconHtml.length).toBeGreaterThan(0);
-        
-        // Test with unknown icon
-        const unknownIconHtml = (learningBuddyViewProvider as any)._getIconHtml('unknown');
-        expect(typeof unknownIconHtml).toBe('string');
-    });
-
-    test('should update webview', () => {
+    test('should update webview', async () => {
         // Access private method through instance
         const updateWebview = (learningBuddyViewProvider as any)._updateWebview;
         expect(typeof updateWebview).toBe('function');
         
         // This should not throw any errors
-        expect(() => updateWebview.call(learningBuddyViewProvider)).not.toThrow();
-    });
-
-    test('should generate nonce', () => {
-        // Access private method through instance
-        const nonce = (learningBuddyViewProvider as any)._getNonce();
-        
-        expect(typeof nonce).toBe('string');
-        expect(nonce.length).toBe(32);
+        await expect(updateWebview.call(learningBuddyViewProvider)).resolves.not.toThrow();
     });
 });
