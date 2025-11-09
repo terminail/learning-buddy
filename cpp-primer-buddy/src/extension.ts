@@ -5,6 +5,7 @@ import { LicenseManager } from './licenseManager';
 import { WeChatIntegration } from './wechatIntegration';
 import { PodmanEnvironmentManager } from './podmanEnvironmentManager';
 import { ContentProtectionManager } from './contentProtection';
+import { LearningBuddyViewProvider } from './learningBuddy/learningBuddyViewProvider';
 
 // Custom text document content provider for read-only previews
 class PreviewContentProvider implements vscode.TextDocumentContentProvider {
@@ -38,349 +39,8 @@ function getCommandPrefix(viewId: string): string {
                  .replace(/^-/, '');
 }
 
-export function activate(context: vscode.ExtensionContext) {
-	console.log('Learning Buddy extension is now active!');
-
-	// Create the protection manager
-	const protectionManager = new ContentProtectionManager(context);
-	
-	// Add debugging to see what licenses are available
-	console.log('=== Protection Manager Debug Info ===');
-	const initialLicenses = protectionManager.getValidLicenses();
-	console.log('Initial valid licenses:', initialLicenses);
-	console.log('Initial valid licenses count:', initialLicenses.length);
-	
-	// Check what's in the global state directly
-	try {
-		const storedLicenses = context.globalState.get('validLicenses', []);
-		console.log('Direct global state check - stored licenses:', storedLicenses);
-		console.log('Direct global state check - stored licenses count:', storedLicenses.length);
-	} catch (error) {
-		console.error('Error checking global state directly:', error);
-	}
-	console.log('====================================');
-	
-	// Create the course structure provider
-	const courseStructureProvider = new CourseStructureProvider(context, protectionManager);
-	
-	// Create the preview content provider
-	const previewContentProvider = new PreviewContentProvider();
-	const previewContentProviderRegistration = vscode.workspace.registerTextDocumentContentProvider('cpp-primer-buddy-preview', previewContentProvider);
-	
-	// Create a status bar item for license information
-	const licenseStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-	licenseStatusBarItem.tooltip = "Manage your Learning Buddy license";
-	
-	// Function to update the license status bar item
-	function updateLicenseStatusBar() {
-		// For testing purposes, link license status to Podman installation status
-		// When Podman is installed (mock status is true), show license as active
-		// When Podman is not installed (mock status is false), show license as required
-		const isPodmanInstalled = courseStructureProvider.getMockPodmanStatus();
-		
-		if (isPodmanInstalled) {
-			licenseStatusBarItem.text = "$(check) License active";
-		} else {
-			licenseStatusBarItem.text = "$(warning) License required, pay now";
-		}
-		licenseStatusBarItem.show();
-	}
-	
-	// Initial update of the license status bar
-	updateLicenseStatusBar();
-
-	// Register the course structure view
-	const courseStructureView = vscode.window.createTreeView('cppPrimerBuddyView', {
-		treeDataProvider: courseStructureProvider,
-		showCollapseAll: true
-	});
-
-	// Register the course catalog provider
-	const courseCatalogProvider = new CourseCatalogProvider(context);
-	
-	// Create the webview panel for the course catalog
-	let courseCatalogPanel: vscode.WebviewPanel | undefined = undefined;
-
-	// Register commands
-	const openCourseCatalogCommand = vscode.commands.registerCommand('cppPrimerBuddy.openCourseCatalog', () => {
-		if (courseCatalogPanel) {
-			courseCatalogPanel.reveal(vscode.ViewColumn.One);
-		} else {
-			courseCatalogPanel = vscode.window.createWebviewPanel(
-				'courseCatalog',
-				'Course Catalog',
-				vscode.ViewColumn.One,
-				{
-					enableScripts: true,
-					retainContextWhenHidden: true
-				}
-			);
-			
-			courseCatalogPanel.webview.html = getCourseCatalogHtml();
-			
-			courseCatalogPanel.onDidDispose(() => {
-				courseCatalogPanel = undefined;
-			});
-		}
-	});
-	
-	const showPodmanInstallationGuideCommand = vscode.commands.registerCommand('cppPrimerBuddy.showPodmanInstallationGuide', () => {
-		const panel = vscode.window.createWebviewPanel(
-			'podmanInstallationGuide',
-			'Podman Installation Guide',
-			vscode.ViewColumn.One,
-			{
-				enableScripts: true,
-				retainContextWhenHidden: true
-			}
-		);
-		
-		panel.webview.html = getPodmanInstallationGuideContent();
-	});
-
-	// Command to toggle mock Podman status for testing
-	let toggleMockPodmanStatusCommand = vscode.commands.registerCommand('cppPrimerBuddy.toggleMockPodmanStatus', () => {
-		courseStructureProvider.toggleMockPodmanStatus();
-		const status = courseStructureProvider.getMockPodmanStatus() ? "installed" : "not installed";
-		vscode.window.showInformationMessage(`Mock Podman status toggled: ${status}`);
-		// Update license status bar when Podman status changes
-		updateLicenseStatusBar();
-	});
-	
-	
-	// Command to preview exercises
-	let previewExerciseCommand = vscode.commands.registerCommand('cppPrimerBuddy.previewExercise', async (item: any) => {
-		if (!item || !item.fullPath) {
-			vscode.window.showErrorMessage('Invalid exercise item');
-			return;
-		}
-		
-		// Show a preview of the exercise in a read-only editor
-		const exercisePath = item.fullPath;
-		vscode.window.showInformationMessage(`Previewing exercise: ${exercisePath}`);
-		
-		// In a real implementation, this would fetch the exercise content from the course content provider
-		// and display it in a read-only editor. For now, we'll just show a message.
-		
-		const previewContent = `// Preview of exercise: ${exercisePath}
-
-// This is a read-only preview.
-// To edit and run this exercise, download it to your workspace.
-
-// Exercise content would appear here...`;
-		
-		const previewDoc = await vscode.workspace.openTextDocument({
-			content: previewContent,
-			language: 'cpp'
-		});
-		
-		await vscode.window.showTextDocument(previewDoc, {
-			preview: true,
-			preserveFocus: false
-		});
-	});
-	
-	// Command to download exercises
-	let downloadExerciseCommand = vscode.commands.registerCommand('cppPrimerBuddy.downloadExercise', async (item: any) => {
-		if (!item || !item.fullPath) {
-			vscode.window.showErrorMessage('Invalid exercise item');
-			return;
-		}
-		
-		// Check for valid license using the protection manager
-		const hasValidLicense = protectionManager.getValidLicenses().length > 0;
-		
-		// If no valid license, show license purchase page
-		if (!hasValidLicense) {
-			const licenseManager = new LicenseManager(protectionManager);
-			await licenseManager.showLicensePurchasePage();
-			return;
-		}
-		
-		// Download the exercise to the workspace
-		const exercisePath = item.fullPath;
-		vscode.window.showInformationMessage(`Downloading exercise: ${exercisePath}`);
-		
-		// In a real implementation, this would:
-		// 1. Fetch the exercise content from the course content provider
-		// 2. Save it to the user's workspace
-		// 3. Open the downloaded file in an editable editor
-		
-		// For now, we'll just show a message
-		vscode.window.showInformationMessage(`Exercise ${exercisePath} downloaded to workspace and ready for editing!`);
-	});
-	
-	// Command to preview content (for section items)
-	let previewContentCommand = vscode.commands.registerCommand('cppPrimerBuddy.previewContent', async (item: any) => {
-		if (!item || !item.fullPath) {
-			vscode.window.showErrorMessage('Invalid content item');
-			return;
-		}
-		
-		// Update the license status bar item
-		updateLicenseStatusBar();
-		
-		// Preview the content in a read-only editor
-		const contentPath = item.fullPath;
-		const contentType = item.itemType || 'content';
-		
-		vscode.window.showInformationMessage(`Previewing ${contentType}: ${contentPath}`);
-		
-		// Generate content based on type
-		let previewContent = `// Preview of ${contentType}: ${contentPath}\n\n`;
-		
-		switch (contentType) {
-			case 'readme':
-				previewContent += `/*
- * README CONTENT
- * =============
- * This is the README content for ${contentPath}
- * 
- * Key concepts covered:
- * - Introduction to the topic
- * - Learning objectives
- * - Prerequisites
- * 
- * This content is for preview purposes only.
- * To edit and work with this content, download it to your workspace.
- */`;
-				break;
-			case 'exercise':
-				previewContent += `/*
- * EXERCISE: ${contentPath}
- * =======================
- * 
- * Instructions:
- * Complete the code below according to the specifications.
- * 
- * Requirements:
- * - Follow best practices
- * - Include comments where necessary
- * - Test your solution
- * 
- * This is a preview of the exercise.
- * Download to your workspace to edit and run.
- */
-
-#include <iostream>
-
-int main() {
-    // Your code here
-    
-    return 0;
-}`;
-				break;
-			case 'solution':
-				previewContent += `/*
- * SOLUTION: ${contentPath}
- * =======================
- * 
- * This is the model solution for the exercise.
- * 
- * Study this solution to understand:
- * - Best practices
- * - Efficient approaches
- * - Common patterns
- * 
- * Note: This is for learning purposes only.
- */
-
-#include <iostream>
-
-int main() {
-    std::cout << "Hello, World!" << std::endl;
-    
-    return 0;
-}`;
-				break;
-			case 'hint':
-				previewContent += `/*
- * HINT: ${contentPath}
- * ===================
- * 
- * Need help with the exercise?
- * 
- * Hints:
- * 1. Consider using a loop for repetitive tasks
- * 2. Remember to validate your inputs
- * 3. Check for edge cases
- * 
- * Try to solve the exercise on your own first,
- * then refer to the solution if needed.
- */`;
-				break;
-			default:
-				previewContent += `// Content preview for ${contentPath}\n// This is a read-only preview\n// Download to edit`;
-		}
-		
-		// Create a virtual URI for the preview
-		const previewUri = vscode.Uri.parse(`cpp-primer-buddy-preview://${contentPath}`);
-		
-		// Set the content in our provider
-		previewContentProvider.setPreviewContent(previewUri, previewContent);
-		
-		// Open the document using our custom provider
-		const doc = await vscode.workspace.openTextDocument(previewUri);
-		await vscode.window.showTextDocument(doc, { preview: true });
-	});
-	
-	// Command to open the license manager
-	let openLicenseManagerCommand = vscode.commands.registerCommand('cppPrimerBuddy.openLicenseManager', async () => {
-		// Check for valid license using the protection manager
-		const hasValidLicense = protectionManager.getValidLicenses().length > 0;
-		
-		const licenseManager = new LicenseManager(protectionManager);
-		if (hasValidLicense) {
-			// Show license information page for users with valid licenses
-			await licenseManager.showLicenseInfoPage();
-		} else {
-			// Show license purchase page for users without valid licenses
-			await licenseManager.showLicensePurchasePage();
-		}
-	});
-
-	// Command to clear all licenses (for testing)
-	let clearLicensesCommand = vscode.commands.registerCommand('cppPrimerBuddy.clearLicenses', async () => {
-		try {
-			// Clear licenses from protection manager
-			const protectionManager = new ContentProtectionManager(context);
-			
-			// Clear the global state
-			await context.globalState.update('validLicenses', []);
-			
-			vscode.window.showInformationMessage('Licenses cleared successfully!');
-			
-			// Show updated license status
-			const updatedLicenses = protectionManager.getValidLicenses();
-			console.log('Licenses after clearing:', updatedLicenses);
-			console.log('Licenses count after clearing:', updatedLicenses.length);
-		} catch (error) {
-			console.error('Error clearing licenses:', error);
-			vscode.window.showErrorMessage('Error clearing licenses: ' + error);
-		}
-	});
-
-	// Set the command for the status bar item
-	licenseStatusBarItem.command = "cppPrimerBuddy.openLicenseManager";
-
-	// Add to context subscriptions
-	context.subscriptions.push(courseStructureView);
-	context.subscriptions.push(openCourseCatalogCommand);
-	context.subscriptions.push(showPodmanInstallationGuideCommand);
-	context.subscriptions.push(toggleMockPodmanStatusCommand);
-	context.subscriptions.push(previewExerciseCommand);
-	context.subscriptions.push(downloadExerciseCommand);
-	context.subscriptions.push(previewContentCommand);
-	context.subscriptions.push(openLicenseManagerCommand);
-	context.subscriptions.push(previewContentProviderRegistration);
-	context.subscriptions.push(licenseStatusBarItem);
-	context.subscriptions.push(clearLicensesCommand);
-}
-
-export function deactivate() {
-    // Cleanup code when extension is deactivated
-    console.log('Learning Buddy extension is now deactivated!');
-}
+// Declare the courseCatalogPanel variable
+let courseCatalogPanel: vscode.WebviewPanel | undefined = undefined;
 
 // Function to generate HTML for course catalog page
 function getCourseCatalogHtml(): string {
@@ -657,4 +317,413 @@ function getPodmanInstallationGuideContent(): string {
 	</body>
 	</html>
 	`;
+}
+
+export function activate(context: vscode.ExtensionContext) {
+	console.log('Learning Buddy extension is now active!');
+
+	// Create the protection manager
+	const protectionManager = new ContentProtectionManager(context);
+	
+	// Add debugging to see what licenses are available
+	console.log('=== Protection Manager Debug Info ===');
+	const initialLicenses = protectionManager.getValidLicenses();
+	console.log('Initial valid licenses:', initialLicenses);
+	console.log('Initial valid licenses count:', initialLicenses.length);
+	
+	// Check what's in the global state directly
+	try {
+		const storedLicenses = context.globalState.get('validLicenses', []);
+		console.log('Direct global state check - stored licenses:', storedLicenses);
+		console.log('Direct global state check - stored licenses count:', storedLicenses.length);
+	} catch (error) {
+		console.error('Error checking global state directly:', error);
+	}
+	console.log('====================================');
+	
+	// Create the course structure provider
+	const courseStructureProvider = new CourseStructureProvider(context, protectionManager);
+	
+	// Create the Learning Buddy view provider
+	const learningBuddyViewProvider = new LearningBuddyViewProvider(context.extensionUri);
+	
+	// Create the preview content provider
+	const previewContentProvider = new PreviewContentProvider();
+	const previewContentProviderRegistration = vscode.workspace.registerTextDocumentContentProvider('cpp-primer-buddy-preview', previewContentProvider);
+	
+	// Create a status bar item for license information
+	const licenseStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+	licenseStatusBarItem.tooltip = "Manage your Learning Buddy license";
+	
+	// Function to update the license status bar item
+	function updateLicenseStatusBar() {
+		// For testing purposes, link license status to Podman installation status
+		// When Podman is installed (mock status is true), show license as active
+		// When Podman is not installed (mock status is false), show license as required
+		const isPodmanInstalled = courseStructureProvider.getMockPodmanStatus();
+		
+		if (isPodmanInstalled) {
+			licenseStatusBarItem.text = "$(check) License active";
+		} else {
+			licenseStatusBarItem.text = "$(warning) License required, pay now";
+		}
+		licenseStatusBarItem.show();
+	}
+	
+	// Initial update of the license status bar
+	updateLicenseStatusBar();
+
+	// Register the course structure view
+	const courseStructureView = vscode.window.createTreeView('cppPrimerBuddyView', {
+		treeDataProvider: courseStructureProvider,
+		showCollapseAll: true
+	});
+	
+	// Register the Learning Buddy view in the activity bar area
+	const learningBuddyViewDisposable = vscode.window.registerWebviewViewProvider(
+		LearningBuddyViewProvider.viewType,
+		learningBuddyViewProvider
+	);
+	
+	// Register commands
+	const openCourseCatalogCommand = vscode.commands.registerCommand('cppPrimerBuddy.openCourseCatalog', () => {
+		if (courseCatalogPanel) {
+			courseCatalogPanel.reveal(vscode.ViewColumn.One);
+		} else {
+			courseCatalogPanel = vscode.window.createWebviewPanel(
+				'courseCatalog',
+				'Course Catalog',
+				vscode.ViewColumn.One,
+				{
+					enableScripts: true,
+					retainContextWhenHidden: true
+				}
+			);
+			
+			courseCatalogPanel.webview.html = getCourseCatalogHtml();
+			
+			courseCatalogPanel.onDidDispose(() => {
+				courseCatalogPanel = undefined;
+			});
+		}
+	});
+	
+	const showPodmanInstallationGuideCommand = vscode.commands.registerCommand('cppPrimerBuddy.showPodmanInstallationGuide', () => {
+		const panel = vscode.window.createWebviewPanel(
+			'podmanInstallationGuide',
+			'Podman Installation Guide',
+			vscode.ViewColumn.One,
+			{
+				enableScripts: true,
+				retainContextWhenHidden: true
+			}
+		);
+		
+		panel.webview.html = getPodmanInstallationGuideContent();
+	});
+
+	// Command to toggle mock Podman status for testing
+	let toggleMockPodmanStatusCommand = vscode.commands.registerCommand('cppPrimerBuddy.toggleMockPodmanStatus', () => {
+		courseStructureProvider.toggleMockPodmanStatus();
+		const status = courseStructureProvider.getMockPodmanStatus() ? "installed" : "not installed";
+		vscode.window.showInformationMessage(`Mock Podman status toggled: ${status}`);
+		// Update license status bar when Podman status changes
+		updateLicenseStatusBar();
+	});
+	
+	
+	// Command to preview exercises
+	let previewExerciseCommand = vscode.commands.registerCommand('cppPrimerBuddy.previewExercise', async (item: any) => {
+		if (!item || !item.fullPath) {
+			vscode.window.showErrorMessage('Invalid exercise item');
+			return;
+		}
+		
+		// Show a preview of the exercise in a read-only editor
+		const exercisePath = item.fullPath;
+		vscode.window.showInformationMessage(`Previewing exercise: ${exercisePath}`);
+		
+		// In a real implementation, this would fetch the exercise content from the course content provider
+		// and display it in a read-only editor. For now, we'll just show a message.
+		
+		const previewContent = `// Preview of exercise: ${exercisePath}
+
+// This is a read-only preview.
+// To edit and run this exercise, download it to your workspace.
+
+// Exercise content would appear here...`;
+		
+		const previewDoc = await vscode.workspace.openTextDocument({
+			content: previewContent,
+			language: 'cpp'
+		});
+		
+		await vscode.window.showTextDocument(previewDoc, {
+			preview: true,
+			preserveFocus: false
+		});
+	});
+	
+	// Command to download exercises
+	let downloadExerciseCommand = vscode.commands.registerCommand('cppPrimerBuddy.downloadExercise', async (item: any) => {
+		if (!item || !item.fullPath) {
+			vscode.window.showErrorMessage('Invalid exercise item');
+			return;
+		}
+		
+		// Check for valid license using the protection manager
+		const hasValidLicense = protectionManager.getValidLicenses().length > 0;
+		
+		// If no valid license, show license purchase page
+		if (!hasValidLicense) {
+			const licenseManager = new LicenseManager(protectionManager);
+			await licenseManager.showLicensePurchasePage();
+			return;
+		}
+		
+		// Download the exercise to the workspace
+		const exercisePath = item.fullPath;
+		vscode.window.showInformationMessage(`Downloading exercise: ${exercisePath}`);
+		
+		// In a real implementation, this would:
+		// 1. Fetch the exercise content from the course content provider
+		// 2. Save it to the user's workspace
+		// 3. Open the downloaded file in an editable editor
+		
+		// For now, we'll just show a message
+		vscode.window.showInformationMessage(`Exercise ${exercisePath} downloaded to workspace and ready for editing!`);
+	});
+	
+	// Command to preview content (for section items)
+	let previewContentCommand = vscode.commands.registerCommand('cppPrimerBuddy.previewContent', async (item: any) => {
+		if (!item || !item.fullPath) {
+			vscode.window.showErrorMessage('Invalid content item');
+			return;
+		}
+		
+		// Update the license status bar item
+		updateLicenseStatusBar();
+		
+		// Preview the content in a read-only editor
+		const contentPath = item.fullPath;
+		const contentType = item.itemType || 'content';
+		
+		vscode.window.showInformationMessage(`Previewing ${contentType}: ${contentPath}`);
+		
+		// Generate content based on type
+		let previewContent = `// Preview of ${contentType}: ${contentPath}
+
+`;
+		
+		switch (contentType) {
+			case 'readme':
+				previewContent += `/*
+ * README CONTENT
+ * =============
+ * This is the README content for ${contentPath}
+ * 
+ * Key concepts covered:
+ * - Introduction to the topic
+ * - Learning objectives
+ * - Prerequisites
+ * 
+ * This content is for preview purposes only.
+ * To edit and work with this content, download it to your workspace.
+ */`;
+				break;
+			case 'exercise':
+				previewContent += `/*
+ * EXERCISE: ${contentPath}
+ * =======================
+ * 
+ * Instructions:
+ * Complete the code below according to the specifications.
+ * 
+ * Requirements:
+ * - Follow best practices
+ * - Include comments where necessary
+ * - Test your solution
+ * 
+ * This is a preview of the exercise.
+ * Download to your workspace to edit and run.
+ */
+
+#include <iostream>
+
+int main() {
+    // Your code here
+    
+    return 0;
+}`;
+				break;
+			case 'solution':
+				previewContent += `/*
+ * SOLUTION: ${contentPath}
+ * =======================
+ * 
+ * This is the model solution for the exercise.
+ * 
+ * Study this solution to understand:
+ * - Best practices
+ * - Efficient approaches
+ * - Common patterns
+ * 
+ * Note: This is for learning purposes only.
+ */
+
+#include <iostream>
+
+int main() {
+    std::cout << "Hello, World!" << std::endl;
+    
+    return 0;
+}`;
+				break;
+			case 'hint':
+				previewContent += `/*
+ * HINT: ${contentPath}
+ * ===================
+ * 
+ * Need help with the exercise?
+ * 
+ * Hints:
+ * 1. Consider using a loop for repetitive tasks
+ * 2. Remember to validate your inputs
+ * 3. Check for edge cases
+ * 
+ * Try to solve the exercise on your own first,
+ * then refer to the solution if needed.
+ */`;
+				break;
+			default:
+				previewContent += `// Content preview for ${contentPath}
+// This is a read-only preview
+// Download to edit`;
+		}
+		
+		// Create a virtual URI for the preview
+		const previewUri = vscode.Uri.parse(`cpp-primer-buddy-preview://${contentPath}`);
+		
+		// Set the content in our provider
+		previewContentProvider.setPreviewContent(previewUri, previewContent);
+		
+		// Open the document using our custom provider
+		const doc = await vscode.workspace.openTextDocument(previewUri);
+		await vscode.window.showTextDocument(doc, { preview: true });
+	});
+	
+	// Command to open the license manager
+	let openLicenseManagerCommand = vscode.commands.registerCommand('cppPrimerBuddy.openLicenseManager', async () => {
+		// Check for valid license using the protection manager
+		const hasValidLicense = protectionManager.getValidLicenses().length > 0;
+		
+		const licenseManager = new LicenseManager(protectionManager);
+		if (hasValidLicense) {
+			// Show license information page for users with valid licenses
+			await licenseManager.showLicenseInfoPage();
+		} else {
+			// Show license purchase page for users without valid licenses
+			await licenseManager.showLicensePurchasePage();
+		}
+	});
+
+	// Command to open WeChat contact
+	let openWeChatContactCommand = vscode.commands.registerCommand('cppPrimerBuddy.openWeChatContact', async () => {
+		const weChatIntegration = new WeChatIntegration(context);
+		await weChatIntegration.showWeChatPanel();
+	});
+
+		// Command to change Podman location
+	let changePodmanLocationCommand = vscode.commands.registerCommand('cppPrimerBuddy.changePodmanLocation', async () => {
+		// Ask user to select the Podman executable file directly instead of the directory
+		const selectedUri = await vscode.window.showOpenDialog({
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			openLabel: 'Select Podman Executable',
+			filters: process.platform === 'win32' ? { 'Executable': ['exe'] } : { 'Executable': ['*'] }
+		});
+
+		if (selectedUri && selectedUri.length > 0) {
+			const podmanPath = selectedUri[0].fsPath;
+			// Save the custom Podman path
+			context.globalState.update('customPodmanPath', podmanPath);
+			vscode.window.showInformationMessage(`Podman executable updated to: ${podmanPath}. Please restart VS Code to apply changes.`);
+		} else {
+			// User cancelled, offer to install Podman automatically
+			vscode.window.showInformationMessage(
+				'Would you like to install Podman automatically?',
+				'Yes, Install Podman',
+				'No, I will install manually'
+			).then(selection => {
+				if (selection === 'Yes, Install Podman') {
+					// Open Podman installation page
+					vscode.env.openExternal(vscode.Uri.parse('https://podman.io/getting-started/installation'));
+				}
+			});
+		}
+	});
+
+	// Command for study selected item
+	let studySelectedCommand = vscode.commands.registerCommand('cppPrimerBuddy.studySelected', async (item: any) => {
+		if (!item) {
+			vscode.window.showErrorMessage('Invalid item selected');
+			return;
+		}
+		
+		vscode.window.showInformationMessage(`Starting study of: ${item.label || item.name || item.fullPath || 'Unknown item'}`);
+		// In a real implementation, this would start the learning process for the selected item
+	});
+
+	// Command for course item selection
+	let courseItemSelectCommand = vscode.commands.registerCommand('cppPrimerBuddy.courseItemSelect', async (item: any) => {
+		if (!item) {
+			vscode.window.showErrorMessage('Invalid course item selected');
+			return;
+		}
+		
+		vscode.window.showInformationMessage(`Selected course item: ${item.label || item.name || item.fullPath || 'Unknown item'}`);
+		// In a real implementation, this would handle the course item selection
+	});
+
+	// Command to clear all licenses (for testing)
+	let clearLicensesCommand = vscode.commands.registerCommand('cppPrimerBuddy.clearLicenses', async () => {
+		try {
+			// Clear licenses from protection manager
+			const protectionManager = new ContentProtectionManager(context);
+			
+			// Clear the global state
+			await context.globalState.update('validLicenses', []);
+			
+			vscode.window.showInformationMessage('Licenses cleared successfully!');
+			
+			// Show updated license status
+			const updatedLicenses = protectionManager.getValidLicenses();
+			console.log('Licenses after clearing:', updatedLicenses);
+			console.log('Licenses count after clearing:', updatedLicenses.length);
+		} catch (error) {
+			console.error('Error clearing licenses:', error);
+			vscode.window.showErrorMessage('Error clearing licenses: ' + error);
+		}
+	});
+
+	// Set the command for the status bar item
+	licenseStatusBarItem.command = "cppPrimerBuddy.openLicenseManager";
+
+	// Add to context subscriptions
+	context.subscriptions.push(courseStructureView);
+	context.subscriptions.push(learningBuddyViewDisposable);
+	context.subscriptions.push(openCourseCatalogCommand);
+	context.subscriptions.push(showPodmanInstallationGuideCommand);
+	context.subscriptions.push(toggleMockPodmanStatusCommand);
+	context.subscriptions.push(previewExerciseCommand);
+	context.subscriptions.push(downloadExerciseCommand);
+	context.subscriptions.push(openLicenseManagerCommand);
+	context.subscriptions.push(openWeChatContactCommand);
+	context.subscriptions.push(changePodmanLocationCommand);
+	context.subscriptions.push(studySelectedCommand);
+	context.subscriptions.push(courseItemSelectCommand);
+	context.subscriptions.push(clearLicensesCommand);
+	context.subscriptions.push(previewContentProviderRegistration);
+	context.subscriptions.push(licenseStatusBarItem);
 }

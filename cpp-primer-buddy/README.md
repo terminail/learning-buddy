@@ -235,3 +235,91 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Course Content Provider
 
 For information about the Course Content Provider service, see the [course-content-provider](./course-content-provider/) directory.
+
+# C++ Primer 5th Edition Buddy
+
+A VS Code extension that helps C++ Primer 5th Edition learners navigate their project files with a directory tree view.
+
+## Features
+
+### Study Plan View
+- Interactive course structure with chapters and sections
+- License management for protected content
+- Exercise downloading and previewing
+- Podman integration for secure content delivery
+
+### Learning Buddy View
+- AI assistant contacts panel integrated into VS Code
+- Quick access to popular AI websites:
+  - ChatGPT
+  - Claude
+  - Gemini
+  - Microsoft Copilot
+  - Perplexity AI
+  - DeepSeek
+  - Kimi
+  - Doubao
+- One-click access to AI assistants without leaving VS Code
+
+### License Management
+- Secure license verification system
+- WeChat integration for license purchase and support
+- Content protection for advanced chapters
+
+### Course Catalog
+- Access to additional courses
+- Promotional content for related learning materials
+
+## Requirements
+
+- VS Code 1.100.0 or higher
+- Podman (for secure content delivery)
+
+## Installation
+
+1. Install the extension from the VS Code Marketplace
+2. Install Podman for secure content delivery
+3. Purchase a license for protected content (Chapters 7 and 8)
+
+## Usage
+
+### Study Plan View
+- Open the "C++ Primer Buddy" view in the Activity Bar
+- Browse chapters and sections
+- Download exercises to your workspace
+- Preview content without downloading
+
+### Learning Buddy View
+- Open the "Learning Buddy" view in the Panel area (alongside DEBUG CONSOLE and PROBLEMS)
+- Click on any AI assistant to open it in a web view panel
+- Access AI assistance without leaving VS Code
+
+### License Management
+- Click on the license status in the status bar to manage your license
+- Purchase licenses through WeChat integration
+- View license information and expiration dates
+
+## Development
+
+This extension is built with TypeScript and follows the VS Code extension API.
+
+### Building
+
+```bash
+npm run compile
+npm run package
+```
+
+### Testing
+
+```bash
+npm test
+```
+
+## Contributing
+
+Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
+
+## License
+
+This extension is licensed under the ISC License.

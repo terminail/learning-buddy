@@ -10,24 +10,37 @@
     "Education"
   ],
   "activationEvents": [
-    "onView:cppPrimerBuddyView"
+    "onView:cppPrimerBuddyView",
+    "onView:learningBuddyView"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "cpp-primer-buddy-view",
+          "id": "cppPrimerBuddy",
           "title": "C++ Primer Buddy",
+          "icon": "media/icon.svg"
+        },
+        {
+          "id": "learningBuddy",
+          "title": "Learning Buddy",
           "icon": "media/icon.svg"
         }
       ]
     },
     "views": {
-      "cpp-primer-buddy-view": [
+      "cppPrimerBuddy": [
         {
           "id": "cppPrimerBuddyView",
           "name": "Study Plan"
+        }
+      ],
+      "learningBuddy": [
+        {
+          "id": "learningBuddyView",
+          "name": "Learning Buddy",
+          "when": "true"
         }
       ]
     },
@@ -61,6 +74,36 @@
         "command": "cppPrimerBuddy.previewContent",
         "title": "Preview Content",
         "icon": "$(open-preview)"
+      },
+      {
+        "command": "cppPrimerBuddy.studySelected",
+        "title": "Study Selected Item",
+        "icon": "$(play)"
+      },
+      {
+        "command": "cppPrimerBuddy.courseItemSelect",
+        "title": "Select Course Item",
+        "icon": "$(folder-opened)"
+      },
+      {
+        "command": "cppPrimerBuddy.openLicenseManager",
+        "title": "Open License Manager",
+        "icon": "$(key)"
+      },
+      {
+        "command": "cppPrimerBuddy.openWeChatContact",
+        "title": "Open WeChat Contact",
+        "icon": "$(account)"
+      },
+      {
+        "command": "cppPrimerBuddy.changePodmanLocation",
+        "title": "Change Podman Location",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "learningBuddy.openAIWebsite",
+        "title": "Open AI Website",
+        "icon": "$(link-external)"
       }
     ],
     "menus": {

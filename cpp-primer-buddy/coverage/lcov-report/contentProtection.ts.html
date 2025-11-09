@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">24.21% </span>
+                <span class="strong">24.27% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>23/95</span>
+                <span class='fraction'>25/103</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">24.21% </span>
+                <span class="strong">24.27% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>23/95</span>
+                <span class='fraction'>25/103</span>
             </div>
         
             
@@ -341,7 +341,15 @@
 <a name='L276'></a><a href='#L276'>276</a>
 <a name='L277'></a><a href='#L277'>277</a>
 <a name='L278'></a><a href='#L278'>278</a>
-<a name='L279'></a><a href='#L279'>279</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -496,6 +504,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -581,8 +592,13 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -773,7 +789,10 @@ export class ContentProtectionManager {
      * @returns Array of valid licenses
      */
     public <span class="fstat-no" title="function not covered" >getValidLicenses(</span>): LicenseInfo[] {
-<span class="cstat-no" title="statement not covered" >        return Array.from(this.validLicenses.values());</span>
+        const licenses = <span class="cstat-no" title="statement not covered" >Array.from(this.validLicenses.values());</span>
+<span class="cstat-no" title="statement not covered" >        console.log('getValidLicenses called, returning licenses:', licenses);</span>
+<span class="cstat-no" title="statement not covered" >        console.log('getValidLicenses count:', licenses.length);</span>
+<span class="cstat-no" title="statement not covered" >        return licenses;</span>
     }
 &nbsp;
     /**
@@ -858,9 +877,14 @@ export class ContentProtectionManager {
     private loadLicenses(): void {
         try {
             const licenses = this.context.globalState.get&lt;LicenseInfo[]&gt;('validLicenses', []);
-            licenses.forEach(<span class="fstat-no" title="function not covered" >license </span>=&gt; {
+            console.log('=== ContentProtection Debug Info ===');
+            console.log('Loaded licenses from storage:', licenses);
+            console.log('Loaded licenses count:', licenses.length);
+<span class="cstat-no" title="statement not covered" >            licenses.forEach(<span class="fstat-no" title="function not covered" >license </span>=&gt; {</span>
 <span class="cstat-no" title="statement not covered" >                this.validLicenses.set(license.id, license);</span>
             });
+<span class="cstat-no" title="statement not covered" >            console.log('Valid licenses map size:', this.validLicenses.size);</span>
+<span class="cstat-no" title="statement not covered" >            console.log('====================================');</span>
         } catch (error) {
             console.error('Error loading licenses:', error);
         }
@@ -904,7 +928,7 @@ export interface LicenseInfo {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-08T16:07:46.010Z
+                at 2025-11-09T02:09:54.906Z
             </div>
         <script src="prettify.js"></script>
         <script>
