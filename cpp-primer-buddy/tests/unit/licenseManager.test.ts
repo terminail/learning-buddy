@@ -131,6 +131,9 @@ describe('LicenseManager', () => {
         licenseManager.showLicensePanel();
         const mockPanel = (vscode.window.createWebviewPanel as jest.Mock).mock.results[0].value;
         
+        // Add the mockPanel to the licenseManager's disposables
+        (licenseManager as any).disposables.push(mockPanel);
+        
         // Dispose the license manager
         licenseManager.dispose();
         
