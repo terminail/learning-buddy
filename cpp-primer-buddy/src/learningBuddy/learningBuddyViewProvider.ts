@@ -66,7 +66,7 @@ export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
 '<html lang="en">\n' +
 '<head>\n' +
     '<meta charset="UTF-8">\n' +
-    '<meta http-equiv="Content-Security-Policy" content="default-src &apos;none&apos;; style-src ' + webview.cspSource + '; script-src &apos;nonce-' + nonce + '&apos;;">\n' +
+    '<meta http-equiv="Content-Security-Policy" content="default-src &apos;none&apos;; img-src ' + webview.cspSource + ' https:; script-src &apos;nonce-' + nonce + '&apos;; style-src ' + webview.cspSource + ' &apos;unsafe-inline&apos;; frame-src https:; child-src https:">\n' +
     '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
     '<link href="' + styleResetUri.toString() + '" rel="stylesheet">\n' +
     '<link href="' + styleVSCodeUri.toString() + '" rel="stylesheet">\n' +
@@ -238,11 +238,11 @@ export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
             }
         ];
 
-        return contacts.map(contact => 
-            '<li class="contact-item" data-url="' + contact.url + '">' +
-                '<span class="contact-icon">' + this._getIconHtml(contact.icon) + '</span>' +
-                '<span class="contact-name">' + contact.name + '</span>' +
-            '</li>'
+        return contacts.map(contact => 
+            '<li class="contact-item" data-url="' + contact.url + '" title="' + contact.url + '">' +
+                '<span class="contact-icon">' + this._getIconHtml(contact.icon) + '</span>' +
+                '<span class="contact-name">' + contact.name + '</span>' +
+            '</li>'
         ).join('');
     }
 
