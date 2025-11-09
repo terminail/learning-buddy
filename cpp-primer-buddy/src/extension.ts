@@ -668,7 +668,13 @@ int main() {
 
 	});
 
-		// Command to change Podman location
+	// Command to refresh the course structure view
+	let refreshCommand = vscode.commands.registerCommand('learningPrimerBuddy.refresh', () => {
+		vscode.window.showInformationMessage('Refreshing course structure...');
+		courseStructureProvider.refresh();
+	});
+
+	// Command to change Podman location
 	let changePodmanLocationCommand = vscode.commands.registerCommand('learningPrimerBuddy.changePodmanLocation', async () => {
 		// Ask user to select the Podman executable file directly instead of the directory
 		const selectedUri = await vscode.window.showOpenDialog({
