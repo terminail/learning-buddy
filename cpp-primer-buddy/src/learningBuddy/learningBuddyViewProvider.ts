@@ -8,7 +8,7 @@ export interface AIContact {
     icon: string;
 }
 
-export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
+export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'learning-buddy.chat';
     
     private _view?: vscode.WebviewView;
@@ -61,46 +61,109 @@ export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
         // Use a nonce to only allow specific scripts to be run
         const nonce = this._getNonce();
 
-        return `<!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <link href="${styleResetUri}" rel="stylesheet">
-                <link href="${styleVSCodeUri}" rel="stylesheet">
-                <link href="${styleMainUri}" rel="stylesheet">
-                <title>Learning Buddy</title>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="sidebar">
-                        <h2>AI Assistants</h2>
-                        <ul class="contact-list">
-                            ${this._getContactListHtml()}
-                        </ul>
-                    </div>
-                    <div class="content">
-                        ${this._currentUrl ? `<iframe src="${this._currentUrl}" frameborder="0"></iframe>` : '<div class="welcome-message">Select an AI assistant from the list to get started</div>'}
-                    </div>
-                </div>
-                <script nonce="${nonce}">
-                    const vscode = acquireVsCodeApi();
-                    
-                    document.addEventListener('DOMContentLoaded', () => {
-                        document.querySelectorAll('.contact-item').forEach(item => {
-                            item.addEventListener('click', () => {
-                                const url = item.getAttribute('data-url');
-                                vscode.postMessage({
-                                    command: 'openAIWebsite',
-                                    url: url
-                                });
-                            });
-                        });
-                    });
-                </script>
-            </body>
-            </html>`;
+        // Create the HTML string with proper escaping for template literals
+        return '<!DOCTYPE html>\n' +
+'<html lang="en">\n' +
+'<head>\n' +
+    '<meta charset="UTF-8">\n' +
+    '<meta http-equiv="Content-Security-Policy" content="default-src &apos;none&apos;; style-src ' + webview.cspSource + '; script-src &apos;nonce-' + nonce + '&apos;;">\n' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+    '<link href="' + styleResetUri.toString() + '" rel="stylesheet">\n' +
+    '<link href="' + styleVSCodeUri.toString() + '" rel="stylesheet">\n' +
+    '<link href="' + styleMainUri.toString() + '" rel="stylesheet">\n' +
+    '<title>Learning Buddy</title>\n' +
+'</head>\n' +
+'<body>\n' +
+    '<div class="container">\n' +
+        '<div class="sidebar">\n' +
+            '<h2>AI Assistants</h2>\n' +
+            '<ul class="contact-list">\n' +
+                this._getContactListHtml() + '\n' +
+            '</ul>\n' +
+        '</div>\n' +
+        '<div class="resizer" id="resizer"></div>\n' +
+        '<div class="content">\n' +
+            (this._currentUrl ? '<iframe src="' + this._currentUrl + '" frameborder="0"></iframe>' : '<div class="welcome-message">Select an AI assistant from the list to get started</div>') + '\n' +
+        '</div>\n' +
+    '</div>\n' +
+    '<script nonce="' + nonce + '">\n' +
+        'const vscode = acquireVsCodeApi();\n' +
+        '\n' +
+        'function initializeComponents() {\n' +
+            'console.log("Initializing components...");\n' +
+            '\n' +
+            '// Set up resizer\n' +
+            'const resizer = document.getElementById(\'resizer\');\n' +
+            'const sidebar = document.querySelector(\'.sidebar\');\n' +
+            'if (resizer && sidebar) {\n' +
+                'let isResizing = false;\n' +
+                '\n' +
+                'resizer.addEventListener(\'mousedown\', function(e) {\n' +
+                    'console.log("Resizer mousedown");\n' +
+                    'isResizing = true;\n' +
+                    'resizer.classList.add(\'dragging\');\n' +
+                    'document.body.style.cursor = \'col-resize\';\n' +
+                    'document.body.style.userSelect = \'none\';\n' +
+                    'e.preventDefault();\n' +
+                '});\n' +
+                '\n' +
+                'document.addEventListener(\'mousemove\', function(e) {\n' +
+                    'if (!isResizing) return;\n' +
+                    'console.log("Resizer mousemove");\n' +
+                    '\n' +
+                    'const containerRect = document.querySelector(\'.container\').getBoundingClientRect();\n' +
+                    'const newWidth = e.clientX - containerRect.left;\n' +
+                    '\n' +
+                    'if (newWidth > 200 && newWidth < 500) {\n' +
+                        'sidebar.style.width = newWidth + \'px\';\n' +
+                    '}\n' +
+                '});\n' +
+                '\n' +
+                'document.addEventListener(\'mouseup\', function() {\n' +
+                    'if (isResizing) {\n' +
+                        'console.log("Resizer mouseup");\n' +
+                        'isResizing = false;\n' +
+                        'resizer.classList.remove(\'dragging\');\n' +
+                        'document.body.style.cursor = \'\';\n' +
+                        'document.body.style.userSelect = \'\';\n' +
+                    '}\n' +
+                '});\n' +
+            '}\n' +
+            '\n' +
+            '// Set up contact item click handlers\n' +
+            'const contactItems = document.querySelectorAll(\'.contact-item\');\n' +
+            'console.log("Found " + contactItems.length + " contact items");\n' +
+            'contactItems.forEach(item => {\n' +
+                'item.addEventListener(\'click\', function(e) {\n' +
+                    'console.log("Contact item clicked:", item.textContent);\n' +
+                    '// Remove active class from all items\n' +
+                    'contactItems.forEach(i => {\n' +
+                        'i.classList.remove(\'active\');\n' +
+                    '});\n' +
+                    '\n' +
+                    '// Add active class to clicked item\n' +
+                    'item.classList.add(\'active\');\n' +
+                    '\n' +
+                    '// Send message to extension\n' +
+                    'const url = item.getAttribute(\'data-url\');\n' +
+                    'console.log("Sending message to VSCode with URL:", url);\n' +
+                    'vscode.postMessage({\n' +
+                        'command: \'openAIWebsite\',\n' +
+                        'url: url\n' +
+                    '});\n' +
+                '});\n' +
+            '});\n' +
+        '}\n' +
+        '\n' +
+        '// Wait for DOM to be fully loaded\n' +
+        'if (document.readyState === \'loading\') {\n' +
+            'document.addEventListener(\'DOMContentLoaded\', initializeComponents);\n' +
+        '} else {\n' +
+            'setTimeout(initializeComponents, 100); // Small delay to ensure DOM is ready\n' +
+        '}\n' +
+    '</script>\n' +
+'</body>\n' +
+'</html>';
     }
 
     private _getContactListHtml(): string {
@@ -175,12 +238,12 @@ export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
             }
         ];
 
-        return contacts.map(contact => `
-            <li class="contact-item" data-url="${contact.url}">
-                <span class="contact-icon">${this._getIconHtml(contact.icon)}</span>
-                <span class="contact-name">${contact.name}</span>
-            </li>
-        `).join('');
+        return contacts.map(contact => 
+            '<li class="contact-item" data-url="' + contact.url + '">' +
+                '<span class="contact-icon">' + this._getIconHtml(contact.icon) + '</span>' +
+                '<span class="contact-name">' + contact.name + '</span>' +
+            '</li>'
+        ).join('');
     }
 
     private _getIconHtml(iconName: string): string {

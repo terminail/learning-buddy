@@ -1,15 +1,36 @@
-.container {
-    display: flex;
-    height: 100%;
-    width: 100%;
+.container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    min-height: 0; /* Needed for flexbox to work properly in webviews */
 }
 
 .sidebar {
     width: 300px;
+    min-width: 200px;
+    max-width: 500px;
     border-right: 1px solid var(--vscode-panel-border);
     background-color: var(--vscode-sideBar-background);
     padding: 10px;
     overflow-y: auto;
+    flex-shrink: 0;
+}
+
+/* Resizable splitter */
+.resizer {
+    width: 4px;
+    background: var(--vscode-panel-border);
+    cursor: col-resize;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.resizer:hover {
+    background: var(--vscode-focusBorder);
+}
+
+.resizer.dragging {
+    background: var(--vscode-button-background);
 }
 
 .sidebar h2 {
@@ -58,25 +79,26 @@
     text-overflow: ellipsis;
 }
 
-.content {
-    flex: 1;
-    background-color: var(--vscode-editor-background);
-    height: 100%;
-}
-
-.content iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
+.content {
+    flex: 1;
+    background-color: var(--vscode-editor-background);
+    min-width: 0; /* Needed for flexbox to work properly in webviews */
+    overflow: hidden;
 }
 
-.welcome-message {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--vscode-editor-foreground);
-    font-size: 14px;
-    text-align: center;
-    padding: 20px;
+.content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.welcome-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--vscode-editor-foreground);
+    font-size: 14px;
+    text-align: center;
+    padding: 20px;
 }
