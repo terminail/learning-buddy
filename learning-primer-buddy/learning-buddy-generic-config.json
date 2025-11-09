@@ -1,0 +1,10 @@
+{
+  "name": "learning-buddy-generic",
+  "displayName": "Learning Buddy",
+  "description": "A generic VS Code extension platform that provides secure, containerized learning environments for programming courses with embedded Podman support",
+  "publisher": "learning-buddy-dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/learning-buddy/learning-buddy.git"
+  }
+}

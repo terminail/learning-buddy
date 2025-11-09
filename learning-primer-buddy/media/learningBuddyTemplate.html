@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src {{CSP_SOURCE}} https:; script-src 'nonce-{{NONCE}}'; style-src {{CSP_SOURCE}} 'unsafe-inline'; frame-src https:; child-src https:">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{STYLE_RESET_URI}}" rel="stylesheet">
+    <link href="{{STYLE_VSCODE_URI}}" rel="stylesheet">
+    <link href="{{STYLE_MAIN_URI}}" rel="stylesheet">
+    <title>Learning Buddy</title>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>AI Assistants</h2>
+            <ul class="contact-list">
+                {{CONTACT_LIST}}
+            </ul>
+        </div>
+        <div class="resizer" id="resizer"></div>
+        <div class="content">
+            {{CONTENT_AREA}}
+        </div>
+    </div>
+    <script nonce="{{NONCE}}">
+        {{JAVASCRIPT}}
+    </script>
+</body>
+</html>

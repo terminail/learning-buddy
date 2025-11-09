@@ -1,0 +1,236 @@
+{
+  "name": "learning-primer-buddy",
+  "displayName": "6Learning Buddy",
+  "description": "A VS Code extension that helps Learning learners navigate their project files with a directory tree view",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Education"
+  ],
+  "activationEvents": [
+    "onView:learningPrimerBuddyView",
+    "onView:learning-buddy.chat"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "learningPrimerBuddy",
+          "title": "6Learning Buddy",
+          "icon": "media/icon.svg"
+        }
+      ],
+      "panel": [
+        {
+          "id": "learning-buddy-panel",
+          "title": "6Learning Buddy",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "learningPrimerBuddy": [
+        {
+          "id": "learningPrimerBuddyView",
+          "name": "C++ Primer 5th Edition"
+        }
+      ],
+      "learning-buddy-panel": [
+        {
+          "id": "learning-buddy.chat",
+          "name": "6Learning Buddy",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "learningPrimerBuddy.openCourseCatalog",
+        "title": "Open Course Catalog",
+        "icon": "$(book)"
+      },
+      {
+        "command": "learningPrimerBuddy.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "learningPrimerBuddy.toggleMockPodmanStatus",
+        "title": "Toggle Mock Podman Status",
+        "icon": "$(vm)"
+      },
+      {
+        "command": "learningPrimerBuddy.previewExercise",
+        "title": "Preview Exercise",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "learningPrimerBuddy.downloadExercise",
+        "title": "Download Exercise",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "learningPrimerBuddy.previewContent",
+        "title": "Preview Content",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "learningPrimerBuddy.studySelected",
+        "title": "Study Selected Item",
+        "icon": "$(play)"
+      },
+      {
+        "command": "learningPrimerBuddy.courseItemSelect",
+        "title": "Select Course Item",
+        "icon": "$(folder-opened)"
+      },
+      {
+        "command": "learningPrimerBuddy.openLicenseManager",
+        "title": "Open License Manager",
+        "icon": "$(key)"
+      },
+      {
+        "command": "learningPrimerBuddy.openWeChatContact",
+        "title": "Open WeChat Contact",
+        "icon": "$(account)"
+      },
+      {
+        "command": "learningPrimerBuddy.changePodmanLocation",
+        "title": "Change Podman Location",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "learningBuddy.openAIWebsite",
+        "title": "Open AI Website",
+        "icon": "$(link-external)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "learningPrimerBuddy.openCourseCatalog",
+          "when": "view == learningPrimerBuddyView",
+          "group": "navigation"
+        },
+        {
+          "command": "learningPrimerBuddy.refresh",
+          "when": "view == learningPrimerBuddyView",
+          "group": "navigation"
+        },
+        {
+          "command": "learningPrimerBuddy.toggleMockPodmanStatus",
+          "when": "view == learningPrimerBuddyView",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "learningPrimerBuddy.studySelected",
+          "when": "view == learningPrimerBuddyView && viewItem == studyItem",
+          "group": "inline"
+        },
+        {
+          "command": "learningPrimerBuddy.studySelected",
+          "when": "view == learningPrimerBuddyView && viewItem == lockedItem",
+          "group": "inline"
+        },
+        {
+          "command": "learningPrimerBuddy.courseItemSelect",
+          "when": "view == learningPrimerBuddyView && viewItem == courseItem",
+          "group": "inline"
+        },
+        {
+          "command": "learningPrimerBuddy.previewExercise",
+          "when": "view == learningPrimerBuddyView && viewItem == studyItem",
+          "group": "inline"
+        },
+        {
+          "command": "learningPrimerBuddy.downloadExercise",
+          "when": "view == learningPrimerBuddyView && viewItem == exerciseItem",
+          "group": "inline"
+        },
+        {
+          "command": "learningPrimerBuddy.previewContent",
+          "when": "view == learningPrimerBuddyView && viewItem == readmeItem || viewItem == studyItem || viewItem == solutionItem || viewItem == hintItem || viewItem == pageItem",
+          "group": "inline"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "learningPrimerBuddy.openLicenseManager",
+          "when": "false"
+        },
+        {
+          "command": "learningPrimerBuddy.openWeChatContact",
+          "when": "false"
+        },
+        {
+          "command": "learningPrimerBuddy.changePodmanLocation",
+          "when": "false"
+        },
+        {
+          "command": "learningPrimerBuddy.openCourseCatalog",
+          "when": "view == learningPrimerBuddyView"
+        },
+        {
+          "command": "learningPrimerBuddy.previewExercise",
+          "when": "view == learningPrimerBuddyView"
+        },
+        {
+          "command": "learningPrimerBuddy.downloadExercise",
+          "when": "view == learningPrimerBuddyView"
+        },
+        {
+          "command": "learningPrimerBuddy.previewContent",
+          "when": "view == learningPrimerBuddyView"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "package-extension": "node package-extension.js",
+    "package-custom": "node build-custom-extension.js",
+    "validate-course": "node dev-tools/validate-course.js",
+    "generate-license": "node generate-test-license.js",
+    "generate-extension": "node dev-tools/generate-extension.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^16.18.126",
+    "@types/node-fetch": "^2.6.13",
+    "@types/vscode": "^1.100.0",
+    "@vscode/vsce": "^3.7.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.5",
+    "typescript": "^4.9.5"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/learning-primer-buddy/learning-primer-buddy.git"
+  },
+  "type": "commonjs",
+  "files": [
+    "out/**/*",
+    "package.json",
+    "README.md",
+    "LICENSE.md",
+    "media/**/*",
+    "licence-keys/public-key.txt"
+  ],
+  "publisher": "learning-primer-buddy-dev",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
