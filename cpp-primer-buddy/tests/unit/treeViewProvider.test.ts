@@ -18,6 +18,9 @@ jest.mock('vscode', () => {
             openTextDocument: jest.fn(),
             showTextDocument: jest.fn()
         },
+        extensions: {
+            all: []
+        },
         TreeItem: jest.fn(),
         TreeItemCollapsibleState: {
             None: 0,
@@ -76,34 +79,59 @@ jest.mock('../../src/podmanEnvironmentManager', () => {
 // Remove the deprecated GiteeContentDelivery mock since it's no longer used
 // The Course Content Provider now handles all content delivery through Podman containers
 
-import { LearningTreeViewProvider, StudyItem } from '../../src/treeViewProvider';
-import { PodmanEnvironmentManager } from '../../src/podmanEnvironmentManager';
-import * as vscode from 'vscode';
+import { LearningTreeViewProvider, StudyItem } from '../../src/treeViewProvider';
+
+import { PodmanEnvironmentManager } from '../../src/podmanEnvironmentManager';
+
+import * as vscode from 'vscode';
+
 import * as fs from 'fs';
 
 describe('LearningTreeViewProvider', () => {
-    let treeViewProvider: LearningTreeViewProvider;
-    let mockContext: vscode.ExtensionContext;
-    let mockPodmanManager: PodmanEnvironmentManager;
-
-    beforeEach(() => {
-        // Mock file system
-        (fs.existsSync as jest.Mock).mockReturnValue(true);
-        (fs.readdirSync as jest.Mock).mockReturnValue(['main.cpp', 'solution.cpp']);
-        
-        // Create a mock context
-        mockContext = {
-            extensionPath: '/mock/extension/path',
-            globalState: {
-                get: jest.fn().mockReturnValue('/mock/working/dir'),
-                update: jest.fn()
-            }
-        } as unknown as vscode.ExtensionContext;
-        
-        // Create a mock podman manager
-        mockPodmanManager = new (require('../../src/podmanEnvironmentManager').PodmanEnvironmentManager)();
-        
-        treeViewProvider = new LearningTreeViewProvider(mockContext, mockPodmanManager);
+    let treeViewProvider: LearningTreeViewProvider;
+
+    let mockContext: vscode.ExtensionContext;
+
+    let mockPodmanManager: PodmanEnvironmentManager;
+
+
+
+    beforeEach(() => {
+
+        // Mock file system
+
+        (fs.existsSync as jest.Mock).mockReturnValue(true);
+
+        (fs.readdirSync as jest.Mock).mockReturnValue(['main.cpp', 'solution.cpp']);
+
+        
+
+        // Create a mock context
+
+        mockContext = {
+
+            extensionPath: '/mock/extension/path',
+
+            globalState: {
+
+                get: jest.fn().mockReturnValue('/mock/working/dir'),
+
+                update: jest.fn()
+
+            }
+
+        } as unknown as vscode.ExtensionContext;
+
+        
+
+        // Create a mock podman manager
+
+        mockPodmanManager = new (require('../../src/podmanEnvironmentManager').PodmanEnvironmentManager)();
+
+        
+
+        treeViewProvider = new LearningTreeViewProvider(mockContext, mockPodmanManager);
+
     });
 
     describe('StudyItem', () => {

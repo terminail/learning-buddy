@@ -7,7 +7,7 @@ jest.mock('vscode', () => {
         },
         ExtensionContext: jest.fn(),
         globalState: {
-            get: jest.fn(),
+            get: jest.fn().mockImplementation((_, defaultValue) => defaultValue),
             update: jest.fn()
         }
     };
