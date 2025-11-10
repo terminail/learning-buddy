@@ -8,6 +8,8 @@ npm test
 npm run test:watch
 npm run test:coverage
 
+# Run end-to-end tests
+npm run test:e2e
 ```
 
 ### Development

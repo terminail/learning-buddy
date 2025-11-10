@@ -35,7 +35,7 @@
       "learningPrimerBuddy": [
         {
           "id": "learningPrimerBuddyView",
-          "name": "C++ Primer 5th Edition"
+          "name": "My Courses"
         }
       ],
       "learning-buddy-panel": [
@@ -173,7 +173,7 @@
         },
         {
           "command": "learningPrimerBuddy.openCourseCatalog",
-          "when": "view == learningPrimerBuddyView"
+          "when": "true"
         },
         {
           "command": "learningPrimerBuddy.previewExercise",
@@ -188,28 +188,53 @@
           "when": "view == learningPrimerBuddyView"
         }
       ]
-    }
+    },
+    "views/item": [
+      {
+        "view": "learningPrimerBuddyView",
+        "when": "viewItem == separator",
+        "height": 10,
+        "style": {
+          "backgroundColor": "#808080",
+          "border": "none"
+        }
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "package": "vsce package",
-    "package-extension": "node package-extension.js",
+    "package-extension": "node dev-tools/generate-extension.js",
     "package-custom": "node build-custom-extension.js",
     "validate-course": "node dev-tools/validate-course.js",
-    "generate-license": "node generate-test-license.js",
-    "generate-extension": "node dev-tools/generate-extension.js",
+    "generate-license": "node tests/integration/generate-test-license.js",
+    "generate-licenses": "node tests/integration/generate-test-licenses.js",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:integration": "node tests/integration/run-integration-tests.js",
+    "test:integration:real": "node tests/integration/run-real-integration-tests.js",
+    "test:integration:automated": "node tests/integration/real/run-automated-integration.js",
+    "test:integration:mycourses": "node tests/integration/real/run-my-courses-test.js",
+    "test:integration:mycourses-view": "node tests/integration/run-mycourses-view-test.js",
+    "test:e2e": "node ./tests/e2e/runTest.js",
+    "test:integration:vscode": "node tests/integration/real/run-vscode-tests.js",
+    "test:my-courses": "node tests/integration/test-my-courses.js",
+    "test:treeview": "node tests/integration/test-treeview-refresh.js",
+    "debug:treeview": "node tests/integration/debug-treeview.js",
+    "debug:treeview-structure": "node tests/integration/debug-treeview-structure.js"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^16.18.126",
     "@types/node-fetch": "^2.6.13",
     "@types/vscode": "^1.100.0",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/test-web": "^0.0.75",
     "@vscode/vsce": "^3.7.0",
     "jest": "^30.2.0",
+    "playwright": "^1.40.0",
     "ts-jest": "^29.4.5",
     "typescript": "^4.9.5"
   },

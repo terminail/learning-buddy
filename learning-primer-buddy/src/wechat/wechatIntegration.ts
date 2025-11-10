@@ -22,7 +22,10 @@ export class WeChatIntegration {
             vscode.ViewColumn.One,
             {
                 enableScripts: true,
-                retainContextWhenHidden: true
+                retainContextWhenHidden: true,
+                enableFindWidget: true,
+                localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'media')],
+                enableCommandUris: true
             }
         );
 
@@ -58,6 +61,7 @@ export class WeChatIntegration {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' vscode-resource:; style-src 'unsafe-inline' vscode-resource:; font-src vscode-resource:;">
     <title>Contact Instructor</title>
     <style>
         body {

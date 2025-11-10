@@ -2,7 +2,9 @@ import * as vscode from 'vscode';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { LicenseInfo } from './contentProtection';
+import { LicenseInfo } from './types';
+import { CourseContentProtectionManager } from '../courseContentProtectionManager';
+import { MyCoursesProvider } from '../course/myCoursesProvider';
 
 /**
  * LicenseManager provides UI for managing license keys
@@ -18,6 +20,30 @@ export class LicenseManager {
     }
 
     /**
+     * Function to update the license status bar item
+     */
+    public static updateLicenseStatusBar(protectionManager: CourseContentProtectionManager, myCoursesProvider: MyCoursesProvider, statusBarItem: vscode.StatusBarItem) {
+        const validLicenses = protectionManager.getValidLicenses();
+        const courseStructure = myCoursesProvider.getCurrentCourseStructure();
+        
+        if (validLicenses.length > 0) {
+            // User has a valid license
+            statusBarItem.text = "$(verified) License: Valid";
+            statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.background');
+        } else if (courseStructure && courseStructure.protectedChapters && courseStructure.protectedChapters.length > 0) {
+            // Course has protected content but no license
+            statusBarItem.text = "$(warning) License: Required";
+            statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
+        } else {
+            // No license needed (free content)
+            statusBarItem.text = "$(check) License: Free";
+            statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.background');
+        }
+        
+        statusBarItem.show();
+    }
+
+    /**
      * Show the license information page (for users with valid licenses)
      */
     public async showLicenseInfoPage(): Promise<void> {
@@ -27,7 +53,9 @@ export class LicenseManager {
             vscode.ViewColumn.One,
             {
                 enableScripts: true,
-                retainContextWhenHidden: true
+                retainContextWhenHidden: true,
+                enableFindWidget: true,
+                enableCommandUris: true
             }
         );
 
@@ -88,16 +116,37 @@ export class LicenseManager {
     }
 
     /**
-     * Show the license purchase page (for users without valid licenses)
-     */
-    public async showLicensePurchasePage(): Promise<void> {
+	 * Show the license free page (for courses with no protected content)
+	 */
+	public async showLicenseFreePage(): Promise<void> {
+		const panel = vscode.window.createWebviewPanel(
+			'licenseFree',
+			'Free Course Content',
+			vscode.ViewColumn.One,
+			{
+				enableScripts: true,
+				retainContextWhenHidden: true,
+				enableFindWidget: true,
+				enableCommandUris: true
+			}
+		);
+
+		panel.webview.html = this.getLicenseFreeWebviewContent();
+	}
+
+	/**
+	 * Show the license purchase page (for users without valid licenses)
+	 */
+	public async showLicensePurchasePage(): Promise<void> {
         const panel = vscode.window.createWebviewPanel(
             'licensePurchase',
             'Purchase License',
             vscode.ViewColumn.One,
             {
                 enableScripts: true,
-                retainContextWhenHidden: true
+                retainContextWhenHidden: true,
+                enableFindWidget: true,
+                enableCommandUris: true
             }
         );
 
@@ -147,7 +196,9 @@ export class LicenseManager {
             vscode.ViewColumn.One,
             {
                 enableScripts: true,
-                retainContextWhenHidden: true
+                retainContextWhenHidden: true,
+                enableFindWidget: true,
+                enableCommandUris: true
             }
         );
 
@@ -222,11 +273,116 @@ export class LicenseManager {
     }
 
     /**
-     * Generate the HTML content for the license info webview
-     * @param licensesHtml HTML string for the licenses list
-     * @returns HTML string for the webview
-     */
-    private getLicenseInfoWebviewContent(licensesHtml: string): string {
+	 * Generate the HTML content for the license free webview
+	 * @returns HTML string for the webview
+	 */
+	private getLicenseFreeWebviewContent(): string {
+		return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Course Content</title>
+    <style>
+        body {
+            font-family: var(--vscode-font-family);
+            padding: 20px;
+            color: var(--vscode-foreground);
+            background-color: var(--vscode-editor-background);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: var(--vscode-foreground);
+        }
+        h2 {
+            color: var(--vscode-foreground);
+            border-bottom: 1px solid var(--vscode-input-border);
+            padding-bottom: 5px;
+        }
+        .free-content {
+            background-color: var(--vscode-input-background);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .status-badge {
+            display: inline-block;
+            background-color: var(--vscode-badge-background);
+            color: var(--vscode-badge-foreground);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .feature-list {
+            margin-left: 20px;
+        }
+        .feature-list li {
+            margin-bottom: 10px;
+        }
+        .next-steps {
+            background-color: var(--vscode-textBlockQuote-background);
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Free Course Content</h1>
+        
+        <div class="status-badge">License Free</div>
+        
+        <div class="free-content">
+            <h2>🎉 No License Required</h2>
+            <p>This course contains free content that is available to all users without any license requirements.</p>
+            
+            <h3>What's Available:</h3>
+            <ul class="feature-list">
+                <li><strong>Full Course Access:</strong> All chapters and sections are available</li>
+                <li><strong>Exercise Downloads:</strong> Download and work on exercises locally</li>
+                <li><strong>Solution Previews:</strong> View solutions to check your work</li>
+                <li><strong>Learning Materials:</strong> Complete set of learning resources</li>
+            </ul>
+            
+            <h3>Benefits of Free Content:</h3>
+            <ul class="feature-list">
+                <li><strong>No Restrictions:</strong> Access all content without limitations</li>
+                <li><strong>No Payment Required:</strong> Completely free to use</li>
+                <li><strong>Immediate Access:</strong> Start learning right away</li>
+                <li><strong>Community Support:</strong> Join our learning community</li>
+            </ul>
+        </div>
+        
+        <div class="next-steps">
+            <h3>Next Steps:</h3>
+            <p>You can now:</p>
+            <ul class="feature-list">
+                <li>Browse the course structure in the main panel</li>
+                <li>Download exercises to your workspace</li>
+                <li>Preview solutions to check your understanding</li>
+                <li>Start learning immediately!</li>
+            </ul>
+        </div>
+        
+        <p><em>Note: Some courses may contain both free and protected content. The status bar will indicate if a license is required for specific content.</em></p>
+    </div>
+</body>
+</html>
+`;
+	}
+
+	/**
+	 * Generate the HTML content for the license info webview
+	 * @param licensesHtml HTML string for the licenses list
+	 * @returns HTML string for the webview
+	 */
+	private getLicenseInfoWebviewContent(licensesHtml: string): string {
         return `
 <!DOCTYPE html>
 <html lang="en">

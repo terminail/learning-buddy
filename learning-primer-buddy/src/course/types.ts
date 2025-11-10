@@ -1,50 +1,52 @@
 import * as vscode from 'vscode';
 
-// Define the course structure types
-export interface CourseSection {
-    id: string;
-    title: string;
-    type: 'exercise' | 'solution' | 'hint' | 'readme' | 'directory';
-    file?: string;
-}
+// New model: CourseCatalog has many Course, 
+// Course has many CourseExercise, etc.
 
-export interface CourseChapter {
-    id: string;
-    title: string;
-    protected: boolean;
-    sections?: CourseSection[];
-}
-
-export interface CourseStructure {
-    version: string;
-    title: string;
-    description: string;
-    chapters: CourseChapter[];
-    protectedChapters: string[];
-}
-
-// Define the course catalog types
-export interface CourseRepository {
-    type: string;
-    url: string;
-    branch: string;
-}
-
-export interface CourseInfo {
-    id: string;
-    name: string;
-    description: string;
-    repository: CourseRepository;
-    icon?: string;
-    level?: string;
-    estimatedHours?: number;
-}
-
+// High-level types
 export interface CourseCatalog {
     version: string;
-    courses: CourseInfo[];
+    courses: Course[];
+    type: 'catalog';
 }
 
+export interface Course {
+    id: string;
+    title: string;
+    description: string;
+    exercises: CourseExercise[];
+    type: 'course';
+}
+
+// Mid-level types
+export interface CourseExercise {
+    id: string;
+    title: string;
+    description: string;
+    folders: Folder[];
+    files: File[];
+    type: 'exercise';
+}
+
+// Low-level types
+export interface Folder {
+    id: string;
+    name: string;
+    path: string;
+    folders: Folder[];
+    files: File[];
+    type: 'folder';
+}
+
+export interface File {
+    id: string;
+    name: string;
+    path: string;
+    extension: string;
+    type: 'file';
+}
+
+// CourseItem class for VS Code tree view
 export class CourseItem extends vscode.TreeItem {
 	constructor(
 		public readonly label: string,
@@ -52,7 +54,7 @@ export class CourseItem extends vscode.TreeItem {
 		public readonly fullPath: string,
 		public readonly isLocked: boolean = false,
 		public readonly isDirectory: boolean = false,
-		public readonly itemType: 'exercise' | 'solution' | 'hint' | 'readme' | 'directory' | 'promotion' = 'exercise'
+		public readonly itemType: 'exercise' | 'solution' | 'hint' | 'readme' | 'directory' | 'promotion' | 'file' | 'folder' = 'exercise'
 	) {
 		super(label, collapsibleState);
 		
@@ -80,6 +82,12 @@ export class CourseItem extends vscode.TreeItem {
 				case 'promotion':
 					(this as any).contextValue = 'promotionItem';
 					break;
+				case 'file':
+					(this as any).contextValue = 'fileItem';
+					break;
+				case 'folder':
+					(this as any).contextValue = 'folderItem';
+					break;
 				default:
 					(this as any).contextValue = 'pageItem';
 			}
@@ -105,6 +113,12 @@ export class CourseItem extends vscode.TreeItem {
 				case 'promotion':
 					(this as any).iconPath = new vscode.ThemeIcon('megaphone');
 					break;
+				case 'file':
+					(this as any).iconPath = new vscode.ThemeIcon('file');
+					break;
+				case 'folder':
+					(this as any).iconPath = new vscode.ThemeIcon('folder');
+					break;
 				default:
 					(this as any).iconPath = new vscode.ThemeIcon('file');
 			}
@@ -120,4 +134,6 @@ export class CourseItem extends vscode.TreeItem {
 			};
 		}
 	}
+
+	
 }

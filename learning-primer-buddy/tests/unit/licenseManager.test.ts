@@ -1,4 +1,4 @@
-import { LicenseManager } from '../../src/licenseManager';
+import { LicenseManager } from '../../src/license/licenseManager';
 import * as vscode from 'vscode';
 
 // Mock the VS Code API

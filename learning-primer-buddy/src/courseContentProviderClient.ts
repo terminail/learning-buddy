@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as https from 'https';
-import { LicenseInfo } from './contentProtection';
+import { LicenseInfo } from './license/types';
 
 /**
  * CourseContentProviderClient handles communication with the Course Content Provider

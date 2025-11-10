@@ -1,4 +1,4 @@
-import { PodmanEnvironmentManager } from '../podmanEnvironmentManager';
+import { PodmanEnvironmentManager } from '../../src/podman/podmanEnvironmentManager';
 import * as vscode from 'vscode';
 import * as os from 'os';
 
@@ -8,7 +8,7 @@ jest.mock('vscode', () => {
         window: {
             showErrorMessage: jest.fn(),
             showWarningMessage: jest.fn(),
-            showInformationMessage: jest.fn()
+            showInformationMessage: jest.fn()        
         },
         env: {
             openExternal: jest.fn()

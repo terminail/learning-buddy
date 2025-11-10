@@ -27,7 +27,8 @@ export class TemplateEngine {
     public async renderMainTemplate(
         webview: vscode.Webview,
         extensionUri: vscode.Uri,
-        currentUrl?: string
+        currentUrl?: string,
+        courseName?: string
     ): Promise<string> {
         const templatePath = vscode.Uri.joinPath(extensionUri, 'media', 'learningBuddyTemplate.html');
         const templateContent = await this._readTemplateFile(templatePath);
@@ -49,9 +50,38 @@ export class TemplateEngine {
             .replace(/{{CSP_SOURCE}}/g, webview.cspSource)
             .replace(/{{CONTACT_LIST}}/g, await this.renderContactList())
             .replace(/{{CONTENT_AREA}}/g, currentUrl 
-                ? `<iframe src="${currentUrl}" frameborder="0"></iframe>` 
+                ? `<iframe src="${currentUrl}" frameborder="0" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>` 
                 : '<div class="welcome-message">Select an AI assistant from the list to get started</div>')
-            .replace(/{{JAVASCRIPT}}/g, await this.renderJavaScript());
+            .replace(/{{JAVASCRIPT}}/g, await this.renderJavaScript())
+            .replace(/{{COURSE_NAME}}/g, courseName || 'Select a course from the catalog');
+
+        return html;
+    }
+
+    /**
+     * Render the course catalog template
+     */
+    public async renderCourseCatalogTemplate(
+        webview: vscode.Webview,
+        extensionUri: vscode.Uri,
+        courses: any[]
+    ): Promise<string> {
+        const templatePath = vscode.Uri.joinPath(extensionUri, 'media', 'courseCatalogTemplate.html');
+        const templateContent = await this._readTemplateFile(templatePath);
+        
+        // Get CSS URI
+        const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'courseCatalog.css'));
+        
+        // Generate nonce for CSP
+        const nonce = this._generateNonce();
+        
+        // Replace placeholders
+        let html = templateContent
+            .replace(/{{STYLE_URI}}/g, styleUri.toString())
+            .replace(/{{NONCE}}/g, nonce)
+            .replace(/{{CSP_SOURCE}}/g, webview.cspSource)
+            .replace(/{{COURSE_CARDS}}/g, this.renderCourseCards(courses))
+            .replace(/{{JAVASCRIPT}}/g, this.getCourseCatalogJavaScript());
 
         return html;
     }
@@ -82,6 +112,80 @@ export class TemplateEngine {
             // Fallback to inline JavaScript if file doesn't exist
             return this.getDefaultJavaScript();
         }
+    }
+
+    /**
+     * Render course cards for the catalog
+     */
+    private renderCourseCards(courses: any[]): string {
+        if (courses.length === 0) {
+            return '<p>No courses available at the moment.</p>';
+        }
+
+        return courses.map(course => `
+            <div class="course-card" onclick="selectCourse('${course.id}', '${course.name}', ${course.hasProtectedContent || false})">
+                <div class="course-card-header">
+                    <h3 class="course-title">${course.name}</h3>
+                    ${course.hasProtectedContent ? '<span class="premium-badge">Premium</span>' : '<span class="free-badge">Free</span>'}
+                </div>
+                <p class="course-description">${course.description}</p>
+                <div class="course-meta">
+                    <span class="course-level">${course.level || 'All Levels'}</span>
+                    <span class="course-hours">${course.estimatedHours || '?'} hours</span>
+                </div>
+                <div class="course-actions">
+                    <button class="select-course-btn">Select Course</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    /**
+     * Get JavaScript for course catalog
+     */
+    private getCourseCatalogJavaScript(): string {
+        return `
+            const vscode = acquireVsCodeApi();
+            
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const coursesGrid = document.getElementById('coursesGrid');
+            const noResults = document.getElementById('noResults');
+            
+            searchButton.addEventListener('click', handleSearch);
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleSearch();
+                }
+            });
+            
+            function handleSearch() {
+                const searchTerm = searchInput.value.trim();
+                if (searchTerm) {
+                    vscode.postMessage({
+                        command: 'searchCourses',
+                        searchTerm: searchTerm
+                    });
+                } else {
+                    // Clear search and show all courses
+                    vscode.postMessage({
+                        command: 'searchCourses',
+                        searchTerm: ''
+                    });
+                }
+            }
+            
+            // Course selection
+            function selectCourse(courseId, courseName, hasProtectedContent) {
+                vscode.postMessage({
+                    command: 'selectCourse',
+                    courseId: courseId,
+                    courseName: courseName,
+                    hasProtectedContent: hasProtectedContent
+                });
+            }
+        `;
     }
 
     /**

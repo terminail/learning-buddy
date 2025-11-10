@@ -11,6 +11,18 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
+// Default generic configuration
+const DEFAULT_GENERIC_CONFIG = {
+  "name": "learning-buddy-generic",
+  "displayName": "Learning Buddy",
+  "description": "A generic VS Code extension platform that provides secure, containerized learning environments for programming courses with embedded Podman support",
+  "publisher": "learning-buddy-dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/learning-buddy/learning-buddy.git"
+  }
+};
+
 /**
  * Generate a generic learning buddy extension
  * @param {Object} config - Configuration for the generic extension
@@ -75,21 +87,13 @@ function generateCourseExtension(config) {
 function buildBothExtensions() {
     console.log('=== Building Both Learning Buddy Extensions ===\n');
     
-    // Build generic extension
-    const genericConfigPath = path.join(__dirname, '..', 'learning-buddy-generic-config.json');
-    if (fs.existsSync(genericConfigPath)) {
-        console.log('Building Generic Learning Buddy Extension...');
-        try {
-            execSync(`node build-buddy.js ${genericConfigPath}`, { 
-                stdio: 'inherit',
-                cwd: path.join(__dirname, '..')
-            });
-            console.log('Generic Learning Buddy Extension generated successfully!');
-        } catch (error) {
-            console.error('Error generating generic extension:', error.message);
-        }
-    } else {
-        console.error('Generic Learning Buddy configuration file not found!');
+    // Build generic extension using default configuration
+    console.log('Building Generic Learning Buddy Extension...');
+    try {
+        generateGenericExtension(DEFAULT_GENERIC_CONFIG);
+        console.log('Generic Learning Buddy Extension generated successfully!');
+    } catch (error) {
+        console.error('Error generating generic extension:', error.message);
     }
     
     // Build C++ Primer 5th Edition extension

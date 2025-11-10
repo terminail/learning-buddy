@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { CourseItem, CourseCatalog, CourseInfo } from './types';
-import { CourseContentProviderClient } from '../courseContentProvider';
+import { CourseItem, CourseCatalog } from './types';
+import { CourseContentProviderClient } from '../courseContentProviderClient';
 
 export class CourseCatalogProvider implements vscode.TreeDataProvider<CourseItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<CourseItem | undefined | void> = new vscode.EventEmitter<CourseItem | undefined | void>();
@@ -48,6 +48,12 @@ export class CourseCatalogProvider implements vscode.TreeDataProvider<CourseItem
 		}
 	}
 
+	// Add command handler for course selection
+	public handleCourseSelection(courseId: string): void {
+		// Trigger the course selection command
+		vscode.commands.executeCommand('learningPrimerBuddy.selectCourse', courseId);
+	}
+
 	private async loadDefaultCourseCatalog(): Promise<void> {
 		try {
 			// Try to load from cache first
@@ -91,81 +97,110 @@ export class CourseCatalogProvider implements vscode.TreeDataProvider<CourseItem
 	}
 
 	private getDefaultCourseCatalog(): CourseCatalog {
-		// Default course catalog with sample courses
+		// Default course catalog with sample courses for license status testing
+		// Courses are designed to test all three license scenarios:
+		// 1. License Paid - User has valid license for protected course
+		// 2. License Free - Course has no protected content (free course)
+		// 3. License Required - User has no license for protected course
 		return {
 			version: "1.0",
+			type: "catalog",
 			courses: [
 				{
 					id: "cpp-primer-5th",
-					name: "C++ Primer 5th Edition Buddy",
-					description: "Learn C++ programming with the definitive guide to the C++ language",
-					repository: {
-						type: "github",
-						url: "https://github.com/conanchen/cpp_primer_5th",
-						branch: "main"
-					},
-					level: "Beginner",
-					estimatedHours: 40
+					title: "C++ Primer 5th Edition (Protected)",
+					description: "Learn C++ programming with the definitive guide to the C++ language - PROTECTED CONTENT",
+					type: "course",
+					exercises: [
+						{
+							id: "intro-exercise",
+							title: "Introduction to C++",
+							description: "Basic concepts of C++ programming",
+							type: "exercise",
+							folders: [],
+							files: []
+						}
+					]
 				},
 				{
 					id: "python-3rd",
-					name: "Python 3rd Edition Buddy",
-					description: "Master Python programming with comprehensive exercises and solutions",
-					repository: {
-						type: "github",
-						url: "https://github.com/conanchen/python_3rd_edition",
-						branch: "main"
-					},
-					level: "Beginner",
-					estimatedHours: 35
+					title: "Python 3rd Edition (Free)",
+					description: "Master Python programming with comprehensive exercises and solutions - FREE CONTENT",
+					type: "course",
+					exercises: [
+						{
+							id: "python-intro",
+							title: "Python Basics",
+							description: "Introduction to Python programming",
+							type: "exercise",
+							folders: [],
+							files: []
+						}
+					]
 				},
 				{
 					id: "javascript-complete",
-					name: "JavaScript Complete Guide Buddy",
-					description: "Complete guide to modern JavaScript development",
-					repository: {
-						type: "github",
-						url: "https://github.com/conanchen/javascript_complete",
-						branch: "main"
-					},
-					level: "Intermediate",
-					estimatedHours: 50
+					title: "JavaScript Complete Guide (Protected)",
+					description: "Complete guide to modern JavaScript development - PROTECTED CONTENT",
+					type: "course",
+					exercises: [
+						{
+							id: "js-fundamentals",
+							title: "JavaScript Fundamentals",
+							description: "Core JavaScript concepts",
+							type: "exercise",
+							folders: [],
+							files: []
+						}
+					]
 				},
 				{
 					id: "java-fundamentals",
-					name: "Java Fundamentals Course",
-					description: "Learn Java programming from basics to advanced concepts",
-					repository: {
-						type: "github",
-						url: "https://github.com/conanchen/java_fundamentals",
-						branch: "main"
-					},
-					level: "Beginner",
-					estimatedHours: 45
+					title: "Java Fundamentals (Free)",
+					description: "Learn Java programming from basics to advanced concepts - FREE CONTENT",
+					type: "course",
+					exercises: [
+						{
+							id: "java-intro",
+							title: "Java Introduction",
+							description: "Basics of Java programming",
+							type: "exercise",
+							folders: [],
+							files: []
+						}
+					]
 				},
 				{
 					id: "react-complete",
-					name: "React Complete Guide",
-					description: "Master React development with hooks, context, and modern patterns",
-					repository: {
-						type: "github",
-						url: "https://github.com/conanchen/react_complete",
-						branch: "main"
-					},
-					level: "Intermediate",
-					estimatedHours: 30
+					title: "React Complete Guide (Protected)",
+					description: "Master React development with hooks, context, and modern patterns - PROTECTED CONTENT",
+					type: "course",
+					exercises: [
+						{
+							id: "react-basics",
+							title: "React Basics",
+							description: "Introduction to React development",
+							type: "exercise",
+							folders: [],
+							files: []
+						}
+					]
 				},
 				{
 					id: "nodejs-backend",
-					name: "Node.js Backend Development",
-					description: "Build scalable backend services with Node.js and Express",
-					repository: {
-						type: "github",
-						url: "https://github.com/conanchen/nodejs_backend",
-						branch: "main"
-					},
-					level: "Intermediate",
-					estimatedHours: 35
+					title: "Node.js Backend Development (Free)",
+					description: "Build scalable backend services with Node.js and Express - FREE CONTENT",
+					type: "course",
+					exercises: [
+						{
+							id: "nodejs-intro",
+							title: "Node.js Introduction",
+							description: "Basics of Node.js development",
+							type: "exercise",
+							folders: [],
+							files: []
+						}
+					]
 				}
 			]
 		};
@@ -179,8 +214,8 @@ export class CourseCatalogProvider implements vscode.TreeDataProvider<CourseItem
 		// Create grid-like display with course cards
 		const items: CourseItem[] = this.defaultCourseCatalog.courses.map(course => {
 			// Create a descriptive label that shows key course information
-			const label = `${course.name}`;
-			const description = `${course.level || 'Not specified'} • ${course.estimatedHours || '?'} hours`;
+			const label = `${course.title}`;
+			const description = `${course.exercises.length} exercises`;
 			
 			// Create a course item that represents a "card" in our grid
 			const courseItem = new CourseItem(
@@ -196,10 +231,17 @@ export class CourseCatalogProvider implements vscode.TreeDataProvider<CourseItem
 			(courseItem as any).description = description;
 			
 			// Add tooltip with full course details
-			(courseItem as any).tooltip = `${course.name}\n${course.description}\nLevel: ${course.level || 'Not specified'}\nEstimated Hours: ${course.estimatedHours || 'Not specified'}`;
+			(courseItem as any).tooltip = `${course.title}\n${course.description}\nExercises: ${course.exercises.length}`;
 			
 			// Add context value for menu actions
 			(courseItem as any).contextValue = 'courseItem';
+			
+			// Add command to handle course selection when clicked
+			(courseItem as any).command = {
+				command: 'learningPrimerBuddy.selectCourse',
+				title: 'Select Course',
+				arguments: [course.id, course.title, false]
+			};
 			
 			return courseItem;
 		});

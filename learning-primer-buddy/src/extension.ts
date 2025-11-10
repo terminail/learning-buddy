@@ -1,28 +1,13 @@
 import * as vscode from 'vscode';
-import { CourseStructureProvider } from './course/courseStructureProvider';
-import { CourseCatalogProvider } from './course/courseCatalogProvider';
-import { LicenseManager } from './licenseManager';
-import { WeChatIntegration } from './wechatIntegration';
-import { PodmanEnvironmentManager } from './podmanEnvironmentManager';
-import { ContentProtectionManager } from './contentProtection';
-import { LearningBuddyViewProvider } from './learningBuddy/learningBuddyViewProvider';
-
-// Custom text document content provider for read-only previews
-class PreviewContentProvider implements vscode.TextDocumentContentProvider {
-    private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
-    private contentMap: Map<string, string> = new Map();
-
-    public readonly onDidChange = this._onDidChange.event;
-
-    public provideTextDocumentContent(uri: vscode.Uri): string {
-        return this.contentMap.get(uri.toString()) || '';
-    }
-
-    public setPreviewContent(uri: vscode.Uri, content: string) {
-        this.contentMap.set(uri.toString(), content);
-        this._onDidChange.fire(uri);
-    }
-}
+import { MyCoursesProvider } from './course/myCoursesProvider';
+import { LicenseManager } from './license/licenseManager';
+import { WeChatIntegration } from './wechat/wechatIntegration';
+import { PodmanEnvironmentManager } from './podman/podmanEnvironmentManager';
+import { CourseContentProtectionManager } from './courseContentProtectionManager';
+import { LearningBuddyChatViewProvider } from './buddy/learningBuddyChatViewProvider';
+import { CourseCatalogWebview } from './course/courseCatalogWebview';
+import { PreviewContentProvider } from './course/previewContentProvider';
+import { getPodmanInstallationGuideContent } from './podman/podmanInstallationGuide';
 
 // Function to generate view ID based on extension name
 function getViewId(): string {
@@ -31,299 +16,20 @@ function getViewId(): string {
 }
 
 // Function to generate command prefix based on view ID
+// Convert camelCase to kebab-case for command prefix
 function getCommandPrefix(viewId: string): string {
-    // Convert camelCase to kebab-case for command prefix
     return viewId.replace('View', '')
                  .replace(/([A-Z])/g, '-$1')
                  .toLowerCase()
                  .replace(/^-/, '');
 }
 
-// Declare the courseCatalogPanel variable
-let courseCatalogPanel: vscode.WebviewPanel | undefined = undefined;
-
-// Function to generate HTML for course catalog page
-function getCourseCatalogHtml(): string {
-    return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Course Catalog</title>
-        <style>
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-                padding: 20px;
-                background-color: #f8f8f8;
-            }
-            .search-container {
-                text-align: center;
-                margin-bottom: 30px;
-                padding: 20px 0;
-            }
-            .search-box {
-                width: 60%;
-                padding: 12px 20px;
-                font-size: 16px;
-                border: 1px solid #ddd;
-                border-radius: 20px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                outline: none;
-            }
-            .search-box:focus {
-                border-color: #007acc;
-                box-shadow: 0 2px 5px rgba(0,122,204,0.3);
-            }
-            .course-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                gap: 20px;
-                max-width: 1200px;
-                margin: 0 auto;
-            }
-            .course-card {
-                background: white;
-                border-radius: 8px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                padding: 20px;
-                transition: transform 0.2s, box-shadow 0.2s;
-                cursor: pointer;
-            }
-            .course-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            }
-            .course-title {
-                font-size: 18px;
-                font-weight: 600;
-                margin-bottom: 10px;
-                color: #333;
-            }
-            .course-description {
-                color: #666;
-                font-size: 14px;
-                margin-bottom: 15px;
-                line-height: 1.4;
-            }
-            .course-meta {
-                display: flex;
-                justify-content: space-between;
-                font-size: 13px;
-                color: #888;
-            }
-            .no-results {
-                text-align: center;
-                color: #666;
-                font-style: italic;
-                grid-column: 1 / -1;
-                padding: 40px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="search-container">
-            <input type="text" class="search-box" id="searchInput" placeholder="Search for courses...">
-        </div>
-        <div class="course-grid" id="courseGrid">
-            <!-- Course cards will be populated here -->
-            <div class="course-card">
-                <div class="course-title">C++ Primer 5th Edition Buddy</div>
-                <div class="course-description">Learn C++ programming with the definitive guide to the C++ language</div>
-                <div class="course-meta">
-                    <span>Beginner</span>
-                    <span>40 hours</span>
-                </div>
-            </div>
-            <div class="course-card">
-                <div class="course-title">Python 3rd Edition Buddy</div>
-                <div class="course-description">Master Python programming with comprehensive exercises and solutions</div>
-                <div class="course-meta">
-                    <span>Beginner</span>
-                    <span>35 hours</span>
-                </div>
-            </div>
-            <div class="course-card">
-                <div class="course-title">JavaScript Complete Guide Buddy</div>
-                <div class="course-description">Complete guide to modern JavaScript development</div>
-                <div class="course-meta">
-                    <span>Intermediate</span>
-                    <span>50 hours</span>
-                </div>
-            </div>
-            <div class="course-card">
-                <div class="course-title">Java Fundamentals Course</div>
-                <div class="course-description">Learn Java programming from basics to advanced concepts</div>
-                <div class="course-meta">
-                    <span>Beginner</span>
-                    <span>45 hours</span>
-                </div>
-            </div>
-            <div class="course-card">
-                <div class="course-title">React Complete Guide</div>
-                <div class="course-description">Master React development with hooks, context, and modern patterns</div>
-                <div class="course-meta">
-                    <span>Intermediate</span>
-                    <span>30 hours</span>
-                </div>
-            </div>
-            <div class="course-card">
-                <div class="course-title">Node.js Backend Development</div>
-                <div class="course-description">Build scalable backend services with Node.js and Express</div>
-                <div class="course-meta">
-                    <span>Intermediate</span>
-                    <span>35 hours</span>
-                </div>
-            </div>
-        </div>
-        <script>
-            const searchInput = document.getElementById('searchInput');
-            const courseGrid = document.getElementById('courseGrid');
-            
-            searchInput.addEventListener('input', function(e) {
-                const searchTerm = e.target.value.toLowerCase();
-                const courseCards = document.querySelectorAll('.course-card');
-                
-                let hasResults = false;
-                
-                courseCards.forEach(card => {
-                    const title = card.querySelector('.course-title').textContent.toLowerCase();
-                    const description = card.querySelector('.course-description').textContent.toLowerCase();
-                    
-                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                        card.style.display = 'block';
-                        hasResults = true;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-                
-                // Show no results message if needed
-                const noResultsElement = document.getElementById('noResults');
-                if (!hasResults && searchTerm) {
-                    if (!noResultsElement) {
-                        const noResults = document.createElement('div');
-                        noResults.id = 'noResults';
-                        noResults.className = 'no-results';
-                        noResults.textContent = 'No courses found matching your search.';
-                        courseGrid.appendChild(noResults);
-                    }
-                } else if (noResultsElement) {
-                    noResultsElement.remove();
-                }
-            });
-        </script>
-    </body>
-    </html>
-    `;
-}
-
-// Function to generate Podman installation guide content
-function getPodmanInstallationGuideContent(): string {
-	return `
-	<!DOCTYPE html>
-	<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Podman Installation Guide</title>
-		<style>
-			body {
-				font-family: var(--vscode-font-family);
-				color: var(--vscode-foreground);
-				background-color: var(--vscode-editor-background);
-				padding: 20px;
-				line-height: 1.6;
-			}
-			h1, h2, h3 {
-				color: var(--vscode-foreground);
-			}
-			a {
-				color: var(--vscode-textLink-foreground);
-			}
-			code {
-				background-color: var(--vscode-textCodeBlock-background);
-				padding: 2px 4px;
-				border-radius: 3px;
-			}
-			.container {
-				max-width: 800px;
-				margin: 0 auto;
-			}
-			.section {
-				margin-bottom: 30px;
-			}
-			.reason-item, .step-item, .guide-item, .info-item {
-				margin: 10px 0;
-				padding-left: 20px;
-			}
-			.status-installed {
-				color: #4caf50;
-				font-weight: bold;
-			}
-			.status-not-installed {
-				color: #f44336;
-				font-weight: bold;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="container">
-			<h1>🔒 Podman Status for Learning Buddy</h1>
-			
-			<div class="section">
-				<h2>Current Status: <span class="status-installed">✅ Installed</span></h2>
-				<p>Learning Buddy has detected that Podman is properly installed and configured on your system.</p>
-			</div>
-
-			<div class="section">
-				<h2>📦 Installation Details</h2>
-				<div class="info-item">• Installation Path: /usr/local/bin/podman</div>
-				<div class="info-item">• Version: 4.9.4</div>
-				<div class="info-item">• Course Containers: 3 running</div>
-				<div class="info-item">• System Integration: Fully configured</div>
-			</div>
-
-			<div class="section">
-				<h2>🔒 Why Podman is Required</h2>
-				<div class="reason-item">• Secure content delivery through containerization</div>
-				<div class="reason-item">• Daemonless operation for lightweight experience</div>
-				<div class="reason-item">• Content protection from unauthorized access</div>
-				<div class="reason-item">• Isolated development environment management</div>
-			</div>
-
-			<div class="section">
-				<h2>📚 Course Environment</h2>
-				<p>Your course environments are running in isolated Podman containers, ensuring:</p>
-				<div class="info-item">• Protected content remains secure</div>
-				<div class="info-item">• Consistent development environment across platforms</div>
-				<div class="info-item">• Automatic cleanup of temporary files</div>
-				<div class="info-item">• Resource isolation for each course</div>
-			</div>
-
-			<div class="section">
-				<h2>⚙️ Management Commands</h2>
-				<p>You can manage your course environments using these commands:</p>
-				<div class="info-item">• <code>podman ps</code> - List running course containers</div>
-				<div class="info-item">• <code>podman stop &lt;container&gt;</code> - Stop a specific course container</div>
-				<div class="info-item">• <code>podman logs &lt;container&gt;</code> - View container logs</div>
-			</div>
-
-			<div class="section">
-				<h2>💬 Need Help?</h2>
-				<p>If you encounter any issues with your Podman setup, please contact our support team via WeChat for assistance.</p>
-			</div>
-		</div>
-	</body>
-	</html>
-	`;
-}
-
-export function activate(context: vscode.ExtensionContext) {
+// Main extension activation function
+export async function activate(context: vscode.ExtensionContext) {
 	console.log('Learning Buddy extension is now active!');
 
 	// Create the protection manager
-	const protectionManager = new ContentProtectionManager(context);
+	const protectionManager = new CourseContentProtectionManager(context);
 	
 	// Add debugging to see what licenses are available
 	console.log('=== Protection Manager Debug Info ===');
@@ -341,17 +47,31 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 	console.log('====================================');
 
+	// Create the my courses provider first
+	const myCoursesProvider = new MyCoursesProvider(context, protectionManager);
+
+	// Create and initialize the Podman environment manager
+	const podmanManager = new PodmanEnvironmentManager(context);
 	
+	// Set up callback for when Podman is not available
+	podmanManager.setOnPodmanNotAvailableCallback(() => {
+		console.log('Podman not available - notifying my courses provider');
+		myCoursesProvider.setPodmanNotAvailable(true);
+	});
 
-	// Create the course structure provider
-
-	const courseStructureProvider = new CourseStructureProvider(context, protectionManager);
-
+	// Initialize Podman environment
+	console.log('Initializing Podman environment...');
+	const podmanAvailable = await podmanManager.initialize();
+	console.log('Podman environment initialization result:', podmanAvailable);
 	
+	// If Podman is available, notify the my courses provider
+	if (podmanAvailable) {
+		console.log('Podman is available - updating my courses provider');
+		myCoursesProvider.setPodmanNotAvailable(false);
+	}
 
-	// Create the Learning Buddy view provider
-
-	const learningBuddyViewProvider = new LearningBuddyViewProvider(context.extensionUri);
+	// Create the Learning Buddy chat view provider
+	const learningBuddyChatViewProvider = new LearningBuddyChatViewProvider(context.extensionUri);
 	
 	// Create the preview content provider
 	const previewContentProvider = new PreviewContentProvider();
@@ -360,107 +80,151 @@ export function activate(context: vscode.ExtensionContext) {
 	// Create a status bar item for license information
 	const licenseStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
 	licenseStatusBarItem.tooltip = "Manage your Learning Buddy license";
-	
-	// Function to update the license status bar item
-    function updateLicenseStatusBar() {
-        // Determine license status based on user's license state and course requirements
-        const hasValidLicense = protectionManager.getValidLicenses().length > 0;
-        
-        // Get current course structure to check for protected content
-        const courseStructure = courseStructureProvider.getCurrentCourseStructure();
-        const hasProtectedContent = courseStructure && 
-            courseStructure.protectedChapters && 
-            courseStructure.protectedChapters.length > 0;
-        
-        // Show appropriate license status based on license state and course requirements
-        if (hasValidLicense) {
-            // User has a valid license - show paid status
-            licenseStatusBarItem.text = "$(check) License Paid";
-            licenseStatusBarItem.tooltip = "Active paid license for course content access";
-        } else if (hasProtectedContent) {
-            // Course has protected content but user has no license - show required status
-            licenseStatusBarItem.text = "$(warning) License Required";
-            licenseStatusBarItem.tooltip = "This course has protected content that requires a license";
-        } else {
-            // User has no valid license and course has no protected content - show free status
-            licenseStatusBarItem.text = "$(info) License Free";
-            licenseStatusBarItem.tooltip = "Free course content available";
-        }
-        licenseStatusBarItem.show();
-    }
+	licenseStatusBarItem.command = "learningbuddygeneric.openLicenseManager";
 	
 	// Initial update of the license status bar
-	updateLicenseStatusBar();
+	LicenseManager.updateLicenseStatusBar(protectionManager, myCoursesProvider, licenseStatusBarItem);
 
-	// Register the course structure view
-
-	const courseStructureView = vscode.window.createTreeView('learningPrimerBuddyView', {
-
-		treeDataProvider: courseStructureProvider,
-
+	// Register the my courses view
+	const myCoursesView = vscode.window.createTreeView('learningPrimerBuddyView', {
+		treeDataProvider: myCoursesProvider,
 		showCollapseAll: true
-
 	});
 
-	
-
-	// Register the Learning Buddy view in the panel area
-
+	// Register the Learning Buddy chat view in the panel area
 	const learningBuddyViewDisposable = vscode.window.registerWebviewViewProvider(
-
 		'learning-buddy.chat',
-
-		learningBuddyViewProvider
-
+		learningBuddyChatViewProvider
 	);
+
+	// Generate command prefix using the helper function
+	const viewId = getViewId();
+	const commandPrefix = getCommandPrefix(viewId);
+
+	// Function to update Learning Buddy chat view title
+	function updateLearningBuddyViewTitle(courseName: string) {
+		// Update the Learning Buddy chat view title to reflect the current course
+		console.log(`Updating Learning Buddy chat view title to: Learning Buddy: ${courseName}`);
+		
+		// Call the updateCourseTitle method on the LearningBuddyChatViewProvider instance
+		learningBuddyChatViewProvider.updateCourseTitle(courseName);
+	}
 	
 	// Register commands
-	const openCourseCatalogCommand = vscode.commands.registerCommand('learningPrimerBuddy.openCourseCatalog', () => {
-		if (courseCatalogPanel) {
-			courseCatalogPanel.reveal(vscode.ViewColumn.One);
-		} else {
-			courseCatalogPanel = vscode.window.createWebviewPanel(
-				'courseCatalog',
-				'Course Catalog',
-				vscode.ViewColumn.One,
-				{
-					enableScripts: true,
-					retainContextWhenHidden: true
-				}
-			);
-			
-			courseCatalogPanel.webview.html = getCourseCatalogHtml();
-			
-			courseCatalogPanel.onDidDispose(() => {
-				courseCatalogPanel = undefined;
-			});
-		}
+	// Course selection and management commands
+	const selectCourseCommand = vscode.commands.registerCommand('learningbuddygeneric.selectCourse', async (courseId: string, courseName: string, isProtected: boolean) => {
+		// Update the current course in the my courses provider
+		await myCoursesProvider.setCurrentCourse(courseId);
+		
+		// Update the license status bar to reflect the new course
+		LicenseManager.updateLicenseStatusBar(protectionManager, myCoursesProvider, licenseStatusBarItem);
+		
+		// Refresh the my courses view to show the new course
+		myCoursesProvider.refresh();
+		
+		// Update the Learning Buddy chat view title
+		updateLearningBuddyViewTitle(courseName);
+		
+		// Show success message
+		vscode.window.showInformationMessage(`Course selected: ${courseName}`);
+		
+		// Log the protection status for debugging
+		console.log(`Course protection status: ${isProtected ? 'Protected' : 'Free'}`);
+	});
+
+	const openCourseCatalogCommand = vscode.commands.registerCommand('learningbuddygeneric.openCourseCatalog', () => {
+		// Open the commerce-style course catalog webview in the main panel
+		CourseCatalogWebview.createOrShow(context.extensionUri, context);
 	});
 	
-	const showPodmanInstallationGuideCommand = vscode.commands.registerCommand('learningPrimerBuddy.showPodmanInstallationGuide', () => {
+	const refreshCommand = vscode.commands.registerCommand('learningbuddygeneric.refresh', () => {
+		vscode.window.showInformationMessage('Refreshing course structure...');
+		myCoursesProvider.refresh();
+	});
+	
+	// Podman-related commands
+	const showPodmanInstallationGuideCommand = vscode.commands.registerCommand('learningbuddygeneric.showPodmanInstallationGuide', () => {
 		const panel = vscode.window.createWebviewPanel(
 			'podmanInstallationGuide',
 			'Podman Installation Guide',
 			vscode.ViewColumn.One,
 			{
 				enableScripts: true,
-				retainContextWhenHidden: true
+				retainContextWhenHidden: true,
+				enableFindWidget: true,
+				localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, 'media')],
+				enableCommandUris: true
 			}
 		);
 		
 		panel.webview.html = getPodmanInstallationGuideContent();
 	});
 
+	const changePodmanLocationCommand = vscode.commands.registerCommand('learningbuddygeneric.changePodmanLocation', async () => {
+		// Ask user to select the Podman executable file directly instead of the directory
+		const selectedUri = await vscode.window.showOpenDialog({
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			openLabel: 'Select Podman Executable',
+			filters: process.platform === 'win32' ? { 'Executable': ['exe'] } : { 'Executable': ['*'] }
+		});
+
+		if (selectedUri && selectedUri.length > 0) {
+			const podmanPath = selectedUri[0].fsPath;
+			// Save the custom Podman path
+			context.globalState.update('customPodmanPath', podmanPath);
+			vscode.window.showInformationMessage(`Podman executable updated to: ${podmanPath}. Please restart VS Code to apply changes.`);
+		} else {
+			// User cancelled, offer to install Podman automatically
+			vscode.window.showInformationMessage(
+				'Would you like to install Podman automatically?',
+				'Yes, Install Podman',
+				'No, I will install manually'
+			).then(selection => {
+				if (selection === 'Yes, Install Podman') {
+					// Open Podman installation page
+					vscode.env.openExternal(vscode.Uri.parse('https://podman.io/getting-started/installation'));
+				}
+			});
+		}
+	});
+	
+	// License-related commands
+	const openLicenseManagerCommand = vscode.commands.registerCommand('learningbuddygeneric.openLicenseManager', async () => {
+		// Check for valid license using the protection manager
+		const hasValidLicense = protectionManager.getValidLicenses().length > 0;
+		// Get current course structure to check for protected content
+		const courseStructure = myCoursesProvider.getCurrentCourseStructure();
+		const hasProtectedContent = courseStructure && 
+			courseStructure.protectedChapters && 
+			courseStructure.protectedChapters.length > 0;
+
+		const licenseManager = new LicenseManager(protectionManager);
+
+		// Determine which page to open based on the three license scenarios
+		if (hasValidLicense) {
+			// License Paid scenario: User has valid license
+			await licenseManager.showLicenseInfoPage();
+		} else if (hasProtectedContent) {
+			// License Required scenario: Course has protected content but no license
+			await licenseManager.showLicensePurchasePage();
+		} else {
+			// License Free scenario: No license needed, course has no protected content
+			await licenseManager.showLicenseFreePage();
+		}
+	});
+	
 	// Command to toggle mock Podman status for testing
-	let toggleMockPodmanStatusCommand = vscode.commands.registerCommand('learningPrimerBuddy.toggleMockPodmanStatus', () => {
-		courseStructureProvider.toggleMockPodmanStatus();
-		const status = courseStructureProvider.getMockPodmanStatus() ? "installed" : "not installed";
+	let toggleMockPodmanStatusCommand = vscode.commands.registerCommand('learningbuddygeneric.toggleMockPodmanStatus', () => {
+		myCoursesProvider.toggleMockPodmanStatus();
+		const status = myCoursesProvider.getMockPodmanStatus() ? "installed" : "not installed";
 		vscode.window.showInformationMessage(`Mock Podman status toggled: ${status}`);
 		// Note: License status is independent of Podman status, so no need to update license status bar
 	});
 	
 	// Command to toggle mock license status for testing
-	let toggleMockLicenseStatusCommand = vscode.commands.registerCommand('learningPrimerBuddy.toggleMockLicenseStatus', async () => {
+	let toggleMockLicenseStatusCommand = vscode.commands.registerCommand('learningbuddygeneric.toggleMockLicenseStatus', async () => {
 		// Toggle between having a mock license and not having one
 		const hasLicense = protectionManager.getValidLicenses().length > 0;
 		
@@ -476,12 +240,32 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		
 		// Update the status bar to reflect the new license status
-		updateLicenseStatusBar();
+		LicenseManager.updateLicenseStatusBar(protectionManager, myCoursesProvider, licenseStatusBarItem);
 	});
 	
+	// Command to clear all licenses (for testing)
+	let clearLicensesCommand = vscode.commands.registerCommand('learningbuddygeneric.clearLicenses', async () => {
+		try {
+			// Clear licenses from protection manager
+			const protectionManager = new CourseContentProtectionManager(context);
+			
+			// Clear the global state
+			await context.globalState.update('validLicenses', []);
+			
+			vscode.window.showInformationMessage('Licenses cleared successfully!');
+			
+			// Show updated license status
+			const updatedLicenses = protectionManager.getValidLicenses();
+			console.log('Licenses after clearing:', updatedLicenses);
+			console.log('Licenses count after clearing:', updatedLicenses.length);
+		} catch (error) {
+			console.error('Error clearing licenses:', error);
+			vscode.window.showErrorMessage('Error clearing licenses: ' + error);
+		}
+	});
 	
-	// Command to preview exercises
-	let previewExerciseCommand = vscode.commands.registerCommand('learningPrimerBuddy.previewExercise', async (item: any) => {
+	// Content preview and download commands
+	let previewExerciseCommand = vscode.commands.registerCommand('learningbuddygeneric.previewExercise', async (item: any) => {
 		if (!item || !item.fullPath) {
 			vscode.window.showErrorMessage('Invalid exercise item');
 			return;
@@ -512,8 +296,7 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	});
 	
-	// Command to download exercises
-	let downloadExerciseCommand = vscode.commands.registerCommand('learningPrimerBuddy.downloadExercise', async (item: any) => {
+	let downloadExerciseCommand = vscode.commands.registerCommand('learningbuddygeneric.downloadExercise', async (item: any) => {
 		if (!item || !item.fullPath) {
 			vscode.window.showErrorMessage('Invalid exercise item');
 			return;
@@ -542,15 +325,14 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage(`Exercise ${exercisePath} downloaded to workspace and ready for editing!`);
 	});
 	
-	// Command to preview content (for section items)
-	let previewContentCommand = vscode.commands.registerCommand('learningPrimerBuddy.previewContent', async (item: any) => {
+	let previewContentCommand = vscode.commands.registerCommand('learningbuddygeneric.previewContent', async (item: any) => {
 		if (!item || !item.fullPath) {
 			vscode.window.showErrorMessage('Invalid content item');
 			return;
 		}
 		
 		// Update the license status bar item
-		updateLicenseStatusBar();
+		LicenseManager.updateLicenseStatusBar(protectionManager, myCoursesProvider, licenseStatusBarItem);
 		
 		// Preview the content in a read-only editor
 		const contentPath = item.fullPath;
@@ -660,85 +442,14 @@ int main() {
 		await vscode.window.showTextDocument(doc, { preview: true });
 	});
 	
-	// Command to open the license manager
-
-	let openLicenseManagerCommand = vscode.commands.registerCommand('learningPrimerBuddy.openLicenseManager', async () => {
-
-		// Check for valid license using the protection manager
-
-		const hasValidLicense = protectionManager.getValidLicenses().length > 0;
-
-		
-
-		const licenseManager = new LicenseManager(protectionManager);
-
-		if (hasValidLicense) {
-
-			// Show license information page for users with valid licenses
-
-			await licenseManager.showLicenseInfoPage();
-
-		} else {
-
-			// Show license purchase page for users without valid licenses
-
-			await licenseManager.showLicensePurchasePage();
-
-		}
-
-	});
-
-
-
-	// Command to open WeChat contact
-
-	let openWeChatContactCommand = vscode.commands.registerCommand('learningPrimerBuddy.openWeChatContact', async () => {
-
+	// WeChat integration commands
+	let openWeChatContactCommand = vscode.commands.registerCommand('learningbuddygeneric.openWeChatContact', async () => {
 		const weChatIntegration = new WeChatIntegration(context);
-
 		await weChatIntegration.showWeChatPanel();
-
-	});
-
-	// Command to refresh the course structure view
-	let refreshCommand = vscode.commands.registerCommand('learningPrimerBuddy.refresh', () => {
-		vscode.window.showInformationMessage('Refreshing course structure...');
-		courseStructureProvider.refresh();
-	});
-
-	// Command to change Podman location
-	let changePodmanLocationCommand = vscode.commands.registerCommand('learningPrimerBuddy.changePodmanLocation', async () => {
-		// Ask user to select the Podman executable file directly instead of the directory
-		const selectedUri = await vscode.window.showOpenDialog({
-			canSelectFiles: true,
-			canSelectFolders: false,
-			canSelectMany: false,
-			openLabel: 'Select Podman Executable',
-			filters: process.platform === 'win32' ? { 'Executable': ['exe'] } : { 'Executable': ['*'] }
-		});
-
-		if (selectedUri && selectedUri.length > 0) {
-			const podmanPath = selectedUri[0].fsPath;
-			// Save the custom Podman path
-			context.globalState.update('customPodmanPath', podmanPath);
-			vscode.window.showInformationMessage(`Podman executable updated to: ${podmanPath}. Please restart VS Code to apply changes.`);
-		} else {
-			// User cancelled, offer to install Podman automatically
-			vscode.window.showInformationMessage(
-				'Would you like to install Podman automatically?',
-				'Yes, Install Podman',
-				'No, I will install manually'
-			).then(selection => {
-				if (selection === 'Yes, Install Podman') {
-					// Open Podman installation page
-					vscode.env.openExternal(vscode.Uri.parse('https://podman.io/getting-started/installation'));
-				}
-			});
-		}
 	});
 
 	// Command for study selected item
-	let studySelectedCommand = vscode.commands.registerCommand('learningPrimerBuddy.studySelected', async (item: any) => {
+	let studySelectedCommand = vscode.commands.registerCommand('learningbuddygeneric.studySelected', async (item: any) => {
 		if (!item) {
 			vscode.window.showErrorMessage('Invalid item selected');
 			return;
@@ -749,7 +460,7 @@ int main() {
 	});
 
 	// Command for course item selection
-	let courseItemSelectCommand = vscode.commands.registerCommand('learningPrimerBuddy.courseItemSelect', async (item: any) => {
+	let courseItemSelectCommand = vscode.commands.registerCommand('learningbuddygeneric.courseItemSelect', async (item: any) => {
 		if (!item) {
 			vscode.window.showErrorMessage('Invalid course item selected');
 			return;
@@ -759,59 +470,20 @@ int main() {
 		// In a real implementation, this would handle the course item selection
 	});
 
-	// Command to clear all licenses (for testing)
-	let clearLicensesCommand = vscode.commands.registerCommand('learningPrimerBuddy.clearLicenses', async () => {
-		try {
-			// Clear licenses from protection manager
-			const protectionManager = new ContentProtectionManager(context);
-			
-			// Clear the global state
-			await context.globalState.update('validLicenses', []);
-			
-			vscode.window.showInformationMessage('Licenses cleared successfully!');
-			
-			// Show updated license status
-			const updatedLicenses = protectionManager.getValidLicenses();
-			console.log('Licenses after clearing:', updatedLicenses);
-			console.log('Licenses count after clearing:', updatedLicenses.length);
-		} catch (error) {
-			console.error('Error clearing licenses:', error);
-			vscode.window.showErrorMessage('Error clearing licenses: ' + error);
-		}
-	});
-
-	// Set the command for the status bar item
-	licenseStatusBarItem.command = "learningPrimerBuddy.openLicenseManager";
-
 	// Add to context subscriptions
-
-	context.subscriptions.push(courseStructureView);
-
+	context.subscriptions.push(myCoursesView);
 	context.subscriptions.push(learningBuddyViewDisposable);
-
 	context.subscriptions.push(openCourseCatalogCommand);
-
 	context.subscriptions.push(showPodmanInstallationGuideCommand);
-
 	context.subscriptions.push(toggleMockPodmanStatusCommand);
-
 	context.subscriptions.push(previewExerciseCommand);
-
 	context.subscriptions.push(downloadExerciseCommand);
-
 	context.subscriptions.push(openLicenseManagerCommand);
-
 	context.subscriptions.push(openWeChatContactCommand);
-
 	context.subscriptions.push(changePodmanLocationCommand);
-
 	context.subscriptions.push(studySelectedCommand);
-
 	context.subscriptions.push(courseItemSelectCommand);
-
 	context.subscriptions.push(clearLicensesCommand);
-
 	context.subscriptions.push(previewContentProviderRegistration);
-
 	context.subscriptions.push(licenseStatusBarItem);
 }

@@ -1,4 +1,4 @@
-import { PodmanEnvironmentManager } from '../../src/podmanEnvironmentManager';
+import { PodmanEnvironmentManager } from '../../src/podman/podmanEnvironmentManager';
 import * as vscode from 'vscode';
 import * as os from 'os';
 

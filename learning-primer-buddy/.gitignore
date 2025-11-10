@@ -52,5 +52,28 @@ test-config.json
 # Test course structure
 test-course-structure.json
 
+# VS Code test directory
+.vscode-test/
+
 # Coverage reports
 coverage/
+
+# Python cache directories
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Python egg-info directories
+*.egg-info/
+*.egg
+
+# Python virtual environments
+venv/
+env/
+.venv/
+
+# Python package installation directories
+pip-wheel-metadata/
+.pytest_cache/

@@ -23,12 +23,13 @@ jest.mock('fs', () => {
     };
 });
 
-import { ContentProtectionManager, LicenseInfo } from '../../src/contentProtection';
+import { CourseContentProtectionManager } from '../../src/courseContentProtectionManager';
+import { LicenseInfo } from '../../src/license/types';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 
-describe('ContentProtectionManager', () => {
-    let protectionManager: ContentProtectionManager;
+describe('CourseContentProtectionManager', () => {
+    let protectionManager: CourseContentProtectionManager;
     let mockContext: vscode.ExtensionContext;
 
     beforeEach(() => {
@@ -45,7 +46,7 @@ describe('ContentProtectionManager', () => {
             }
         } as unknown as vscode.ExtensionContext;
         
-        protectionManager = new ContentProtectionManager(mockContext);
+        protectionManager = new CourseContentProtectionManager(mockContext);
     });
 
     describe('LicenseInfo interface', () => {

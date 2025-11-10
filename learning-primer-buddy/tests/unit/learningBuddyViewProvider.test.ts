@@ -1,4 +1,4 @@
-import { LearningBuddyViewProvider } from '../../src/learningBuddy/learningBuddyViewProvider';
+import { LearningBuddyChatViewProvider } from '../../src/buddy/learningBuddyChatViewProvider';
 import * as vscode from 'vscode';
 
 // Mock the VS Code API
@@ -24,8 +24,8 @@ jest.mock('../../src/templates/index', () => ({
     }
 }));
 
-describe('LearningBuddyViewProvider', () => {
-    let learningBuddyViewProvider: LearningBuddyViewProvider;
+describe('LearningBuddyChatViewProvider', () => {
+    let learningBuddyViewProvider: LearningBuddyChatViewProvider;
     let mockExtensionUri: vscode.Uri;
 
     beforeEach(() => {
@@ -34,19 +34,19 @@ describe('LearningBuddyViewProvider', () => {
             toString: () => '/test/extension/path'
         } as any;
 
-        learningBuddyViewProvider = new LearningBuddyViewProvider(mockExtensionUri);
+        learningBuddyViewProvider = new LearningBuddyChatViewProvider(mockExtensionUri);
     });
 
     afterEach(() => {
         jest.clearAllMocks();
     });
 
-    test('should create LearningBuddyViewProvider instance', () => {
-        expect(learningBuddyViewProvider).toBeInstanceOf(LearningBuddyViewProvider);
+    test('should create LearningBuddyChatViewProvider instance', () => {
+        expect(learningBuddyViewProvider).toBeInstanceOf(LearningBuddyChatViewProvider);
     });
 
     test('should have correct viewType', () => {
-        expect(LearningBuddyViewProvider.viewType).toBe('learning-buddy.chat');
+        expect(LearningBuddyChatViewProvider.viewType).toBe('learning-buddy.chat');
     });
 
     test('should have resolveWebviewView method', () => {

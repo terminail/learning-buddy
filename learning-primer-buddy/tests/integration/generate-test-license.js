@@ -8,7 +8,7 @@ const path = require('path');
 function generateTestLicense() {
     try {
         // Load the private key
-        const privateKeyPath = path.join(__dirname, 'licence-keys', 'private-key.txt');
+        const privateKeyPath = path.join(__dirname, '..', 'licence-keys', 'private-key.txt');
         const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
         
         // Create license data with Gitee access information

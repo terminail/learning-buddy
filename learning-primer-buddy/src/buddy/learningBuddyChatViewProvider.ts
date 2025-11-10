@@ -9,11 +9,12 @@ export interface AIContact {
     icon: string;
 }
 
-export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
+export class LearningBuddyChatViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'learning-buddy.chat';
     
     private _view?: vscode.WebviewView;
     private _currentUrl?: string;
+    private _currentCourseName: string = 'Select a course from the catalog';
 
     constructor(
         private readonly _extensionUri: vscode.Uri,
@@ -46,6 +47,11 @@ export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
                         this._currentUrl = message.url;
                         this._updateWebview();
                         return;
+                    case 'updateCourseTitle':
+                        // Handle course title updates from the extension
+                        this._currentCourseName = message.courseName;
+                        this._updateWebview();
+                        return;
                 }
             },
             undefined,
@@ -60,6 +66,18 @@ export class LearningBuddyViewProvider implements vscode.WebviewViewProvider {
     private async _updateWebview() {
         if (this._view) {
             this._view.webview.html = await this._getHtmlForWebview(this._view.webview);
+        }
+    }
+
+    public updateCourseTitle(courseName: string) {
+        this._currentCourseName = courseName;
+        if (this._view) {
+            // Send message to webview to update the course title
+            this._view.webview.postMessage({
+                command: 'updateCourseTitle',
+                courseName: courseName
+            });
+            this._updateWebview();
         }
     }
 }

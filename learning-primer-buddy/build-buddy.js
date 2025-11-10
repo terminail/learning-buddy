@@ -1,21 +1,28 @@
+#!/usr/bin/env node
+
+/**
+ * Build Tool: Learning Buddy Extension Builder
+ * 
+ * This script builds customized Learning Buddy extensions by:
+ * 1. Updating package.json with extension-specific metadata
+ * 2. Updating extension display names in source files
+ * 3. Compiling TypeScript to JavaScript
+ * 4. Packaging the extension into a VSIX file
+ */
+
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
 /**
- * Build a Learning Buddy extension based on configuration
- * Automatically detects if it's a generic or course-specific extension
+ * Build a Learning Buddy extension with the provided configuration
  * @param {string} configPath - Path to the configuration JSON file
  */
 function buildLearningBuddy(configPath) {
     try {
-        // Read the configuration file
-        const configContent = fs.readFileSync(configPath, 'utf8');
-        const config = JSON.parse(configContent);
-        
-        // Determine extension type based on presence of "course" property
-        const isCourseSpecific = !!config.course;
-        const extensionType = isCourseSpecific ? 'Course Learning Buddy' : 'Generic Learning Buddy';
+        // Read configuration
+        const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        const extensionType = config.name.includes('generic') ? 'Generic Learning Buddy' : 'Course Learning Buddy';
         
         console.log(`Building ${extensionType} extension: ${config.displayName}`);
         
@@ -24,127 +31,36 @@ function buildLearningBuddy(configPath) {
         const backupPackagePath = path.join(__dirname, 'package.json.backup');
         fs.copyFileSync(packagePath, backupPackagePath);
         
-        // Read the original package.json
-        const packageContent = fs.readFileSync(packagePath, 'utf8');
-        const packageJson = JSON.parse(packageContent);
-        
-        // Update package.json with custom configuration
+        // Update package.json with new configuration
+        const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
         packageJson.name = config.name;
         packageJson.displayName = config.displayName;
         packageJson.description = config.description;
         packageJson.publisher = config.publisher;
         packageJson.repository = config.repository;
         
-        // Update files property to remove non-existent patterns
-        if (packageJson.files) {
-            packageJson.files = packageJson.files.filter(file => 
-                !file.includes('embedded-tools') && !file.includes('embedded-images')
-            );
-        }
-        
-        // Update activation events and views to use the custom name
-        const customId = config.name.replace(/[^a-zA-Z0-9]/g, '');
-        packageJson.activationEvents = [`onView:${customId}View`];
-        
-        // Update views containers
-        if (packageJson.contributes && packageJson.contributes.viewsContainers) {
-            const activityBar = packageJson.contributes.viewsContainers.activitybar[0];
-            activityBar.id = `${customId}-view`;
-            activityBar.title = config.displayName.replace(' Buddy', '').replace(' Template', '');
-        }
-        
-        // Update views
-        if (packageJson.contributes && packageJson.contributes.views) {
-            const oldViewKey = Object.keys(packageJson.contributes.views)[0];
-            const newViewKey = `${customId}-view`;
-            packageJson.contributes.views[newViewKey] = packageJson.contributes.views[oldViewKey];
-            delete packageJson.contributes.views[oldViewKey];
-            
-            // Update view id
-            packageJson.contributes.views[newViewKey][0].id = `${customId}View`;
-            packageJson.contributes.views[newViewKey][0].name = "Study Plan";
-        }
-        
-        // Update commands
-        if (packageJson.contributes && packageJson.contributes.commands) {
-            packageJson.contributes.commands = packageJson.contributes.commands.map(cmd => {
-                // Update command names to use custom prefix
-                cmd.command = cmd.command.replace('learningPrimerBuddy', customId);
-                return cmd;
-            });
-        }
-        
-        // Update menus
-        if (packageJson.contributes && packageJson.contributes.menus) {
-            // Update view/item/context menu
-            if (packageJson.contributes.menus['view/item/context']) {
-                packageJson.contributes.menus['view/item/context'] = 
-                    packageJson.contributes.menus['view/item/context'].map(menu => {
-                        menu.command = menu.command.replace('learningPrimerBuddy', customId);
-                        menu.when = menu.when.replace('learningPrimerBuddyView', `${customId}View`);
-                        return menu;
-                    });
-            }
-            
-            // Update commandPalette menu
-            if (packageJson.contributes.menus.commandPalette) {
-                packageJson.contributes.menus.commandPalette = 
-                    packageJson.contributes.menus.commandPalette.map(menu => {
-                        menu.command = menu.command.replace('learningPrimerBuddy', customId);
-                        return menu;
-                    });
-            }
-        }
-        
-        // Write updated package.json
         fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2));
         
-        // Update extension.ts to use custom identifiers
+        // Update extension.ts
         const extensionPath = path.join(__dirname, 'src', 'extension.ts');
         let extensionContent = fs.readFileSync(extensionPath, 'utf8');
-        
-        // Replace identifiers
-        extensionContent = extensionContent.replace(/learningPrimerBuddy/g, customId);
-        extensionContent = extensionContent.replace(/CppPrimer/g, getClassName(config.displayName));
-        extensionContent = extensionContent.replace(/C\+\+ Primer Buddy/g, config.displayName);
-        
+        extensionContent = extensionContent.replace(/6Learning Buddy/g, config.displayName);
         fs.writeFileSync(extensionPath, extensionContent);
         
-        // Update treeViewProvider.ts to use custom identifiers and support dynamic structure
-        const treeViewProviderPath = path.join(__dirname, 'src', 'treeViewProvider.ts');
-        let treeViewProviderContent = fs.readFileSync(treeViewProviderPath, 'utf8');
-        
-        // Add import for dynamic structure loading
-        if (!treeViewProviderContent.includes('import * as https from \'https\'')) {
-            treeViewProviderContent = treeViewProviderContent.replace(
-                "import * as fs from 'fs';",
-                "import * as fs from 'fs';\nimport * as https from 'https';"
-            );
+        // Update other TypeScript files with correct paths
+        const licenseManagerPath = path.join(__dirname, 'src', 'license', 'licenseManager.ts');
+        if (fs.existsSync(licenseManagerPath)) {
+            let licenseManagerContent = fs.readFileSync(licenseManagerPath, 'utf8');
+            licenseManagerContent = licenseManagerContent.replace(/6Learning Buddy/g, config.displayName);
+            fs.writeFileSync(licenseManagerPath, licenseManagerContent);
         }
         
-        // Replace identifiers
-        treeViewProviderContent = treeViewProviderContent.replace(/learningPrimerBuddy/g, customId);
-        treeViewProviderContent = treeViewProviderContent.replace(/CppPrimer/g, getClassName(config.displayName));
-        treeViewProviderContent = treeViewProviderContent.replace(/C\+\+ Primer Buddy/g, config.displayName);
-        
-        // If it's a course-specific extension, ensure it doesn't have course switching functionality
-        if (isCourseSpecific) {
-            // This would be handled by the configuration and code structure
-            // The course-specific extension would have different behavior built-in
+        const wechatIntegrationPath = path.join(__dirname, 'src', 'wechat', 'wechatIntegration.ts');
+        if (fs.existsSync(wechatIntegrationPath)) {
+            let wechatIntegrationContent = fs.readFileSync(wechatIntegrationPath, 'utf8');
+            wechatIntegrationContent = wechatIntegrationContent.replace(/6Learning Buddy/g, config.displayName);
+            fs.writeFileSync(wechatIntegrationPath, wechatIntegrationContent);
         }
-        
-        fs.writeFileSync(treeViewProviderPath, treeViewProviderContent);
-        
-        // Update other TypeScript files
-        const licenseManagerPath = path.join(__dirname, 'src', 'licenseManager.ts');
-        let licenseManagerContent = fs.readFileSync(licenseManagerPath, 'utf8');
-        licenseManagerContent = licenseManagerContent.replace(/C\+\+ Primer Buddy/g, config.displayName);
-        fs.writeFileSync(licenseManagerPath, licenseManagerContent);
-        
-        const wechatIntegrationPath = path.join(__dirname, 'src', 'wechatIntegration.ts');
-        let wechatIntegrationContent = fs.readFileSync(wechatIntegrationPath, 'utf8');
-        wechatIntegrationContent = wechatIntegrationContent.replace(/C\+\+ Primer Buddy/g, config.displayName);
-        fs.writeFileSync(wechatIntegrationPath, wechatIntegrationContent);
         
         // Compile TypeScript
         console.log('Compiling TypeScript...');
