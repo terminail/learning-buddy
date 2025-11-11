@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Read the myCoursesProvider.ts file
-const treeViewProviderPath = path.join(__dirname, '..', 'src', 'course', 'myCoursesProvider.ts');
+const treeViewProviderPath = path.join(__dirname, '..', '..', 'src', 'course', 'myCoursesProvider.ts');
 const content = fs.readFileSync(treeViewProviderPath, 'utf8');
 
 // Check if My Courses implementation exists (without section header)

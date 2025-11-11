@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
 import { CourseContentProviderClient } from '../courseContentProviderClient';
 import { TemplateEngine } from '../templates/index';
+import { CourseContentProtectionManager } from '../courseContentProtectionManager';
+import { LicenseManager } from '../license/licenseManager';
+import { MyCoursesProvider } from './myCoursesProvider';
 
 export class CourseCatalogWebview {
     public static currentPanel: CourseCatalogWebview | undefined;
@@ -8,6 +11,9 @@ export class CourseCatalogWebview {
     private readonly _extensionUri: vscode.Uri;
     private _disposables: vscode.Disposable[] = [];
     private courseContentProvider: CourseContentProviderClient;
+    private context: vscode.ExtensionContext;
+    private protectionManager: CourseContentProtectionManager;
+    private myCoursesProvider: MyCoursesProvider;
 
     public static createOrShow(extensionUri: vscode.Uri, context: vscode.ExtensionContext): void {
         const column = vscode.window.activeTextEditor
@@ -42,7 +48,12 @@ export class CourseCatalogWebview {
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, context: vscode.ExtensionContext) {
         this._panel = panel;
         this._extensionUri = extensionUri;
+        this.context = context;
         this.courseContentProvider = new CourseContentProviderClient(context);
+        
+        // Create protection manager and my courses provider for license checking
+        this.protectionManager = new CourseContentProtectionManager(context);
+        this.myCoursesProvider = new MyCoursesProvider(context, this.protectionManager);
 
         // Set the webview's initial HTML content
         this._update();
@@ -55,11 +66,15 @@ export class CourseCatalogWebview {
             async (message) => {
                 switch (message.command) {
                     case 'selectCourse':
-                        // Handle course selection
-                        vscode.commands.executeCommand('learningPrimerBuddy.selectCourse', 
-                            message.courseId, message.courseName, message.hasProtectedContent);
-                        // Close the catalog panel after selection
-                        this.dispose();
+                        if (message.openLicensePage) {
+                            // For licensed courses, open the license purchase page
+                            const licenseManager = new LicenseManager(this.protectionManager);
+                            await licenseManager.showLicensePurchasePage();
+                        } else {
+                            // For free courses, select the course directly
+                            vscode.commands.executeCommand('learningPrimerBuddy.selectCourse', 
+                                message.courseId, message.courseName, message.hasProtectedContent);
+                        }
                         return;
                     case 'searchCourses':
                         // Handle search
@@ -81,10 +96,13 @@ export class CourseCatalogWebview {
         // Get the course catalog data
         const catalog = await this.courseContentProvider.getCourseCatalog();
         const courses = catalog?.courses || [];
+        
+        // Get the currently selected course ID from global state
+        const currentCourseId = this.context.globalState.get<string>('currentCourseId', '');
 
-        // Use the template engine to render the HTML
+        // Use the template engine to render the HTML with course selection information
         const templateEngine = TemplateEngine.getInstance();
-        return await templateEngine.renderCourseCatalogTemplate(webview, this._extensionUri, courses);
+        return await templateEngine.renderCourseCatalogTemplate(webview, this._extensionUri, courses, currentCourseId);
     }
 
     private async handleSearch(searchTerm: string): Promise<void> {

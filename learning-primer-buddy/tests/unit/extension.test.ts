@@ -158,6 +158,29 @@ describe('Extension Configuration Constants', () => {
             expect(commandIds).toContain('learningPrimerBuddy.changePodmanLocation');
         });
 
+        it('should have learningPrimerBuddy.openCourseCatalog command properly configured', () => {
+            const commands = packageJson.contributes.commands;
+            const openCourseCatalogCommand = commands.find((cmd: any) => cmd.command === 'learningPrimerBuddy.openCourseCatalog');
+            
+            expect(openCourseCatalogCommand).toBeDefined();
+            expect(openCourseCatalogCommand.title).toBe('Open Course Catalog');
+            expect(openCourseCatalogCommand.icon).toBe('$(book)');
+            
+            // Verify it appears in command palette
+            const commandPaletteMenus = packageJson.contributes.menus.commandPalette;
+            const inCommandPalette = commandPaletteMenus.some((menu: any) => 
+                menu.command === 'learningPrimerBuddy.openCourseCatalog' && menu.when === 'true'
+            );
+            expect(inCommandPalette).toBe(true);
+            
+            // Verify it appears in view title menu
+            const viewTitleMenus = packageJson.contributes.menus['view/title'];
+            const inViewTitle = viewTitleMenus.some((menu: any) => 
+                menu.command === 'learningPrimerBuddy.openCourseCatalog' && menu.when === 'view == learningPrimerBuddyView'
+            );
+            expect(inViewTitle).toBe(true);
+        });
+
         it('should have correct menu configurations', () => {
             const viewTitleMenus = packageJson.contributes.menus['view/title'];
             const viewItemMenus = packageJson.contributes.menus['view/item/context'];

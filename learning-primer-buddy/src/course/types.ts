@@ -13,7 +13,13 @@ export interface CourseCatalog {
 export interface Course {
     id: string;
     title: string;
+    name?: string;  // For backward compatibility with backend API
     description: string;
+    level?: string;
+    estimatedHours?: number;
+    hasProtectedContent?: boolean;
+    isFree?: boolean;
+    version?: string;
     exercises: CourseExercise[];
     type: 'course';
 }
@@ -127,10 +133,16 @@ export class CourseItem extends vscode.TreeItem {
 		// Add command for page items to preview content
 		if (!isDirectory) {
 			// Add a command to preview the content
+			// Pass only the necessary data to avoid circular references
 			(this as any).command = {
 				command: 'learningPrimerBuddy.previewContent',
 				title: 'Preview Content',
-				arguments: [this]
+				arguments: [{
+					label: this.label,
+					fullPath: this.fullPath,
+					itemType: this.itemType,
+					isLocked: this.isLocked
+				}]
 			};
 		}
 	}

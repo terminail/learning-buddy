@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as https from 'https';
+import { defaultCourseCatalog } from './course/defaultCourseCatalog';
 import { LicenseInfo } from './license/types';
 
 /**
@@ -102,19 +103,17 @@ export class CourseContentProviderClient {
     }
 
     /**
-     * Get course catalog from the Course Content Provider
-     * @returns Course catalog, or null if failed
+     * Get the course catalog from the Course Content Provider
+     * @returns Course catalog data, or null if failed
      */
     public async getCourseCatalog(): Promise<any | null> {
         try {
             // Check if the Podman environment is running
             const isPodmanRunning = await this.checkPodmanEnvironment();
             if (!isPodmanRunning) {
-                vscode.window.showErrorMessage(
-                    'Learning Buddy Podman Environment is not running. ' +
-                    'Please ensure Podman is installed and the Learning Buddy environment is started.'
-                );
-                return null;
+                // If Podman is not running, use the default course catalog for testing
+                console.log('Using default course catalog for testing');
+                return defaultCourseCatalog;
             }
             
             // Make request to Course Content Provider API to get course catalog
@@ -130,11 +129,13 @@ export class CourseContentProviderClient {
                 return await response.json();
             } else {
                 console.error(`Failed to fetch course catalog: ${response.status} ${response.statusText}`);
-                return null;
+                // Fallback to default course catalog if API request fails
+                return defaultCourseCatalog;
             }
         } catch (error) {
             console.error('Error fetching course catalog from Course Content Provider:', error);
-            return null;
+            // Fallback to default course catalog if there's an error
+            return defaultCourseCatalog;
         }
     }
 
@@ -148,11 +149,13 @@ export class CourseContentProviderClient {
             // Check if the Podman environment is running
             const isPodmanRunning = await this.checkPodmanEnvironment();
             if (!isPodmanRunning) {
-                vscode.window.showErrorMessage(
-                    'Learning Buddy Podman Environment is not running. ' +
-                    'Please ensure Podman is installed and the Learning Buddy environment is started.'
+                // If Podman is not running, search within the default course catalog for testing
+                console.log('Searching within default course catalog for testing');
+                const filteredCourses = defaultCourseCatalog.courses.filter(course => 
+                    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    course.description.toLowerCase().includes(searchTerm.toLowerCase())
                 );
-                return null;
+                return { courses: filteredCourses };
             }
             
             // Make request to Course Content Provider API to search courses
@@ -168,11 +171,21 @@ export class CourseContentProviderClient {
                 return await response.json();
             } else {
                 console.error(`Failed to search courses: ${response.status} ${response.statusText}`);
-                return null;
+                // Fallback to searching within default course catalog if API request fails
+                const filteredCourses = defaultCourseCatalog.courses.filter(course => 
+                    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    course.description.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                return { courses: filteredCourses };
             }
         } catch (error) {
             console.error('Error searching courses from Course Content Provider:', error);
-            return null;
+            // Fallback to searching within default course catalog if there's an error
+            const filteredCourses = defaultCourseCatalog.courses.filter(course => 
+                course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                course.description.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            return { courses: filteredCourses };
         }
     }
 

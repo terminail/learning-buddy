@@ -12,6 +12,11 @@ export const defaultCourseCatalog: CourseCatalog = {
 			id: "cpp-primer-5th",
 			title: "C++ Primer 5th Edition",
 			description: "Learning path for C++ Primer 5th Edition",
+			level: "Intermediate",
+			estimatedHours: 40,
+			hasProtectedContent: true,
+			isFree: false,
+			version: "5th Edition",
 			type: "course",
 			exercises: [
 				{
@@ -229,6 +234,195 @@ export const defaultCourseCatalog: CourseCatalog = {
 							type: "file"
 						}
 					]
+				}
+			]
+		},
+		{
+			id: "python-3rd-edition",
+			title: "Python 3rd Edition",
+			description: "Python programming from beginner to advanced",
+			level: "Beginner",
+			estimatedHours: 35,
+			hasProtectedContent: false,
+			isFree: true,
+			version: "3rd Edition",
+			type: "course",
+			exercises: [
+				{
+					id: "python-intro",
+					title: "Python Introduction",
+					description: "Basics of Python programming",
+					type: "exercise",
+					folders: [],
+					files: []
+				}
+			]
+		},
+		{
+			id: "javascript-es6",
+			title: "JavaScript ES6+",
+			description: "Modern JavaScript with ES6 features and beyond",
+			level: "Intermediate",
+			estimatedHours: 30,
+			hasProtectedContent: true,
+			isFree: false,
+			version: "ES2023",
+			type: "course",
+			exercises: [
+				{
+					id: "js-fundamentals",
+					title: "JavaScript Fundamentals",
+					description: "Core JavaScript concepts",
+					type: "exercise",
+					folders: [],
+					files: []
+				}
+			]
+		},
+		{
+			id: "data-structures-algorithms",
+			title: "Data Structures & Algorithms",
+			description: "Essential data structures and algorithms for interviews",
+			level: "Advanced",
+			estimatedHours: 50,
+			hasProtectedContent: true,
+			isFree: false,
+			version: "2023",
+			type: "course",
+			exercises: [
+				{
+					id: "ds-intro",
+					title: "Data Structures Introduction",
+					description: "Overview of data structures",
+					type: "exercise",
+					folders: [],
+					files: []
+				}
+			]
+		},
+		{
+			id: "web-development",
+			title: "Web Development Full Stack",
+			description: "Complete web development course with frontend and backend",
+			level: "Intermediate",
+			estimatedHours: 60,
+			hasProtectedContent: true,
+			isFree: false,
+			version: "2023",
+			type: "course",
+			exercises: [
+				{
+					id: "web-intro",
+					title: "Web Development Introduction",
+					description: "Basics of web development",
+					type: "exercise",
+					folders: [],
+					files: []
+				}
+			]
+		},
+		{
+			id: "machine-learning",
+			title: "Machine Learning Fundamentals",
+			description: "Introduction to machine learning concepts and algorithms",
+			level: "Advanced",
+			estimatedHours: 45,
+			hasProtectedContent: true,
+			isFree: false,
+			version: "2023",
+			type: "course",
+			exercises: [
+				{
+					id: "ml-intro",
+					title: "Machine Learning Introduction",
+					description: "Basics of machine learning",
+					type: "exercise",
+					folders: [],
+					files: []
+				}
+			]
+		},
+		{
+			id: "docker-kubernetes",
+			title: "Docker & Kubernetes",
+			description: "Containerization and orchestration with Docker and Kubernetes",
+			level: "Intermediate",
+			estimatedHours: 35,
+			hasProtectedContent: true,
+			isFree: false,
+			version: "2023",
+			type: "course",
+			exercises: [
+				{
+					id: "docker-intro",
+					title: "Docker Introduction",
+					description: "Basics of Docker containerization",
+					type: "exercise",
+					folders: [],
+					files: []
+				}
+			]
+		},
+		{
+			id: "react-native",
+			title: "React Native Mobile Development",
+			description: "Build cross-platform mobile apps with React Native",
+			level: "Intermediate",
+			estimatedHours: 40,
+			hasProtectedContent: true,
+			isFree: false,
+			version: "2023",
+			type: "course",
+			exercises: [
+				{
+					id: "react-intro",
+					title: "React Native Introduction",
+					description: "Basics of React Native",
+					type: "exercise",
+					folders: [],
+					files: []
+				}
+			]
+		},
+		{
+			id: "sql-database",
+			title: "SQL & Database Design",
+			description: "Database design and SQL query optimization",
+			level: "Beginner",
+			estimatedHours: 25,
+			hasProtectedContent: false,
+			isFree: true,
+			version: "2023",
+			type: "course",
+			exercises: [
+				{
+					id: "sql-intro",
+					title: "SQL Introduction",
+					description: "Basics of SQL",
+					type: "exercise",
+					folders: [],
+					files: []
+				}
+			]
+		},
+		{
+			id: "git-version-control",
+			title: "Git Version Control",
+			description: "Master Git for version control and collaboration",
+			level: "Beginner",
+			estimatedHours: 15,
+			hasProtectedContent: false,
+			isFree: true,
+			version: "2023",
+			type: "course",
+			exercises: [
+				{
+					id: "git-intro",
+					title: "Git Introduction",
+					description: "Basics of Git",
+					type: "exercise",
+					folders: [],
+					files: []
 				}
 			]
 		}

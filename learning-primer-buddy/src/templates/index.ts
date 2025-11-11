@@ -62,28 +62,43 @@ export class TemplateEngine {
      * Render the course catalog template
      */
     public async renderCourseCatalogTemplate(
-        webview: vscode.Webview,
-        extensionUri: vscode.Uri,
-        courses: any[]
+        webview: vscode.Webview, 
+        extensionUri: vscode.Uri, 
+        courses: any[], 
+        currentCourseId?: string
     ): Promise<string> {
-        const templatePath = vscode.Uri.joinPath(extensionUri, 'media', 'courseCatalogTemplate.html');
-        const templateContent = await this._readTemplateFile(templatePath);
-        
-        // Get CSS URI
-        const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'courseCatalog.css'));
-        
-        // Generate nonce for CSP
-        const nonce = this._generateNonce();
-        
-        // Replace placeholders
-        let html = templateContent
-            .replace(/{{STYLE_URI}}/g, styleUri.toString())
-            .replace(/{{NONCE}}/g, nonce)
-            .replace(/{{CSP_SOURCE}}/g, webview.cspSource)
-            .replace(/{{COURSE_CARDS}}/g, this.renderCourseCards(courses))
-            .replace(/{{JAVASCRIPT}}/g, this.getCourseCatalogJavaScript());
-
-        return html;
+        try {
+            // Get the path to the HTML template file
+            const templatePath = vscode.Uri.joinPath(extensionUri, 'media', 'courseCatalogTemplate.html');
+            
+            // Read the template file content
+            const templateContent = await this._readTemplateFile(templatePath);
+            
+            // Get the path to the CSS file
+            const cssPath = vscode.Uri.joinPath(extensionUri, 'media', 'courseCatalog.css');
+            const cssUri = webview.asWebviewUri(cssPath);
+            
+            // Generate a nonce for inline scripts
+            const nonce = this._generateNonce();
+            
+            // Render the course cards HTML
+            const courseCardsHtml = this.renderCourseCards(courses, currentCourseId);
+            
+            // Get the JavaScript for the webview
+            const javascriptContent = this.getCourseCatalogJavaScript();
+            
+            // Replace placeholders with actual content
+            let htmlContent = templateContent
+                .replace('{{STYLE_URI}}', cssUri.toString())
+                .replace('{{COURSE_CARDS}}', courseCardsHtml)
+                .replace('{{JAVASCRIPT}}', javascriptContent)
+                .replace('{{NONCE}}', nonce);
+                
+            return htmlContent;
+        } catch (error) {
+            console.error('Error rendering course catalog template:', error);
+            throw error;
+        }
     }
 
     /**
@@ -115,18 +130,41 @@ export class TemplateEngine {
     }
 
     /**
-     * Render course cards for the catalog
+     * Render course cards HTML
      */
-    private renderCourseCards(courses: any[]): string {
+    private renderCourseCards(courses: any[], currentCourseId?: string): string {
         if (courses.length === 0) {
             return '<p>No courses available at the moment.</p>';
         }
 
-        return courses.map(course => `
-            <div class="course-card" onclick="selectCourse('${course.id}', '${course.name}', ${course.hasProtectedContent || false})">
+        return courses.map(course => {
+            // Determine if the course requires a license
+            const requiresLicense = course.hasProtectedContent || course.isFree === false;
+            
+            // Check if this course is currently selected
+            const isSelected = currentCourseId === course.id;
+            
+            let buttonText, buttonClass;
+            if (isSelected) {
+                // Course is already selected, show status based on license
+                if (requiresLicense) {
+                    buttonText = '🔐 Selected, License Paid';
+                    buttonClass = 'selected-license-paid';
+                } else {
+                    buttonText = '✅ Selected, Free';
+                    buttonClass = 'selected-free';
+                }
+            } else {
+                // Course is not selected, show selection button
+                buttonText = requiresLicense ? '🔐 Select Course (License Required)' : '🛒 Select Course (Free)';
+                buttonClass = 'select-course-btn';
+            }
+            
+            return `
+            <div class="course-card" ${!isSelected ? `onclick="selectCourse('${course.id}', '${course.title || course.name}', ${requiresLicense})"` : ''}>
                 <div class="course-card-header">
-                    <h3 class="course-title">${course.name}</h3>
-                    ${course.hasProtectedContent ? '<span class="premium-badge">Premium</span>' : '<span class="free-badge">Free</span>'}
+                    <h3 class="course-title">${course.title || course.name}</h3>
+                    ${requiresLicense ? '<span class="premium-badge">Premium</span>' : '<span class="free-badge">Free</span>'}
                 </div>
                 <p class="course-description">${course.description}</p>
                 <div class="course-meta">
@@ -134,10 +172,10 @@ export class TemplateEngine {
                     <span class="course-hours">${course.estimatedHours || '?'} hours</span>
                 </div>
                 <div class="course-actions">
-                    <button class="select-course-btn">Select Course</button>
+                    <button class="${buttonClass}" ${isSelected ? 'disabled' : ''}>${buttonText}</button>
                 </div>
             </div>
-        `).join('');
+        `}).join('');
     }
 
     /**
@@ -176,14 +214,32 @@ export class TemplateEngine {
                 }
             }
             
-            // Course selection
-            function selectCourse(courseId, courseName, hasProtectedContent) {
-                vscode.postMessage({
-                    command: 'selectCourse',
-                    courseId: courseId,
-                    courseName: courseName,
-                    hasProtectedContent: hasProtectedContent
-                });
+            // Course selection - check license status and open appropriate page
+            function selectCourse(courseId, courseName, requiresLicense) {
+                // Provide immediate feedback to the user
+                if (requiresLicense) {
+                    // For licensed courses, show a message indicating license verification will be needed
+                    console.log('Selected licensed course: ' + courseName);
+                    // Send message to open license purchase page
+                    vscode.postMessage({
+                        command: 'selectCourse',
+                        courseId: courseId,
+                        courseName: courseName,
+                        hasProtectedContent: requiresLicense,
+                        openLicensePage: true
+                    });
+                } else {
+                    // For free courses, indicate that it can be accessed immediately
+                    console.log('Selected free course: ' + courseName);
+                    // Send message to select the course directly
+                    vscode.postMessage({
+                        command: 'selectCourse',
+                        courseId: courseId,
+                        courseName: courseName,
+                        hasProtectedContent: requiresLicense,
+                        openLicensePage: false
+                    });
+                }
             }
         `;
     }

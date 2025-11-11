@@ -112,9 +112,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	
 	// Register commands
 	// Course selection and management commands
-	const selectCourseCommand = vscode.commands.registerCommand('learningbuddygeneric.selectCourse', async (courseId: string, courseName: string, isProtected: boolean) => {
+	const selectCourseCommand = vscode.commands.registerCommand('learningPrimerBuddy.selectCourse', async (courseId: string, courseName: string, isProtected: boolean) => {
 		// Update the current course in the my courses provider
 		await myCoursesProvider.setCurrentCourse(courseId);
+		
+		// Save the current course ID to global state so the course catalog can access it
+		await context.globalState.update('currentCourseId', courseId);
 		
 		// Update the license status bar to reflect the new course
 		LicenseManager.updateLicenseStatusBar(protectionManager, myCoursesProvider, licenseStatusBarItem);
@@ -132,18 +135,18 @@ export async function activate(context: vscode.ExtensionContext) {
 		console.log(`Course protection status: ${isProtected ? 'Protected' : 'Free'}`);
 	});
 
-	const openCourseCatalogCommand = vscode.commands.registerCommand('learningbuddygeneric.openCourseCatalog', () => {
+	const openCourseCatalogCommand = vscode.commands.registerCommand('learningPrimerBuddy.openCourseCatalog', () => {
 		// Open the commerce-style course catalog webview in the main panel
 		CourseCatalogWebview.createOrShow(context.extensionUri, context);
 	});
 	
-	const refreshCommand = vscode.commands.registerCommand('learningbuddygeneric.refresh', () => {
+	const refreshCommand = vscode.commands.registerCommand('learningPrimerBuddy.refresh', () => {
 		vscode.window.showInformationMessage('Refreshing course structure...');
 		myCoursesProvider.refresh();
 	});
 	
 	// Podman-related commands
-	const showPodmanInstallationGuideCommand = vscode.commands.registerCommand('learningbuddygeneric.showPodmanInstallationGuide', () => {
+	const showPodmanInstallationGuideCommand = vscode.commands.registerCommand('learningPrimerBuddy.showPodmanInstallationGuide', () => {
 		const panel = vscode.window.createWebviewPanel(
 			'podmanInstallationGuide',
 			'Podman Installation Guide',
@@ -160,7 +163,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		panel.webview.html = getPodmanInstallationGuideContent();
 	});
 
-	const changePodmanLocationCommand = vscode.commands.registerCommand('learningbuddygeneric.changePodmanLocation', async () => {
+	const changePodmanLocationCommand = vscode.commands.registerCommand('learningPrimerBuddy.changePodmanLocation', async () => {
 		// Ask user to select the Podman executable file directly instead of the directory
 		const selectedUri = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
@@ -191,7 +194,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	
 	// License-related commands
-	const openLicenseManagerCommand = vscode.commands.registerCommand('learningbuddygeneric.openLicenseManager', async () => {
+	const openLicenseManagerCommand = vscode.commands.registerCommand('learningPrimerBuddy.openLicenseManager', async () => {
 		// Check for valid license using the protection manager
 		const hasValidLicense = protectionManager.getValidLicenses().length > 0;
 		// Get current course structure to check for protected content
@@ -216,7 +219,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	
 	// Command to toggle mock Podman status for testing
-	let toggleMockPodmanStatusCommand = vscode.commands.registerCommand('learningbuddygeneric.toggleMockPodmanStatus', () => {
+	let toggleMockPodmanStatusCommand = vscode.commands.registerCommand('learningPrimerBuddy.toggleMockPodmanStatus', () => {
 		myCoursesProvider.toggleMockPodmanStatus();
 		const status = myCoursesProvider.getMockPodmanStatus() ? "installed" : "not installed";
 		vscode.window.showInformationMessage(`Mock Podman status toggled: ${status}`);
@@ -224,7 +227,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	
 	// Command to toggle mock license status for testing
-	let toggleMockLicenseStatusCommand = vscode.commands.registerCommand('learningbuddygeneric.toggleMockLicenseStatus', async () => {
+	let toggleMockLicenseStatusCommand = vscode.commands.registerCommand('learningPrimerBuddy.toggleMockLicenseStatus', async () => {
 		// Toggle between having a mock license and not having one
 		const hasLicense = protectionManager.getValidLicenses().length > 0;
 		
@@ -244,7 +247,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	
 	// Command to clear all licenses (for testing)
-	let clearLicensesCommand = vscode.commands.registerCommand('learningbuddygeneric.clearLicenses', async () => {
+	let clearLicensesCommand = vscode.commands.registerCommand('learningPrimerBuddy.clearLicenses', async () => {
 		try {
 			// Clear licenses from protection manager
 			const protectionManager = new CourseContentProtectionManager(context);
@@ -265,7 +268,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	
 	// Content preview and download commands
-	let previewExerciseCommand = vscode.commands.registerCommand('learningbuddygeneric.previewExercise', async (item: any) => {
+	let previewExerciseCommand = vscode.commands.registerCommand('learningPrimerBuddy.previewExercise', async (item: any) => {
 		if (!item || !item.fullPath) {
 			vscode.window.showErrorMessage('Invalid exercise item');
 			return;
@@ -296,7 +299,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		});
 	});
 	
-	let downloadExerciseCommand = vscode.commands.registerCommand('learningbuddygeneric.downloadExercise', async (item: any) => {
+	let downloadExerciseCommand = vscode.commands.registerCommand('learningPrimerBuddy.downloadExercise', async (item: any) => {
 		if (!item || !item.fullPath) {
 			vscode.window.showErrorMessage('Invalid exercise item');
 			return;
@@ -325,7 +328,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage(`Exercise ${exercisePath} downloaded to workspace and ready for editing!`);
 	});
 	
-	let previewContentCommand = vscode.commands.registerCommand('learningbuddygeneric.previewContent', async (item: any) => {
+	let previewContentCommand = vscode.commands.registerCommand('learningPrimerBuddy.previewContent', async (item: any) => {
 		if (!item || !item.fullPath) {
 			vscode.window.showErrorMessage('Invalid content item');
 			return;
@@ -443,13 +446,13 @@ int main() {
 	});
 	
 	// WeChat integration commands
-	let openWeChatContactCommand = vscode.commands.registerCommand('learningbuddygeneric.openWeChatContact', async () => {
+	let openWeChatContactCommand = vscode.commands.registerCommand('learningPrimerBuddy.openWeChatContact', async () => {
 		const weChatIntegration = new WeChatIntegration(context);
 		await weChatIntegration.showWeChatPanel();
 	});
 
 	// Command for study selected item
-	let studySelectedCommand = vscode.commands.registerCommand('learningbuddygeneric.studySelected', async (item: any) => {
+	let studySelectedCommand = vscode.commands.registerCommand('learningPrimerBuddy.studySelected', async (item: any) => {
 		if (!item) {
 			vscode.window.showErrorMessage('Invalid item selected');
 			return;
@@ -460,7 +463,7 @@ int main() {
 	});
 
 	// Command for course item selection
-	let courseItemSelectCommand = vscode.commands.registerCommand('learningbuddygeneric.courseItemSelect', async (item: any) => {
+	let courseItemSelectCommand = vscode.commands.registerCommand('learningPrimerBuddy.courseItemSelect', async (item: any) => {
 		if (!item) {
 			vscode.window.showErrorMessage('Invalid course item selected');
 			return;

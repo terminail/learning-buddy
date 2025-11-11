@@ -1036,73 +1036,30 @@ export class MyCoursesProvider implements vscode.TreeDataProvider<CourseItem> {
 	}
 
 	private getMyCourses(): CourseItem[] {
-		// Sample data for 10 courses that the user has collected
-		// MY COURSES SECTION: User's collected courses
-		const myCourses = [
-			{
-				id: "cpp-primer-5th",
-				name: "C++ Primer 5th Edition",
-				description: "Complete C++ programming course with exercises and solutions",
-				progress: "75%"
-			},
-			{
-				id: "python-3rd-edition",
-				name: "Python 3rd Edition",
-				description: "Python programming from beginner to advanced",
-				progress: "60%"
-			},
-			{
-				id: "javascript-es6",
-				name: "JavaScript ES6+",
-				description: "Modern JavaScript with ES6 features and beyond",
-				progress: "45%"
-			},
-			{
-				id: "data-structures-algorithms",
-				name: "Data Structures & Algorithms",
-				description: "Essential data structures and algorithms for interviews",
-				progress: "30%"
-			},
-			{
-				id: "web-development",
-				name: "Web Development Full Stack",
-				description: "Complete web development course with frontend and backend",
-				progress: "20%"
-			},
-			{
-				id: "machine-learning",
-				name: "Machine Learning Fundamentals",
-				description: "Introduction to machine learning concepts and algorithms",
-				progress: "15%"
-			},
-			{
-				id: "docker-kubernetes",
-				name: "Docker & Kubernetes",
-				description: "Containerization and orchestration with Docker and Kubernetes",
-				progress: "90%"
-			},
-			{
-				id: "react-native",
-				name: "React Native Mobile Development",
-				description: "Build cross-platform mobile apps with React Native",
-				progress: "50%"
-			},
-			{
-				id: "sql-database",
-				name: "SQL & Database Design",
-				description: "Database design and SQL query optimization",
-				progress: "80%"
-			},
-			{
-				id: "git-version-control",
-				name: "Git Version Control",
-				description: "Master Git for version control and collaboration",
-				progress: "95%"
-			}
-		];
-		return myCourses.map(course => {
+		// Use data from defaultCourseCatalog instead of hardcoded data
+		if (!this.defaultCourseStructure || !this.defaultCourseStructure.courses) {
+			return [];
+		}
+
+		// Map the courses from defaultCourseCatalog to the format expected by My Courses view
+		// For now, we'll use some dummy progress data since the defaultCourseCatalog doesn't include progress
+		const progressData: { [key: string]: string } = {
+			"cpp-primer-5th": "75%",
+			"python-3rd-edition": "60%",
+			"javascript-es6": "45%",
+			"data-structures-algorithms": "30%",
+			"web-development": "20%",
+			"machine-learning": "15%",
+			"docker-kubernetes": "90%",
+			"react-native": "50%",
+			"sql-database": "80%",
+			"git-version-control": "95%"
+		};
+
+		return this.defaultCourseStructure.courses.map((course: any) => {
+			const progress = progressData[course.id] || "50%"; // Default to 50% if no progress data
 			const courseItem = new CourseItem(
-				`📖 ${course.name} (${course.progress})`,
+				`📖 ${course.title} (${progress})`,
 				vscode.TreeItemCollapsibleState.Collapsed,
 				`my_course_${course.id}`,
 				false,
@@ -1170,6 +1127,18 @@ export class MyCoursesProvider implements vscode.TreeDataProvider<CourseItem> {
 	 */
 	public getCurrentCourseStructure(): any | null {
 		return this.defaultCourseStructure;
+	}
+
+	/**
+	 * Get the list of course IDs that the user has in their My Courses
+	 */
+	public getMyCourseIds(): string[] {
+		const myCourses = this.getMyCourses();
+		return myCourses.map(course => {
+			// Extract course ID from the fullPath (e.g., "my_course_cpp-primer-5th" -> "cpp-primer-5th")
+			const match = course.fullPath.match(/^my_course_(.+)$/);
+			return match ? match[1] : '';
+		}).filter(id => id !== '');
 	}
 
 	/**

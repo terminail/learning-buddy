@@ -10,8 +10,8 @@
     "Education"
   ],
   "activationEvents": [
-    "onView:learningPrimerBuddyView",
-    "onView:learning-buddy.chat"
+    
+    
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -222,6 +222,8 @@
     "test:integration:vscode": "node tests/integration/real/run-vscode-tests.js",
     "test:my-courses": "node tests/integration/test-my-courses.js",
     "test:treeview": "node tests/integration/test-treeview-refresh.js",
+    "test:course-catalog-command": "node tests/integration/test-course-catalog-command.js",
+    "test:all-commands": "node tests/integration/test-all-commands.js",
     "debug:treeview": "node tests/integration/debug-treeview.js",
     "debug:treeview-structure": "node tests/integration/debug-treeview-structure.js"
   },
