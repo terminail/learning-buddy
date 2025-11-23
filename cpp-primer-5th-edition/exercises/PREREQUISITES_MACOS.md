@@ -4,9 +4,9 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 
 ## Required Tools
 
-1. **C++ Compiler (g++)**
-2. **CMake** (version 3.14 or higher)
-3. **Google Test Framework**
+1. **C++ Compiler (g++)** - GNU Compiler Collection for C++. Compiles C++ source code into executable programs.
+2. **CMake** (version 3.14 or higher) - Cross-platform build system generator. Creates build files for your development environment.
+3. **Google Test Framework** - Testing framework for C++. Used to write and run unit tests for the exercises.
 
 ## Installation Steps
 
@@ -48,6 +48,8 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 5. **Check Ninja**
    - Run: `ninja --version`
    - You should see version information
+
+**Ninja** - Small build system with a focus on speed. Used by CMake to perform fast builds of the exercises.
 
 ### 4. Verify Installation
 
