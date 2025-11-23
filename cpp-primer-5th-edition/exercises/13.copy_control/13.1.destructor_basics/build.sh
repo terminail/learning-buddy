@@ -12,7 +12,12 @@ cd build
 cmake ..
 
 # Compile the project
-make
+# Check if ninja is available, otherwise use make
+if command -v ninja &> /dev/null; then
+    ninja
+else
+    make
+fi
 
 echo "Build complete!"
 echo "Run exercises with: ./build/destructor_basics_exercises"

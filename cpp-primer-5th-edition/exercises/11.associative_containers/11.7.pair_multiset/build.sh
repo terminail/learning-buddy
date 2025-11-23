@@ -12,7 +12,12 @@ cd build
 cmake ..
 
 # Compile the project
-make
+# Check if ninja is available, otherwise use make
+if command -v ninja &> /dev/null; then
+    ninja
+else
+    make
+fi
 
 # Check if build was successful
 if [ $? -eq 0 ]; then

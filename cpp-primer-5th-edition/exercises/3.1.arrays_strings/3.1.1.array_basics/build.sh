@@ -10,7 +10,12 @@ cd build
 cmake ..
 
 # Build the project
-make
+# Check if ninja is available, otherwise use make
+if command -v ninja &> /dev/null; then
+    ninja
+else
+    make
+fi
 
 echo "Build completed successfully!"
 echo "Run the exercises with: ./build/array_basics_exercises"
