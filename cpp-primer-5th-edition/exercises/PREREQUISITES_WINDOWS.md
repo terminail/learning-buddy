@@ -75,19 +75,25 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 
 1. **Open a new Command Prompt** (not MSYS2 terminal)
 
-2. **Check g++**
+2. **Check MSYS2**
+   - Run: `where mingw64.exe`
+   - You should see output like: `C:\msys64\mingw64.exe`
+   - If you don't see this output, MSYS2 may not be properly installed or PATH is not set correctly
+   - **Alternative check**: Try running `mingw64.exe --version` in Command Prompt
+
+3. **Check g++**
    - Run: `g++ --version`
    - You should see version information like: `g++ (GCC) 11.2.0`
    - Expected: gcc version 7.0 or higher (C++17 support). Recommended: gcc version 9.0 or higher for full C++17 features.
    - **Run this command in**: Any terminal (Command Prompt, PowerShell, or MSYS2 terminal)
 
-3. **Check CMake**
+4. **Check CMake**
    - Run: `cmake --version`
    - You should see version information like: `cmake version 4.1.2`
    - Expected: cmake version 3.14 or higher. Your version (4.1.2) is more than sufficient for Google Test.
    - **Run this command in**: Any terminal (Command Prompt, PowerShell, or MSYS2 terminal)
 
-4. **Install Ninja (if not already installed)**
+5. **Install Ninja (if not already installed)**
    - **Important**: You must run this command in an MSYS2 MinGW 64-bit terminal.
    - To open MSYS2 MinGW 64-bit terminal:
      - **Method 1 (Start Menu)**: Click Start Menu → MSYS2 → MSYS2 MinGW 64-bit
@@ -98,7 +104,7 @@ This guide will help you set up the necessary tools to build and run the C++ exe
    - Run: `pacman -S mingw-w64-x86_64-ninja`
    - **Do not run this command in**: Command Prompt (`C:\>`) or PowerShell (`PS C:\>`)
 
-5. **Check Ninja**
+6. **Check Ninja**
    - Run: `ninja --version`
    - You should see version information like: `1.11.1`
    - Expected: ninja version 1.10 or higher.
