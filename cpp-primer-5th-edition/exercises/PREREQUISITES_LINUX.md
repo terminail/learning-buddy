@@ -30,8 +30,12 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 3. **Install Google Test**
    - Run: `sudo apt install libgtest-dev`
 
-4. **Install Ninja (optional but recommended)**
+4. **Install Ninja (if not already installed)**
    - Run: `sudo apt install ninja-build`
+
+5. **Check Ninja**
+   - Run: `ninja --version`
+   - You should see version information
 
 ### 3. Build Google Test (if needed)
 
@@ -66,9 +70,13 @@ On some distributions, you may need to build Google Test from source:
    - For CentOS/RHEL: `sudo yum install gtest-devel`
    - For Fedora: `sudo dnf install gtest-devel`
 
-4. **Install Ninja (optional but recommended)**
+4. **Install Ninja (if not already installed)**
    - For CentOS/RHEL: `sudo yum install ninja-build`
    - For Fedora: `sudo dnf install ninja-build`
+
+5. **Check Ninja**
+   - Run: `ninja --version`
+   - You should see version information
 
 ### 4. Verify Installation
 

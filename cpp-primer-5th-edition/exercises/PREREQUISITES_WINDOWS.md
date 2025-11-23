@@ -76,7 +76,10 @@ This guide will help you set up the necessary tools to build and run the C++ exe
    - Run: `cmake --version`
    - You should see version information
 
-4. **Check Ninja (if installed)**
+4. **Install Ninja (if not already installed)**
+   - Run: `pacman -S mingw-w64-x86_64-ninja`
+
+5. **Check Ninja**
    - Run: `ninja --version`
    - You should see version information
 

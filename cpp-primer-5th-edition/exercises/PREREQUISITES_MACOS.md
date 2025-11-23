@@ -42,8 +42,12 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 3. **Install Google Test**
    - Run: `brew install googletest`
 
-4. **Install Ninja (optional but recommended)**
+4. **Install Ninja (if not already installed)**
    - Run: `brew install ninja`
+
+5. **Check Ninja**
+   - Run: `ninja --version`
+   - You should see version information
 
 ### 4. Verify Installation
 
