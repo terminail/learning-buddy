@@ -93,6 +93,7 @@ This guide will help you set up the necessary tools to build and run the C++ exe
      - **Method 1 (Start Menu)**: Click Start Menu → MSYS2 → MSYS2 MinGW 64-bit
      - **Method 2 (Command Line)**: Press `Win + R`, type `C:\msys64\mingw64.exe`, and press Enter
      - **Method 3 (Direct Execution)**: Navigate to `C:\msys64\` and double-click `mingw64.exe`
+     - **Method 4 (From PATH)**: Open Command Prompt or PowerShell, then run: `mingw64.exe`
    - In the MSYS2 MinGW 64-bit terminal, you should see a prompt like: `user@computer MINGW64 ~`
    - Run: `pacman -S mingw-w64-x86_64-ninja`
    - **Do not run this command in**: Command Prompt (`C:\>`) or PowerShell (`PS C:\>`)
@@ -119,4 +120,5 @@ This guide will help you set up the necessary tools to build and run the C++ exe
     - **Method 1**: Start Menu → MSYS2 → MSYS2 MinGW 64-bit
     - **Method 2**: Press `Win + R`, type `C:\msys64\mingw64.exe`, press Enter
     - **Method 3**: Navigate to `C:\msys64\` and double-click `mingw64.exe`
+    - **Method 4 (From PATH)**: Open Command Prompt or PowerShell, then run: `mingw64.exe`
   - Verify prompt shows: `user@computer MINGW64 ~`
