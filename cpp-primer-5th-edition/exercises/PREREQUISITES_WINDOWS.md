@@ -81,10 +81,12 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 
 3. **Check CMake**
    - Run: `cmake --version`
-   - You should see version information. Expected: cmake version 3.14 or higher. Recommended: cmake version 3.20 or higher for best Google Test support.
+   - You should see version information. Expected: cmake version 3.14 or higher. Your version (4.1.2) is more than sufficient for Google Test.
 
 4. **Install Ninja (if not already installed)**
+   - **Important**: You must run this command in an MSYS2 MinGW 64-bit terminal, not a regular Command Prompt or PowerShell.
    - Run: `pacman -S mingw-w64-x86_64-ninja`
+   - If you get "command not found" error, make sure you have properly installed MSYS2 and are using the MSYS2 MinGW 64-bit terminal.
 
 5. **Check Ninja**
    - Run: `ninja --version`
@@ -97,3 +99,5 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 - If commands are not found, make sure you've restarted your terminal after updating PATH
 - If you get permission errors, try running the terminal as Administrator
 - If packages fail to install, make sure your MSYS2 is fully updated
+- If `pacman` command is not found, make sure you are using the MSYS2 MinGW 64-bit terminal, not a regular Command Prompt or PowerShell
+- If you're in the wrong terminal, close it and open Start Menu → MSYS2 → MSYS2 MinGW 64-bit
