@@ -23,8 +23,8 @@ If you're using Windows and want to run Linux tools, you can install WSL:
 
 ## Required Tools
 
-1. **C++ Compiler (g++)** - GNU Compiler Collection for C++. Compiles C++ source code into executable programs.
-2. **CMake** (version 3.14 or higher) - Cross-platform build system generator. Creates build files for your development environment.
+1. **C++ Compiler (g++)** - GNU Compiler Collection for C++. Compiles C++ source code into executable programs. Minimum version: GCC 5.0 or higher (C++11 support required).
+2. **CMake** (version 3.14 or higher) - Cross-platform build system generator. Creates build files for your development environment. Required for Google Test integration and modern C++ project management.
 3. **Google Test Framework** - Testing framework for C++. Used to write and run unit tests for the exercises.
 
 ## Recommended Editors/IDEs
