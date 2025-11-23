@@ -9,7 +9,9 @@ mkdir -p build
 cd build
 
 # Configure with CMake
-cmake ..
+# Run CMake with explicit compiler paths
+# This fixes issues where CMake tries to use cc instead of gcc
+cmake .. -DCMAKE_C_COMPILER=C:/msys64/mingw64/bin/gcc.exe -DCMAKE_CXX_COMPILER=C:/msys64/mingw64/bin/g++.exe
 
 # Build
 # Check if ninja is available, otherwise use make
