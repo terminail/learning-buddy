@@ -77,27 +77,40 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 
 2. **Check g++**
    - Run: `g++ --version`
-   - You should see version information. Expected: gcc version 7.0 or higher (C++17 support). Recommended: gcc version 9.0 or higher for full C++17 features.
+   - You should see version information like: `g++ (GCC) 11.2.0`
+   - Expected: gcc version 7.0 or higher (C++17 support). Recommended: gcc version 9.0 or higher for full C++17 features.
+   - **Run this command in**: Any terminal (Command Prompt, PowerShell, or MSYS2 terminal)
 
 3. **Check CMake**
    - Run: `cmake --version`
-   - You should see version information. Expected: cmake version 3.14 or higher. Your version (4.1.2) is more than sufficient for Google Test.
+   - You should see version information like: `cmake version 4.1.2`
+   - Expected: cmake version 3.14 or higher. Your version (4.1.2) is more than sufficient for Google Test.
+   - **Run this command in**: Any terminal (Command Prompt, PowerShell, or MSYS2 terminal)
 
 4. **Install Ninja (if not already installed)**
-   - **Important**: You must run this command in an MSYS2 MinGW 64-bit terminal, not a regular Command Prompt or PowerShell.
+   - **Important**: You must run this command in an MSYS2 MinGW 64-bit terminal.
+   - To open MSYS2 MinGW 64-bit terminal: Click Start Menu → MSYS2 → MSYS2 MinGW 64-bit
+   - In the MSYS2 MinGW 64-bit terminal, you should see a prompt like: `user@computer MINGW64 ~`
    - Run: `pacman -S mingw-w64-x86_64-ninja`
-   - If you get "command not found" error, make sure you have properly installed MSYS2 and are using the MSYS2 MinGW 64-bit terminal.
+   - **Do not run this command in**: Command Prompt (`C:\>`) or PowerShell (`PS C:\>`)
 
 5. **Check Ninja**
    - Run: `ninja --version`
-   - You should see version information. Expected: ninja version 1.10 or higher.
+   - You should see version information like: `1.11.1`
+   - Expected: ninja version 1.10 or higher.
+   - **Run this command in**: Any terminal (Command Prompt, PowerShell, or MSYS2 terminal). Expected: ninja version 1.10 or higher.
 
 **Ninja** - Small build system with a focus on speed. Used by CMake to perform fast builds of the exercises.
 
 ## Troubleshooting
 
 - If commands are not found, make sure you've restarted your terminal after updating PATH
+  - **Correct terminal prompt**: `user@computer MINGW64 ~`
+  - **Wrong terminals**: Command Prompt (`C:\>`) or PowerShell (`PS C:\>`)
 - If you get permission errors, try running the terminal as Administrator
 - If packages fail to install, make sure your MSYS2 is fully updated
-- If `pacman` command is not found, make sure you are using the MSYS2 MinGW 64-bit terminal, not a regular Command Prompt or PowerShell
-- If you're in the wrong terminal, close it and open Start Menu → MSYS2 → MSYS2 MinGW 64-bit
+- If `pacman` command is not found:
+  - **You're likely in the wrong terminal**
+  - Close your current terminal
+  - Open: Start Menu → MSYS2 → MSYS2 MinGW 64-bit
+  - Verify prompt shows: `user@computer MINGW64 ~`
