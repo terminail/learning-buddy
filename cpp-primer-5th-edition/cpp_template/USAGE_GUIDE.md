@@ -1,90 +1,144 @@
-# C++ Primer Exercise Template - Usage Guide for University Lecturers
+# <<C++ Primer 5th Edition>> Exercise Template - Usage Guide for University Lecturers
 
 ## Overview
 
-This guide provides comprehensive instructions for university lecturers to create effective C++ exercises based on "C++ Primer 5th Edition." It follows pedagogical best practices for teaching programming to beginners, emphasizing concept decomposition, progressive difficulty, and confidence building. The template uses a clear structure with student files for implementation and solution files for reference, aligned with modern C++ teaching methodologies.
+This guide provides comprehensive instructions for university lecturers to create effective C++ exercises based on <<C++ Primer 5th Edition>>. It follows pedagogical best practices for teaching programming to beginners, emphasizing concept decomposition, progressive difficulty, and confidence building. The template uses a clear structure with student files for implementation and solution files for reference, aligned with modern C++ teaching methodologies.
 
 ## Quick Start: Creating a New Exercise
+
+The cpp_template provides two approaches depending on the chapter content:
+
+### For Pre-Class Concept Exercises (Chapters 1-6)
 
 ### 1. Copy the Template
 ```bash
 # Navigate to the template directory
 cd cpp_primer_5th_deepseek
 
-# Copy the template to create your new exercise
-cp -r cpp_template exercises/1.1.1.hello_world
+# Copy the function-based template to create your new exercise
+cp -r cpp_template exercises/2.1a_variables_declarations
 ```
 
 ### 2. Rename Files
 ```bash
 # Navigate to your new exercise directory
-cd exercises/1.1.1.hello_world
+cd exercises/2.1a_variables_declarations
 
-# Rename files according to your exercise name
-mv include/exercise_name_exercises.h include/hello_world_exercises.h
-mv include/exercise_name_solutions.h include/hello_world_solutions.h
-mv src/exercise_name_exercises.cpp src/hello_world_exercises.cpp
-mv src/exercise_name_solutions.cpp src/hello_world_solutions.cpp
-mv test/test_exercise_name_basics.cpp test/test_hello_world_basics.cpp
-mv test/test_exercise_name_practice.cpp test/test_hello_world_practice.cpp
+# Rename function-based files according to your exercise name
+mv include/function_exercises.h include/variables_declarations_exercises.h
+mv include/function_solutions.h include/variables_declarations_solutions.h
+mv src/function_exercises.cpp src/variables_declarations_exercises.cpp
+mv src/function_solutions.cpp src/variables_declarations_solutions.cpp
+mv test/test_function_basics.cpp test/test_variables_declarations_basics.cpp
 ```
 
 ### 3. Update CMakeLists.txt
 Edit `CMakeLists.txt` and change the project name:
 ```cmake
-project(hello_world)
+project(variables_declarations)
 ```
 
 Update target names in the CMakeLists.txt file:
 ```cmake
-add_library(hello_world_exercises src/hello_world_exercises.cpp)
-add_library(hello_world_solutions src/hello_world_solutions.cpp)
-add_executable(test_hello_world_basics test/test_hello_world_basics.cpp)
-add_executable(test_hello_world_practice test/test_hello_world_practice.cpp)
+add_library(variables_declarations_exercises src/variables_declarations_exercises.cpp)
+add_library(variables_declarations_solutions src/variables_declarations_solutions.cpp)
+add_executable(test_variables_declarations_basics test/test_variables_declarations_basics.cpp)
 ```
 
-## Example: Creating a String Operations Exercise
+### For Post-Class Concept Exercises (Chapters 7+)
+
+### 1. Copy the Template
+```bash
+# Navigate to the template directory
+cd cpp_primer_5th_deepseek
+
+# Copy the class-based template to create your new exercise
+cp -r cpp_template exercises/7.1_classes
+```
+
+### 2. Rename Files
+```bash
+# Navigate to your new exercise directory
+cd exercises/7.1_classes
+
+# Rename class-based files according to your exercise name
+mv include/exercise_name_exercises.h include/classes_exercises.h
+mv include/exercise_name_solutions.h include/classes_solutions.h
+mv src/exercise_name_exercises.cpp src/classes_exercises.cpp
+mv src/exercise_name_solutions.cpp src/classes_solutions.cpp
+mv test/test_exercise_name_basics.cpp test/test_classes_basics.cpp
+mv test/test_exercise_name_practice.cpp test/test_classes_practice.cpp
+```
+
+### 3. Update CMakeLists.txt
+Edit `CMakeLists.txt` and change the project name:
+```cmake
+project(classes)
+```
+
+Update target names in the CMakeLists.txt file:
+```cmake
+add_library(classes_exercises src/classes_exercises.cpp)
+add_library(classes_solutions src/classes_solutions.cpp)
+add_executable(test_classes_basics test/test_classes_basics.cpp)
+add_executable(test_classes_practice test/test_classes_practice.cpp)
+```
+
+## Examples: Creating Exercises with Different Templates
+
+### Example 1: Creating a Variables Exercise (Function-Based Template)
+
+This approach is suitable for chapters 1-6 before students learn about classes.
 
 ### Step 1: Copy and Rename
 ```bash
-cp -r cpp_template exercises/3.2.1.string_operations
-cd exercises/3.2.1.string_operations
-mv include/exercise_name_exercises.h include/string_operations_exercises.h
-mv include/exercise_name_solutions.h include/string_operations_solutions.h
-mv src/exercise_name_exercises.cpp src/string_operations_exercises.cpp
-mv src/exercise_name_solutions.cpp src/string_operations_solutions.cpp
-mv test/test_exercise_name_basics.cpp test/test_string_operations_basics.cpp
-mv test/test_exercise_name_practice.cpp test/test_string_operations_practice.cpp
+cp -r cpp_template exercises/2.1a_variables_declarations
+cd exercises/2.1a_variables_declarations
+
+# Rename function-based files according to your exercise name
+mv include/function_exercises.h include/variables_declarations_exercises.h
+mv include/function_solutions.h include/variables_declarations_solutions.h
+mv src/function_exercises.cpp src/variables_declarations_exercises.cpp
+mv src/function_solutions.cpp src/variables_declarations_solutions.cpp
+mv test/test_function_basics.cpp test/test_variables_declarations_basics.cpp
 ```
 
-### Step 2: Update Class Names
-In `string_operations_exercises.h`:
+### Step 2: Update Function Signatures
+In `variables_declarations_exercises.h`, modify function declarations to match learning objectives:
 ```cpp
-class StringOperations {
-public:
-    // Keep the same function signatures
-    std::string basic_operation(const std::string& input);
-    std::string combine_strings(const std::string& str1, const std::string& str2);
-    // ... etc
-};
+// Example functions for variable declarations
+int declare_and_initialize_int();
+double declare_and_initialize_double();
+void demonstrate_type_deduction();
 ```
 
 ### Step 3: Update Implementation Files
-Update the class name in all function definitions in `string_operations_exercises.cpp`.
+In `variables_declarations_exercises.cpp`, update TODO comments to guide students:
+```cpp
+// TODO: Declare and initialize an integer variable with value 42
+int declare_and_initialize_int() {
+    // Your implementation here
+}
+```
 
 ### Step 4: Update Tests
-Update all test files to use `StringOperations` instead of `ExerciseName`.
+In `test_variables_declarations_basics.cpp`, update tests to match your functions:
+```cpp
+TEST(VariablesDeclarationsTest, BasicDeclarations) {
+    EXPECT_EQ(cpp_primer::declare_and_initialize_int(), 42);
+    // Add more tests as needed
+}
+```
 
 ### Step 5: Update CMakeLists.txt
 ```cmake
-project(string_operations)
+project(variables_declarations)
 
 # Update library and executable names
-add_library(string_operations_exercises src/string_operations_exercises.cpp)
-add_library(string_operations_solutions src/string_operations_solutions.cpp)
+add_library(variables_declarations_exercises src/variables_declarations_exercises.cpp)
+add_library(variables_declarations_solutions src/variables_declarations_solutions.cpp)
 
-add_executable(test_string_operations_basics test/test_string_operations_basics.cpp)
-add_executable(test_string_operations_practice test/test_string_operations_practice.cpp)
+add_executable(test_variables_declarations_basics test/test_variables_declarations_basics.cpp)
 ```
 
 ### Step 6: Build and Test
@@ -92,8 +146,65 @@ add_executable(test_string_operations_practice test/test_string_operations_pract
 mkdir build && cd build
 cmake ..
 make
-./test_string_operations_basics
-./test_string_operations_practice
+./test_variables_declarations_basics
+```
+
+### Example 2: Creating a Class Exercise (Class-Based Template)
+
+This approach is suitable for chapters 7+ after students learn about classes.
+
+### Step 1: Copy and Rename
+```bash
+cp -r cpp_template exercises/7.1_classes
+cd exercises/7.1_classes
+
+# Rename class-based files according to your exercise name
+mv include/exercise_name_exercises.h include/classes_exercises.h
+mv include/exercise_name_solutions.h include/classes_solutions.h
+mv src/exercise_name_exercises.cpp src/classes_exercises.cpp
+mv src/exercise_name_solutions.cpp src/classes_solutions.cpp
+mv test/test_exercise_name_basics.cpp test/test_classes_basics.cpp
+mv test/test_exercise_name_practice.cpp test/test_classes_practice.cpp
+```
+
+### Step 2: Update Class Names
+In `classes_exercises.h`:
+```cpp
+class Student {
+public:
+    // Keep the same function signatures
+    Student(const std::string& name, int age);
+    std::string getName() const;
+    void setAge(int age);
+    // ... etc
+};
+```
+
+### Step 3: Update Implementation Files
+Update the class name in all function definitions in `classes_exercises.cpp`.
+
+### Step 4: Update Tests
+Update all test files to use `Student` instead of `ExerciseName`.
+
+### Step 5: Update CMakeLists.txt
+```cmake
+project(classes)
+
+# Update library and executable names
+add_library(classes_exercises src/classes_exercises.cpp)
+add_library(classes_solutions src/classes_solutions.cpp)
+
+add_executable(test_classes_basics test/test_classes_basics.cpp)
+add_executable(test_classes_practice test/test_classes_practice.cpp)
+```
+
+### Step 6: Build and Test
+```bash
+mkdir build && cd build
+cmake ..
+make
+./test_classes_basics
+./test_classes_practice
 ```
 
 ## Best Practices
@@ -104,10 +215,25 @@ make
 - Use consistent naming across all files
 
 ### Template Structure
-The exercise template contains several key components:
+The exercise template contains several key components, with two distinct approaches:
+
+**For Function-Based Exercises (Chapters 1-6):**
 
 **Header Files**
-- `include/exercise_name_exercises.h`: Student header with TODO comments and function declarations
+- `include/function_exercises.h`: Student header with function declarations and documentation
+- `include/function_solutions.h`: Complete reference implementation
+
+**Source Files**
+- `src/function_exercises.cpp`: Starter code with TODO comments for students
+- `src/function_solutions.cpp`: Complete implementations
+
+**Test Files**
+- `test/test_function_basics.cpp`: Core functionality tests
+
+**For Class-Based Exercises (Chapters 7+):**
+
+**Header Files**
+- `include/exercise_name_exercises.h`: Student header with class declarations and TODO comments
 - `include/exercise_name_solutions.h`: Complete reference implementation
 - `include/empty_exercise_name_*.h`: Minimal headers for simple exercises
 
@@ -130,36 +256,103 @@ Since the learning environment is containerized with Docker using Linux, only Li
 
 ### Choosing the Right Template Approach
 
-**For Complex Exercises (Classes, Multiple Functions)**
-Use the full template with class declarations in header files:
+The cpp_template directory provides two distinct approaches depending on whether students have learned class concepts:
+
+**For Pre-Class Concept Exercises (Chapters 1-6)**
+Use the function-based template which is ideal for early learning exercises:
+1. Copy the function template files:
+   - `include/function_exercises.h` and `include/function_solutions.h`
+   - `src/function_exercises.cpp` and `src/function_solutions.cpp`
+   - `test/test_function_basics.cpp`
+2. Rename these files to match your exercise topic
+3. Modify function signatures to match learning objectives
+4. Update TODO comments to guide students through specific concepts
+
+This approach is suitable for:
+- Basic syntax introduction exercises (Chapter 1)
+- Variables, types, and expressions (Chapter 2)
+- String and array operations (Chapter 3)
+- Control flow exercises (Chapter 5)
+- Function overloading (Chapter 6)
+- Expressions (Chapter 4)
+
+**For Post-Class Concept Exercises (Chapters 7+)**
+Use the class-based template with class declarations in header files:
 1. Keep the existing header files (`exercise_name_exercises.h`, `exercise_name_solutions.h`)
 2. Implement class methods in the source files
 3. Add function declarations in headers, implementations in source files
-
-**For Simple Exercises (Basic Syntax, Single Functions)**
-Use empty headers for simpler exercises:
-1. Copy empty header templates:
-   ```bash
-   cp include/empty_exercise_name_exercises.h include/your_exercise_name_exercises.h
-   cp include/empty_exercise_name_solutions.h include/your_exercise_name_solutions.h
-   ```
-2. Implement directly in source files without class declarations
-3. Example for a "Hello World" exercise:
-   ```cpp
-   // In src/hello_world_exercises.cpp
-   #include <iostream>
-   
-   int main() {
-       std::cout << "Hello, World!" << std::endl;
-       return 0;
-   }
-   ```
+4. Use both `test_exercise_name_basics.cpp` and `test_exercise_name_practice.cpp` for progressive difficulty
 
 This approach is suitable for:
-- Basic syntax introduction exercises
-- Simple input/output exercises
-- Early learning exercises focusing on fundamentals
-- Quick practice problems without complex class design
+- Object-oriented programming exercises (Chapter 7)
+- Class design and implementation
+- Inheritance and polymorphism (Chapter 15)
+- Complex data structures and algorithms
+- Advanced C++ features
+
+### Using the Function Exercises Template for Pre-Class Concept Exercises (Chapters 1-6)
+
+The function-based template ([function_exercises.h](file:///d:/git/learning-buddy/cpp-primer-5th-edition/cpp_template/include/function_exercises.h), [function_exercises.cpp](file:///d:/git/learning-buddy/cpp-primer-5th-edition/cpp_template/src/function_exercises.cpp), [function_solutions.cpp](file:///d:/git/learning-buddy/cpp-primer-5th-edition/cpp_template/src/function_solutions.cpp), and [test_function_basics.cpp](file:///d:/git/learning-buddy/cpp-primer-5th-edition/cpp_template/test/test_function_basics.cpp)) is specifically designed for early chapters (1-6) that focus on fundamental C++ concepts before object-oriented programming.
+
+**Creating Pre-Class Concept Exercises (Chapters 1-6):**
+
+1. **Copy the template:**
+   ```bash
+   cp -r cpp_template exercises/2.1a_variables_declarations
+   ```
+
+2. **Rename files to match your topic:**
+   ```bash
+   cd exercises/2.1a_variables_declarations
+   mv include/function_exercises.h include/variables_declarations_exercises.h
+   mv include/function_solutions.h include/variables_declarations_solutions.h
+   mv src/function_exercises.cpp src/variables_declarations_exercises.cpp
+   mv src/function_solutions.cpp src/variables_declarations_solutions.cpp
+   mv test/test_function_basics.cpp test/test_variables_declarations_basics.cpp
+   ```
+
+3. **Customize the content:**
+   - Update function signatures in header and source files to match learning objectives
+   - Modify TODO comments to guide students through specific concepts
+   - Adjust tests to match the functions you've defined
+   - Update CMakeLists.txt with appropriate project and target names
+
+**Template Structure for Function Exercises:**
+
+The function exercises template is organized into logical sections:
+
+1. **Basic Types and Variables** - Functions for fundamental data types and operations
+2. **Strings and Arrays** - Functions for string manipulation and array operations
+3. **Control Flow** - Functions demonstrating loops, conditionals, and decision making
+4. **Function Overloading** - Functions showing different overloads of the same name
+
+Each section contains:
+- Function declarations with clear documentation in the header file
+- TODO comments in the exercise file guiding student implementation
+- Complete reference implementations in the solutions file
+- Comprehensive tests in the test file
+
+### Customizing for Specific Chapters
+
+**Chapter 1 (Getting Started):**
+- Focus on basic syntax and simple functions
+- Remove complex sections and focus on core concepts
+- Simplify TODO comments for absolute beginners
+
+**Chapter 2 (Variables and Types):**
+- Emphasize different data types and variable declarations
+- Include exercises on type conversion and basic operations
+- Add functions that demonstrate scope and lifetime concepts
+
+**Chapter 3 (Strings, Vectors, and Arrays):**
+- Expand string manipulation functions
+- Add vector and array operations
+- Include exercises on container traversal and modification
+
+**Chapter 4 (Expressions):**
+- Create functions that demonstrate operator precedence
+- Include exercises on different types of expressions
+- Add functions that show mixed-type arithmetic
 
 ### Documentation
 - Update README.md with exercise-specific information

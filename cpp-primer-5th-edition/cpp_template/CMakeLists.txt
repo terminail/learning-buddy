@@ -27,7 +27,13 @@ add_library(exercise_name_exercises src/exercise_name_exercises.cpp)
 # Solution library
 add_library(exercise_name_solutions src/exercise_name_solutions.cpp)
 
-# Test executables
+# Function exercises library (for chapters 1-4)
+add_library(function_exercises src/function_exercises.cpp)
+
+# Function solutions library
+add_library(function_solutions src/function_solutions.cpp)
+
+# Test executables for class-based exercises
 add_executable(test_exercise_name_basics test/test_exercise_name_basics.cpp)
 target_link_libraries(test_exercise_name_basics 
     exercise_name_exercises 
@@ -40,8 +46,16 @@ target_link_libraries(test_exercise_name_practice
     GTest::gtest 
     GTest::gtest_main)
 
-# Solution executable
+# Test executable for function-based exercises
+add_executable(test_function_basics test/test_function_basics.cpp)
+target_link_libraries(test_function_basics 
+    function_exercises 
+    GTest::gtest 
+    GTest::gtest_main)
+
+# Solution executables
 add_executable(solution_exercise_name src/exercise_name_solutions.cpp)
+add_executable(solution_function_exercises src/function_solutions.cpp)
 
 # Enable testing
 enable_testing()
@@ -53,10 +67,13 @@ set_property(TEST test_basics PROPERTY LABELS "basics")
 add_test(NAME test_practice COMMAND test_exercise_name_practice)
 set_property(TEST test_practice PROPERTY LABELS "practice")
 
+add_test(NAME test_function_basics COMMAND test_function_basics)
+set_property(TEST test_function_basics PROPERTY LABELS "function")
+
 # Custom target for running all tests
 add_custom_target(run_tests
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
-    DEPENDS test_exercise_name_basics test_exercise_name_practice
+    DEPENDS test_exercise_name_basics test_exercise_name_practice test_function_basics
     COMMENT "Running all tests with detailed output")
 
 # Custom target for running basic tests only
@@ -70,6 +87,12 @@ add_custom_target(run_practice
     COMMAND ${CMAKE_CTEST_COMMAND} -L practice --output-on-failure
     DEPENDS test_exercise_name_practice
     COMMENT "Running practice tests with detailed output")
+
+# Custom target for running function tests only
+add_custom_target(run_function
+    COMMAND ${CMAKE_CTEST_COMMAND} -L function --output-on-failure
+    DEPENDS test_function_basics
+    COMMENT "Running function tests with detailed output")
 
 # Customization Instructions:
 # 1. Update project name: project(your_exercise_name)

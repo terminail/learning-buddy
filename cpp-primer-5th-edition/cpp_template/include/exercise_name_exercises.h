@@ -7,6 +7,10 @@
 
 namespace cpp_primer {
 
+// 定义占位符类型的实际类型别名，使代码能够编译
+using return_type = int;
+using parameter_type = std::string;
+
 /**
  * @class ExerciseName
  * @brief Student implementation template for C++ Primer exercises

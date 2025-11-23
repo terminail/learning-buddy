@@ -1,4 +1,4 @@
-# Teaching Philosophy for C++ Primer 5th Edition Exercises
+# Teaching Philosophy for <<C++ Primer 5th Edition>> Exercises
 
 ## Core Principles
 
