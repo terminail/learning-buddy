@@ -2,6 +2,25 @@
 
 This guide will help you set up the necessary tools to build and run the C++ exercises on Linux or Windows Subsystem for Linux (WSL).
 
+## Installing WSL (Windows Subsystem for Linux)
+
+If you're using Windows and want to run Linux tools, you can install WSL:
+
+1. **Enable WSL**
+   - Open PowerShell as Administrator
+   - Run: `wsl --install`
+   - This command will enable the required components, download the latest Linux kernel, set WSL 2 as the default, and install a Linux distribution (Ubuntu by default)
+
+2. **Restart Your Computer**
+   - A restart may be required to complete the installation
+
+3. **Set Up Your Linux User**
+   - After restarting, launch Ubuntu (or your chosen distribution) from the Start Menu
+   - Create a username and password when prompted
+
+4. **Update Your Linux Distribution**
+   - Run: `sudo apt update && sudo apt upgrade`
+
 ## Required Tools
 
 1. **C++ Compiler (g++)** - GNU Compiler Collection for C++. Compiles C++ source code into executable programs.
