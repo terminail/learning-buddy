@@ -1,59 +1,51 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include <sstream>
-#include <streambuf>
 
 // Simple test for basic hello world output
 // No classes or complex structures since students haven't learned them yet
-
-// Capture std::cout output for testing
-class CoutCapture {
-private:
-    std::streambuf* original_buffer;
-    std::ostringstream captured_output;
-
-public:
-    CoutCapture() {
-        original_buffer = std::cout.rdbuf();
-        std::cout.rdbuf(captured_output.rdbuf());
-    }
-    
-    ~CoutCapture() {
-        std::cout.rdbuf(original_buffer);
-    }
-    
-    std::string getOutput() {
-        return captured_output.str();
-    }
-};
-
-// Test that the hello world program produces expected output
-TEST(HelloWorldTest, BasicOutput) {
-    // Since we can't directly include and call the main function from hello_world_exercises.cpp
-    // due to multiple main functions, we'll test the concept instead
-    
-    // This is a simple test that just verifies the Google Test framework is working
-    EXPECT_EQ(1, 1);
-}
 
 // Test that basic C++ syntax works
 TEST(HelloWorldTest, BasicSyntax) {
     int value = 42;
     EXPECT_EQ(value, 42);
     
-    std::string message = "Hello, World!";
-    EXPECT_EQ(message, "Hello, World!");
+    // Test basic string
+    const char* message = "Hello, World!";
+    EXPECT_STREQ(message, "Hello, World!");
 }
 
 // Test that we can use basic standard library features
 TEST(HelloWorldTest, StandardLibraryBasics) {
-    std::string text = "Hello";
-    EXPECT_FALSE(text.empty());
-    EXPECT_EQ(text.length(), 5);
+    // Test basic arithmetic
+    EXPECT_EQ(2 + 2, 4);
+    EXPECT_EQ(10 - 3, 7);
+    EXPECT_EQ(5 * 6, 30);
+    EXPECT_EQ(15 / 3, 5);
     
-    // Test basic string concatenation
-    std::string result = text + ", World!";
-    EXPECT_EQ(result, "Hello, World!");
+    // Test boolean operations
+    EXPECT_TRUE(true);
+    EXPECT_FALSE(false);
+    EXPECT_TRUE(5 > 3);
+    EXPECT_FALSE(2 > 10);
+}
+
+// Test basic control flow concepts
+TEST(HelloWorldTest, BasicControlFlow) {
+    int x = 10;
+    
+    // Test if statement
+    if (x > 5) {
+        EXPECT_TRUE(true);  // This should execute
+    } else {
+        FAIL() << "This branch should not execute";
+    }
+    
+    // Test simple loop
+    int sum = 0;
+    for (int i = 1; i <= 3; i++) {
+        sum += i;
+    }
+    EXPECT_EQ(sum, 6);
 }
 
 int main(int argc, char **argv) {

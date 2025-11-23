@@ -12,13 +12,11 @@ TEST(HelloWorldPracticeTest, BasicVariables) {
     double pi = 3.14159;
     char letter = 'A';
     bool flag = true;
-    std::string message = "Hello, World!";
     
     EXPECT_EQ(number, 42);
     EXPECT_DOUBLE_EQ(pi, 3.14159);
     EXPECT_EQ(letter, 'A');
     EXPECT_TRUE(flag);
-    EXPECT_EQ(message, "Hello, World!");
 }
 
 // Practice Test 2: Basic arithmetic operations
@@ -40,25 +38,7 @@ TEST(HelloWorldPracticeTest, BasicArithmetic) {
     EXPECT_EQ(counter, 0);
 }
 
-// Practice Test 3: String operations
-TEST(HelloWorldPracticeTest, BasicStringOperations) {
-    std::string greeting = "Hello";
-    std::string target = "World";
-    
-    // Test string concatenation
-    std::string result = greeting + ", " + target + "!";
-    EXPECT_EQ(result, "Hello, World!");
-    
-    // Test string length
-    EXPECT_EQ(greeting.length(), 5);
-    EXPECT_FALSE(greeting.empty());
-    
-    // Test string comparison
-    EXPECT_EQ(greeting, "Hello");
-    EXPECT_NE(greeting, "Goodbye");
-}
-
-// Practice Test 4: Basic control flow
+// Practice Test 3: Basic control flow
 TEST(HelloWorldPracticeTest, BasicControlFlow) {
     int value = 10;
     
@@ -84,18 +64,15 @@ TEST(HelloWorldPracticeTest, BasicControlFlow) {
     EXPECT_EQ(count, 3);
 }
 
-// Practice Test 5: Basic function concepts (without actually defining functions)
-TEST(HelloWorldPracticeTest, BasicFunctionConcepts) {
-    // This test verifies understanding of function calls and return values
-    // Students should understand that main() is a function
+// Practice Test 4: Simple string concepts
+TEST(HelloWorldPracticeTest, BasicStringConcepts) {
+    // Test C-style string
+    const char* cstring = "Hello";
+    EXPECT_STREQ(cstring, "Hello");
     
-    // Test basic standard library function usage
-    std::string text = "hello";
-    EXPECT_EQ(text.length(), 5);
-    
-    // Test that we can use basic standard library functions
-    std::string upper_text = text + " world";
-    EXPECT_EQ(upper_text.length(), 11);
+    // Test that we can use string literals
+    EXPECT_STREQ("Hello", "Hello");
+    EXPECT_STRNE("Hello", "World");
 }
 
 int main(int argc, char **argv) {
