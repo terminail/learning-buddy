@@ -77,18 +77,18 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 
 2. **Check g++**
    - Run: `g++ --version`
-   - You should see version information
+   - You should see version information. Expected: gcc version 7.0 or higher (C++17 support). Recommended: gcc version 9.0 or higher for full C++17 features.
 
 3. **Check CMake**
    - Run: `cmake --version`
-   - You should see version information
+   - You should see version information. Expected: cmake version 3.14 or higher. Recommended: cmake version 3.20 or higher for best Google Test support.
 
 4. **Install Ninja (if not already installed)**
    - Run: `pacman -S mingw-w64-x86_64-ninja`
 
 5. **Check Ninja**
    - Run: `ninja --version`
-   - You should see version information
+   - You should see version information. Expected: ninja version 1.10 or higher.
 
 **Ninja** - Small build system with a focus on speed. Used by CMake to perform fast builds of the exercises.
 

@@ -112,15 +112,15 @@ On some distributions, you may need to build Google Test from source:
 
 1. **Check g++**
    - Run: `g++ --version`
-   - You should see version information
+   - You should see version information. Expected: gcc version 7.0 or higher (C++17 support). Recommended: gcc version 9.0 or higher for full C++17 features.
 
 2. **Check CMake**
    - Run: `cmake --version`
-   - You should see version information
+   - You should see version information. Expected: cmake version 3.14 or higher. Recommended: cmake version 3.20 or higher for best Google Test support.
 
 3. **Check Ninja (if installed)**
    - Run: `ninja --version`
-   - You should see version information
+   - You should see version information. Expected: ninja version 1.10 or higher.
 
 ## Troubleshooting
 
