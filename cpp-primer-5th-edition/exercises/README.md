@@ -18,6 +18,13 @@ Each exercise follows a consistent template structure:
 - `build.sh` - Build script for Linux/Docker environments
 - `run_tests.sh` - Test execution script
 
+## Prerequisites
+
+Before building and running these exercises, you need to install the required tools:
+- [Windows Setup Instructions](PREREQUISITES_WINDOWS.md)
+- [macOS Setup Instructions](PREREQUISITES_MACOS.md)
+- [Linux/WSL Setup Instructions](PREREQUISITES_LINUX.md)
+
 ## Chapters with Exercises
 
 ### Chapter 1: Getting Started
