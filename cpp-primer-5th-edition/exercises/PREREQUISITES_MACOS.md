@@ -6,7 +6,7 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 
 1. **C++ Compiler (g++)** - GNU Compiler Collection for C++. Compiles C++ source code into executable programs. Minimum version: GCC 5.0 or higher (C++11 support required).
 2. **CMake** (version 3.14 or higher) - Cross-platform build system generator. Creates build files for your development environment. Required for Google Test integration and modern C++ project management.
-3. **Google Test Framework** - Testing framework for C++. Used to write and run unit tests for the exercises.
+3. **Google Test Framework** - Testing framework for C++. Used to write and run unit tests for the exercises. Installed via Homebrew with C++17 support.
 
 ## Recommended Editors/IDEs
 
