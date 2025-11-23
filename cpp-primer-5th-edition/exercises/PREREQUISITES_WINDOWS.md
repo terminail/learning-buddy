@@ -89,7 +89,10 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 
 4. **Install Ninja (if not already installed)**
    - **Important**: You must run this command in an MSYS2 MinGW 64-bit terminal.
-   - To open MSYS2 MinGW 64-bit terminal: Click Start Menu → MSYS2 → MSYS2 MinGW 64-bit
+   - To open MSYS2 MinGW 64-bit terminal:
+     - **Method 1 (Start Menu)**: Click Start Menu → MSYS2 → MSYS2 MinGW 64-bit
+     - **Method 2 (Command Line)**: Press `Win + R`, type `C:\msys64\mingw64.exe`, and press Enter
+     - **Method 3 (Direct Execution)**: Navigate to `C:\msys64\` and double-click `mingw64.exe`
    - In the MSYS2 MinGW 64-bit terminal, you should see a prompt like: `user@computer MINGW64 ~`
    - Run: `pacman -S mingw-w64-x86_64-ninja`
    - **Do not run this command in**: Command Prompt (`C:\>`) or PowerShell (`PS C:\>`)
@@ -112,5 +115,8 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 - If `pacman` command is not found:
   - **You're likely in the wrong terminal**
   - Close your current terminal
-  - Open: Start Menu → MSYS2 → MSYS2 MinGW 64-bit
+  - Open MSYS2 MinGW 64-bit terminal using one of these methods:
+    - **Method 1**: Start Menu → MSYS2 → MSYS2 MinGW 64-bit
+    - **Method 2**: Press `Win + R`, type `C:\msys64\mingw64.exe`, press Enter
+    - **Method 3**: Navigate to `C:\msys64\` and double-click `mingw64.exe`
   - Verify prompt shows: `user@computer MINGW64 ~`
