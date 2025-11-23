@@ -94,12 +94,7 @@ This guide will help you set up the necessary tools to build and run the C++ exe
    - **Run this command in**: Any terminal (Command Prompt, PowerShell, or MSYS2 terminal)
 
 5. **Install Ninja (if not already installed)**
-   - **Important**: You must run this command in an MSYS2 MinGW 64-bit terminal.
-   - To open MSYS2 MinGW 64-bit terminal:
-     - **Method 1 (Start Menu)**: Click Start Menu → MSYS2 → MSYS2 MinGW 64-bit
-     - **Method 2 (Command Line)**: Press `Win + R`, type `C:\msys64\mingw64.exe`, and press Enter
-     - **Method 3 (Direct Execution)**: Navigate to `C:\msys64\` and double-click `mingw64.exe`
-     - **Method 4 (From PATH)**: Open Command Prompt or PowerShell, then run: `mingw64.exe`
+   - **Important**: You must run this command in an MSYS2 MinGW 64-bit terminal (see MSYS2 verification step above for how to open it).
    - In the MSYS2 MinGW 64-bit terminal, you should see a prompt like: `user@computer MINGW64 ~`
    - Run: `pacman -S mingw-w64-x86_64-ninja`
    - **Do not run this command in**: Command Prompt (`C:\>`) or PowerShell (`PS C:\>`)
@@ -108,7 +103,7 @@ This guide will help you set up the necessary tools to build and run the C++ exe
    - Run: `ninja --version`
    - You should see version information like: `1.11.1`
    - Expected: ninja version 1.10 or higher.
-   - **Run this command in**: Any terminal (Command Prompt, PowerShell, or MSYS2 terminal). Expected: ninja version 1.10 or higher.
+   - **Run this command in**: Any terminal (Command Prompt, PowerShell, or MSYS2 terminal).
 
 **Ninja** - Small build system with a focus on speed. Used by CMake to perform fast builds of the exercises.
 
@@ -122,9 +117,5 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 - If `pacman` command is not found:
   - **You're likely in the wrong terminal**
   - Close your current terminal
-  - Open MSYS2 MinGW 64-bit terminal using one of these methods:
-    - **Method 1**: Start Menu → MSYS2 → MSYS2 MinGW 64-bit
-    - **Method 2**: Press `Win + R`, type `C:\msys64\mingw64.exe`, press Enter
-    - **Method 3**: Navigate to `C:\msys64\` and double-click `mingw64.exe`
-    - **Method 4 (From PATH)**: Open Command Prompt or PowerShell, then run: `mingw64.exe`
+  - Open MSYS2 MinGW 64-bit terminal (see MSYS2 verification step above for how to open it)
   - Verify prompt shows: `user@computer MINGW64 ~`
