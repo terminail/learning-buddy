@@ -76,10 +76,11 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 1. **Open a new Command Prompt** (not MSYS2 terminal)
 
 2. **Check MSYS2**
+   - **Run this command in Command Prompt (not PowerShell)**:
    - Run: `where mingw64.exe`
    - You should see output like: `C:\msys64\mingw64.exe`
    - If you don't see this output, MSYS2 may not be properly installed or PATH is not set correctly
-   - **Alternative check**: Try running `mingw64.exe --version` in Command Prompt
+   - **Alternative check**: Try running `mingw64.exe --version` in Command Prompt (not PowerShell)
 
 3. **Check g++**
    - Run: `g++ --version`
