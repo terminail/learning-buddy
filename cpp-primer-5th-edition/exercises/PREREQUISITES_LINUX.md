@@ -27,6 +27,13 @@ If you're using Windows and want to run Linux tools, you can install WSL:
 2. **CMake** (version 3.14 or higher) - Cross-platform build system generator. Creates build files for your development environment.
 3. **Google Test Framework** - Testing framework for C++. Used to write and run unit tests for the exercises.
 
+## Recommended Editors/IDEs
+
+1. **Visual Studio Code** - Free, lightweight editor with excellent C++ support through extensions.
+2. **Vim/Neovim** - Terminal-based editor, excellent for Linux/WSL environments.
+3. **CLion** - Professional C++ IDE by JetBrains (paid, but free for students).
+4. **Code::Blocks** - Free C++ IDE that works well on Linux.
+
 ## Installation Steps
 
 ### For Ubuntu/Debian-based distributions:

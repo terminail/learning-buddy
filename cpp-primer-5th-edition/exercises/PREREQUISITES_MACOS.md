@@ -8,6 +8,13 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 2. **CMake** (version 3.14 or higher) - Cross-platform build system generator. Creates build files for your development environment.
 3. **Google Test Framework** - Testing framework for C++. Used to write and run unit tests for the exercises.
 
+## Recommended Editors/IDEs
+
+1. **Visual Studio Code** - Free, lightweight editor with excellent C++ support through extensions.
+2. **Xcode** - Apple's IDE with built-in C++ support.
+3. **CLion** - Professional C++ IDE by JetBrains (paid, but free for students).
+4. **Vim/Neovim** - Terminal-based editor, good for learning command-line workflows.
+
 ## Installation Steps
 
 ### 1. Install Xcode Command Line Tools

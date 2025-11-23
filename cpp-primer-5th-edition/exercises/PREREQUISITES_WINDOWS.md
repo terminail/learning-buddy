@@ -9,6 +9,13 @@ This guide will help you set up the necessary tools to build and run the C++ exe
 3. **Google Test Framework** - Testing framework for C++. Used to write and run unit tests for the exercises.
 4. **MSYS2** (recommended for g++ on Windows) - Software distribution and building platform for Windows. Provides a Unix-like environment and package management.
 
+## Recommended Editors/IDEs
+
+1. **Visual Studio Code** - Free, lightweight editor with excellent C++ support through extensions.
+2. **Code::Blocks** - Free C++ IDE that works well with MinGW/MSYS2.
+3. **CLion** - Professional C++ IDE by JetBrains (paid, but free for students).
+4. **Vim/Neovim** - Terminal-based editor, good for learning command-line workflows.
+
 ## Installation Steps
 
 ### 1. Install MSYS2
