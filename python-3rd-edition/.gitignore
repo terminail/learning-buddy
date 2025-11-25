@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Build output
+out/
+
+# VS Code
+.vscode/
+
+# VSIX packages
+*.vsix
+
+# Log files
+*.log
+
+# Environment files
+.env
+
+# Python content
+python-3rd-edition/
