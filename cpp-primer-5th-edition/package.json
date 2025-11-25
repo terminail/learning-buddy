@@ -9,6 +9,7 @@
   "categories": [
     "Education"
   ],
+  "publisher": "learning-buddy",
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
