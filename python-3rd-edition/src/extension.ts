@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as os from 'os';
 
 // Import the tree view provider
-import { CppPrimerTreeViewProvider } from './treeViewProvider';
+import { PythonTreeViewProvider } from './treeViewProvider';
 
 // Custom Text Document Content Provider for truly read-only files
 class ReadOnlyDocumentContentProvider implements vscode.TextDocumentContentProvider {
@@ -16,7 +16,7 @@ class ReadOnlyDocumentContentProvider implements vscode.TextDocumentContentProvi
             // Extract the original file path from the query
             const originalPath = uri.query;
             if (!originalPath) {
-                return '// Error: Invalid file path';
+                return '# Error: Invalid file path';
             }
             
             // Read the file content
@@ -26,11 +26,11 @@ class ReadOnlyDocumentContentProvider implements vscode.TextDocumentContentProvi
             const fileName = path.basename(originalPath);
             
             // Add a clear header indicating this is a read-only preview
-            const header = `// READ-ONLY PREVIEW of: ${fileName}
+            const header = `# READ-ONLY PREVIEW of: ${fileName}
 
-// This is a read-only preview of the original file.
-// To work with this file, download the chapter to your workspace using the download button.
-// Any changes made here will not be saved and cannot be executed.
+# This is a read-only preview of the original file.
+# To work with this file, download the chapter to your workspace using the download button.
+# Any changes made here will not be saved and cannot be executed.
 
 `;
             
@@ -82,10 +82,10 @@ class ReadOnlyDocumentContentProvider implements vscode.TextDocumentContentProvi
 </head>
 <body>
     <div class="header">
-// READ-ONLY PREVIEW of: ${fileName}<br><br>
-// This is a read-only preview of the original file.<br>
-// To work with this file, download the chapter to your workspace using the download button.<br>
-// Any changes made here will not be saved and cannot be executed.<br>
+# READ-ONLY PREVIEW of: ${fileName}<br><br>
+# This is a read-only preview of the original file.<br>
+# To work with this file, download the chapter to your workspace using the download button.<br>
+# Any changes made here will not be saved and cannot be executed.<br>
     </div>
     <pre>${escapedContent}</pre>
 </body>
@@ -107,7 +107,7 @@ class ReadOnlyDocumentContentProvider implements vscode.TextDocumentContentProvi
     </style>
 </head>
 <body>
-// Error reading file: ${error instanceof Error ? error.message : 'Unknown error'}
+# Error reading file: ${error instanceof Error ? error.message : 'Unknown error'}
 </body>
 </html>`;
         }
@@ -118,28 +118,28 @@ let treeView: vscode.TreeView<any>;
 
 export function activate(context: vscode.ExtensionContext) {
     // Load saved download path from workspace state
-    const savedDownloadPath = context.workspaceState.get<string>('cppPrimerDownloadPath');
+    const savedDownloadPath = context.workspaceState.get<string>('python3rdEditionDownloadPath');
     
     // Create the tree view provider
-    const treeViewProvider = new CppPrimerTreeViewProvider(savedDownloadPath || undefined);
+    const treeViewProvider = new PythonTreeViewProvider(savedDownloadPath || undefined);
     
     // Create the tree view (matching the view ID from package.json)
-    treeView = vscode.window.createTreeView('cppPrimer5thEditionBuddyView', { treeDataProvider: treeViewProvider });
+    treeView = vscode.window.createTreeView('python3rdEditionBuddyView', { treeDataProvider: treeViewProvider });
     
     // Register refresh command
-    const refreshCommand = vscode.commands.registerCommand('cppPrimer5thEditionBuddy.refresh', () => {
+    const refreshCommand = vscode.commands.registerCommand('python3rdEditionBuddy.refresh', () => {
         treeViewProvider.refresh();
     });
     
     // Register download chapter command
-    const downloadChapterCommand = vscode.commands.registerCommand('cppPrimer5thEditionBuddy.downloadChapter', async (item: any) => {
+    const downloadChapterCommand = vscode.commands.registerCommand('python3rdEditionBuddy.downloadChapter', async (item: any) => {
         if (item && item.path) {
             await treeViewProvider.downloadChapter(item.path);
         }
     });
     
     // Register select download workspace command
-    const selectDownloadWorkspaceCommand = vscode.commands.registerCommand('cppPrimer5thEditionBuddy.selectDownloadWorkspace', async () => {
+    const selectDownloadWorkspaceCommand = vscode.commands.registerCommand('python3rdEditionBuddy.selectDownloadWorkspace', async () => {
         const folder = await vscode.window.showOpenDialog({
             canSelectFolders: true,
             canSelectFiles: false,
@@ -149,18 +149,18 @@ export function activate(context: vscode.ExtensionContext) {
         
         if (folder && folder.length > 0) {
             const downloadPath = folder[0].fsPath;
-            context.workspaceState.update('cppPrimerDownloadPath', downloadPath);
+            context.workspaceState.update('python3rdEditionDownloadPath', downloadPath);
             treeViewProvider.setDownloadPath(downloadPath);
         }
     });
 
     // Register the custom text document content provider
-    const readOnlyScheme = 'cppprimer-readonly';
+    const readOnlyScheme = 'python3rd-readonly';
     const provider = new ReadOnlyDocumentContentProvider();
     const providerRegistration = vscode.workspace.registerTextDocumentContentProvider(readOnlyScheme, provider);
     
     // Register open file command that opens files in truly read-only mode
-    const openFileCommand = vscode.commands.registerCommand('cppPrimer5thEditionBuddy.openReadOnlyFile', async (uri: vscode.Uri) => {
+    const openFileCommand = vscode.commands.registerCommand('python3rdEditionBuddy.openReadOnlyFile', async (uri: vscode.Uri) => {
         try {
             // Get the file name and extension
             const fileName = path.basename(uri.fsPath);
@@ -175,7 +175,7 @@ export function activate(context: vscode.ExtensionContext) {
             
             // Open the file in read-only mode using a webview panel for HTML content
             const panel = vscode.window.createWebviewPanel(
-                'cppPrimerReadOnlyView',
+                'python3rdEditionReadOnlyView',
                 fileName,
                 vscode.ViewColumn.One,
                 {
@@ -200,7 +200,7 @@ export function activate(context: vscode.ExtensionContext) {
         dispose: () => {
             try {
                 const homeDir = os.homedir();
-                const tempDir = path.join(homeDir, '_cpp_primer_temp');
+                const tempDir = path.join(homeDir, '_python_temp');
                 
                 // Remove the temporary directory and all its contents
                 if (fs.existsSync(tempDir)) {

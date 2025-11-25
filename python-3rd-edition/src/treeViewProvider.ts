@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 
-export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<Dependency> {
+export class PythonTreeViewProvider implements vscode.TreeDataProvider<Dependency> {
     private _onDidChangeTreeData: vscode.EventEmitter<Dependency | undefined | void> = new vscode.EventEmitter<Dependency | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<Dependency | undefined | void> = this._onDidChangeTreeData.event;
 
@@ -12,18 +12,18 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<Depend
     constructor(downloadPath?: string) {
         this.downloadPath = downloadPath;
         
-        // Get the path to the embedded cpp-primer-5th-edition directory
-        const extensionPath = vscode.extensions.getExtension('cpp-primer-5th-edition-buddy')?.extensionPath || __dirname;
-        this.rootPath = path.join(extensionPath, 'cpp-primer-5th-edition');
+        // Get the path to the embedded python-3rd-edition directory
+        const extensionPath = vscode.extensions.getExtension('python-3rd-edition-buddy')?.extensionPath || __dirname;
+        this.rootPath = path.join(extensionPath, 'python-3rd-edition');
         
         // If we can't find it relative to the extension, try the expected embedded path
         if (!fs.existsSync(this.rootPath)) {
             // Try alternative paths where the content might be embedded
             const possiblePaths = [
-                path.join(__dirname, '..', 'cpp-primer-5th-edition'),
-                path.join(__dirname, '..', '..', 'cpp-primer-5th-edition'),
-                path.join(extensionPath, '..', 'cpp-primer-5th-edition', 'cpp-primer-5th-edition'),
-                path.join(extensionPath, 'cpp-primer-5th-edition')
+                path.join(__dirname, '..', 'python-3rd-edition'),
+                path.join(__dirname, '..', '..', 'python-3rd-edition'),
+                path.join(extensionPath, '..', 'python-3rd-edition', 'python-3rd-edition'),
+                path.join(extensionPath, 'python-3rd-edition')
             ];
             
             for (const possiblePath of possiblePaths) {
@@ -34,7 +34,7 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<Depend
             }
         }
         
-        console.log('C++ Primer 5th Edition root path:', this.rootPath);
+        console.log('Python Crash Course 3rd Edition root path:', this.rootPath);
     }
 
     refresh(): void {
@@ -52,7 +52,7 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<Depend
 
     getChildren(element?: Dependency): Promise<Dependency[]> {
         if (!this.rootPath) {
-            vscode.window.showInformationMessage('No root path found for C++ Primer 5th Edition content');
+            vscode.window.showInformationMessage('No root path found for Python Crash Course 3rd Edition content');
             return Promise.resolve([]);
         }
 
@@ -153,10 +153,8 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<Depend
             );
             
             // Set icon based on file extension
-            if (fileName.endsWith('.cpp')) {
+            if (fileName.endsWith('.py')) {
                 dependency.iconPath = new vscode.ThemeIcon('symbol-class');
-            } else if (fileName.endsWith('.h') || fileName.endsWith('.hpp')) {
-                dependency.iconPath = new vscode.ThemeIcon('symbol-struct');
             } else if (fileName.endsWith('.md')) {
                 dependency.iconPath = new vscode.ThemeIcon('markdown');
             } else if (fileName.endsWith('.txt')) {
@@ -248,7 +246,7 @@ class Dependency extends vscode.TreeItem {
         // Add command to open file when clicked
         if (collapsibleState === vscode.TreeItemCollapsibleState.None) {
             this.command = {
-                command: 'cppPrimer5thEditionBuddy.openReadOnlyFile',
+                command: 'python3rdEditionBuddy.openReadOnlyFile',
                 title: 'Open File',
                 arguments: [vscode.Uri.file(this.path)]
             };
@@ -296,7 +294,7 @@ class DownloadWorkspaceItem extends Dependency {
         this.tooltip = downloadPath ? `Current download folder: ${downloadPath}` : 'Click to select download folder';
         
         this.command = {
-            command: 'cppPrimer5thEditionBuddy.selectDownloadWorkspace',
+            command: 'python3rdEditionBuddy.selectDownloadWorkspace',
             title: 'Select Download Folder',
             arguments: [this]
         };
