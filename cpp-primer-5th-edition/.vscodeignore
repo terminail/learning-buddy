@@ -1,0 +1,11 @@
+node_modules/**
+.git/**
+*.md
+!README.md
+!LICENSE
+src/**
+tsconfig.json
+build.*
+*.sh
+*.bat
+cpp-primer-5th-edition/**/build/**

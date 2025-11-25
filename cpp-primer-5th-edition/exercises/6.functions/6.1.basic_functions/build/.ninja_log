@@ -1,9 +1,0 @@
-# ninja log v7
-10	346	7841241844843191	CMakeFiles/basic_functions_exercises.dir/src/basic_functions_exercises.cpp.obj	697e68ea80581dfa
-26	395	7841241844998608	CMakeFiles/basic_functions_solutions.dir/src/basic_functions_solutions.cpp.obj	59c8e027935d9f68
-348	524	7841241848220876	basic_functions_exercises.exe	d774d84b63caee4e
-395	568	7841241848686750	basic_functions_solutions.exe	447628fb079e6c0c
-56	875	7841241845302030	CMakeFiles/test_basic_functions_practice.dir/test/test_basic_functions_practice.cpp.obj	b64f6e890acafb54
-41	886	7841241845146351	CMakeFiles/test_basic_functions_basics.dir/test/test_basic_functions_basics.cpp.obj	cbd6d8b71de565b2
-876	1054	7841241853495500	test_basic_functions_practice.exe	2dd46970c94c9db1
-887	1057	7841241853605907	test_basic_functions_basics.exe	43aba59461402492

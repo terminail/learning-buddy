@@ -1,0 +1,84 @@
+{
+  "name": "cpp-primer-5th-edition-buddy",
+  "displayName": "C++ Primer 5th Edition Buddy",
+  "description": "A VS Code extension that helps navigate C++ Primer 5th Edition course files with a directory tree view",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Education"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "cppPrimer5thEditionBuddy",
+          "title": "C++ Primer 5th Edition Buddy",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "cppPrimer5thEditionBuddy": [
+        {
+          "id": "cppPrimer5thEditionBuddyView",
+          "name": "Course Content"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "cppPrimer5thEditionBuddy.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "cppPrimer5thEditionBuddy.downloadChapter",
+        "title": "Download Chapter",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "cppPrimer5thEditionBuddy.selectDownloadWorkspace",
+        "title": "Select Download Workspace"
+      },
+      {
+        "command": "cppPrimer5thEditionBuddy.openReadOnlyFile",
+        "title": "Open File"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "cppPrimer5thEditionBuddy.refresh",
+          "when": "view == cppPrimer5thEditionBuddyView",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "cppPrimer5thEditionBuddy.downloadChapter",
+          "when": "view == cppPrimer5thEditionBuddyView && viewItem == chapter",
+          "group": "inline"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terminail/learning-buddy.git"
+  },
+  "devDependencies": {
+    "@types/node": "16.x",
+    "@types/vscode": "^1.74.0",
+    "@vscode/vsce": "^3.7.1",
+    "typescript": "^4.9.4"
+  }
+}

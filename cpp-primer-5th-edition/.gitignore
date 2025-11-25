@@ -39,3 +39,7 @@ build.ninja
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Build output and dependencies
+out/
+node_modules/
