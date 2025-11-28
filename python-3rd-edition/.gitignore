@@ -1,0 +1,9 @@
+python-3rd-edition/**
+node_modules/
+out/
+!python-3rd-edition
+package-lock.json
+
+
+# VSIX packages
+*.vsix

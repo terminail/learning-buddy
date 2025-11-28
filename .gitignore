@@ -1,3 +1,7 @@
-python-3rd-edition/**
-!python-3rd-edition/
-!python-3rd-edition/README.md
+# Ignore node_modules and other build artifacts
+node_modules/
+out/
+.vscode/
+*.vsix
+*.log
+.env
