@@ -12,7 +12,7 @@ The book introduces the C++ standard library from the outset, drawing on its com
 
 This book is a proven tutorial for those new to C++, an authoritative discussion of core C++ concepts and techniques, and a valuable resource for experienced programmers, especially those eager to see C++11 enhancements illuminated.
 
-![C++ Primer 5th Edition Buddy](./media/cpp-primer-5th-edition-buddy-web.png)
+![C++ Primer 5th Edition Buddy](https://raw.githubusercontent.com/terminail/learning-buddy/main/cpp-primer-5th-edition/media/cpp-primer-5th-edition-buddy-web.png)
 
 ## How This Extension Helps You Learn
 
