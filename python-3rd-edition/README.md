@@ -55,7 +55,9 @@ Each exercise follows a consistent template structure:
 
 ## Extension Settings
 
-This extension does not contribute any settings.
+This extension contributes the following settings:
+
+- `python3rdEditionBuddy.downloadPath`: Configure the default download path for Python Crash Course chapters. If empty, you'll be prompted to select a folder when downloading.
 
 ## Known Issues
 
