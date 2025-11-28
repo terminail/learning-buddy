@@ -1,1 +1,2 @@
-python-3rd-edition/
+*/python-3rd-edition/**
+!*/python-3rd-edition/
