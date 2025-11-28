@@ -117,13 +117,19 @@ class ReadOnlyDocumentContentProvider implements vscode.TextDocumentContentProvi
 let treeView: vscode.TreeView<any>;
 
 export function activate(context: vscode.ExtensionContext) {
-    // Load saved download path from workspace state
-    const savedDownloadPath = context.workspaceState.get<string>('cppPrimerDownloadPath');
+    // Load saved download path from workspace state (takes precedence over settings)
+    let savedDownloadPath = context.workspaceState.get<string>('cppPrimerDownloadPath');
+    
+    // If no saved download path, try to get it from settings
+    if (!savedDownloadPath) {
+        const config = vscode.workspace.getConfiguration('cppPrimer5thEditionBuddy');
+        savedDownloadPath = config.get<string>('downloadPath');
+    }
     
     // Create the tree view provider
     const treeViewProvider = new CppPrimerTreeViewProvider(savedDownloadPath || undefined);
     
-    // Create the tree view (matching the view ID from package.json)
+    // Create the tree view
     treeView = vscode.window.createTreeView('cppPrimer5thEditionBuddyView', { treeDataProvider: treeViewProvider });
     
     // Register refresh command
@@ -149,8 +155,37 @@ export function activate(context: vscode.ExtensionContext) {
         
         if (folder && folder.length > 0) {
             const downloadPath = folder[0].fsPath;
+            // Save to workspace state (takes precedence)
             context.workspaceState.update('cppPrimerDownloadPath', downloadPath);
+            // Also update the global setting to keep them in sync
+            await vscode.workspace.getConfiguration('cppPrimer5thEditionBuddy').update('downloadPath', downloadPath, vscode.ConfigurationTarget.Global);
             treeViewProvider.setDownloadPath(downloadPath);
+        }
+    });
+
+    // Register configuration change listener
+    const configChangeListener = vscode.workspace.onDidChangeConfiguration(async (event) => {
+        if (event.affectsConfiguration('cppPrimer5thEditionBuddy.downloadPath')) {
+            // Only update if there's no saved download path (workspace state takes precedence)
+            const savedPath = context.workspaceState.get<string>('cppPrimerDownloadPath');
+            if (!savedPath) {
+                const config = vscode.workspace.getConfiguration('cppPrimer5thEditionBuddy');
+                let newPath = config.get<string>('downloadPath');
+                
+                // If the configured path is the default placeholder, expand it to the user's home directory
+                if (newPath === '~/cpp-primer-5th-edition-buddy') {
+                    const homeDir = require('os').homedir();
+                    newPath = path.join(homeDir, 'cpp-primer-5th-edition-buddy');
+                }
+                
+                treeViewProvider.setDownloadPath(newPath || undefined);
+            }
+            // If there is a saved path, we still want to update the setting to match
+            // This handles the case where the user changed via tree view but setting wasn't updated
+            else {
+                // Update the global setting to match the workspace state
+                await vscode.workspace.getConfiguration('cppPrimer5thEditionBuddy').update('downloadPath', savedPath, vscode.ConfigurationTarget.Global);
+            }
         }
     });
 
@@ -217,6 +252,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(refreshCommand);
     context.subscriptions.push(downloadChapterCommand);
     context.subscriptions.push(selectDownloadWorkspaceCommand);
+    context.subscriptions.push(configChangeListener);
     context.subscriptions.push(openFileCommand);
     context.subscriptions.push(providerRegistration);
 }

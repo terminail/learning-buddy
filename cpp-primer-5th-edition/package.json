@@ -12,6 +12,16 @@
   "publisher": "learning-buddy",
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "C++ Primer 5th Edition Buddy",
+      "properties": {
+        "cppPrimer5thEditionBuddy.downloadPath": {
+          "type": "string",
+          "default": "~/cpp-primer-5th-edition-buddy",
+          "description": "Default download path for C++ Primer chapters. If empty, you'll be prompted to select a folder when downloading."
+        }
+      }
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -76,6 +86,10 @@
     "type": "git",
     "url": "https://github.com/terminail/learning-buddy.git"
   },
+  "bugs": {
+    "url": "https://github.com/terminail/learning-buddy/issues"
+  },
+  "homepage": "https://github.com/terminail/learning-buddy/blob/main/cpp-primer-5th-edition/README.md",
   "devDependencies": {
     "@types/node": "16.x",
     "@types/vscode": "^1.74.0",

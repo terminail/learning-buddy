@@ -12,6 +12,8 @@ The book introduces the C++ standard library from the outset, drawing on its com
 
 This book is a proven tutorial for those new to C++, an authoritative discussion of core C++ concepts and techniques, and a valuable resource for experienced programmers, especially those eager to see C++11 enhancements illuminated.
 
+![C++ Primer 5th Edition Buddy](./cpp-primer-5th-edition-buddy.png)
+
 ## How This Extension Helps You Learn
 
 This extension makes it easier to navigate and work with the comprehensive exercises for C++ Primer 5th Edition, organized by chapter and topic. All exercises follow modern C++ practices and the pedagogical approach of providing conceptual guidance in TODO comments rather than code solutions, encouraging active learning through implementation.

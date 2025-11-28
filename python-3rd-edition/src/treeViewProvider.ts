@@ -34,6 +34,22 @@ export class PythonTreeViewProvider implements vscode.TreeDataProvider<Dependenc
             }
         }
         
+        // If no download path was provided, try to get it from settings
+        if (!this.downloadPath) {
+            const config = vscode.workspace.getConfiguration('python3rdEditionBuddy');
+            let configuredPath = config.get<string>('downloadPath');
+            
+            // If the configured path is the default placeholder, expand it to the user's home directory
+            if (configuredPath === '~/python-crash-course-3rd-edition-buddy') {
+                const homeDir = require('os').homedir();
+                configuredPath = path.join(homeDir, 'python-crash-course-3rd-edition-buddy');
+            }
+            
+            if (configuredPath) {
+                this.downloadPath = configuredPath;
+            }
+        }
+        
         console.log('Python Crash Course 3rd Edition root path:', this.rootPath);
     }
 
@@ -41,9 +57,13 @@ export class PythonTreeViewProvider implements vscode.TreeDataProvider<Dependenc
         this._onDidChangeTreeData.fire();
     }
 
-    setDownloadPath(downloadPath: string): void {
-        this.downloadPath = downloadPath;
-        this.refresh();
+    public setDownloadPath(path: string | undefined): void {
+        this.downloadPath = path;
+        this.refresh(); // Refresh the tree view to update the download workspace item
+    }
+
+    public getDownloadPath(): string | undefined {
+        return this.downloadPath;
     }
 
     getTreeItem(element: Dependency): vscode.TreeItem {

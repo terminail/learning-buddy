@@ -43,3 +43,7 @@ compile_commands.json
 **/*.exe
 **/a.out
 **/a.exe
+**/__pycache__
+**/__pycache__/**
+**/*.egg-info
+**/*.egg-info/**

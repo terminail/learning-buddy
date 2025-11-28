@@ -13,6 +13,16 @@
   "icon": "media/icon.png",
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Python Crash Course 3rd Edition Buddy",
+      "properties": {
+        "python3rdEditionBuddy.downloadPath": {
+          "type": "string",
+          "default": "~/python-crash-course-3rd-edition-buddy",
+          "description": "Default download path for Python Crash Course chapters. If empty, you'll be prompted to select a folder when downloading."
+        }
+      }
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -77,6 +87,10 @@
     "type": "git",
     "url": "https://github.com/terminail/learning-buddy.git"
   },
+  "bugs": {
+    "url": "https://github.com/terminail/learning-buddy/issues"
+  },
+  "homepage": "https://github.com/terminail/learning-buddy/blob/main/python-3rd-edition/README.md",
   "devDependencies": {
     "@types/node": "^16.18.126",
     "@types/vscode": "^1.100.0",

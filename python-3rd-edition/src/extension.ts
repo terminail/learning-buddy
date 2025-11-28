@@ -149,7 +149,10 @@ export function activate(context: vscode.ExtensionContext) {
         
         if (folder && folder.length > 0) {
             const downloadPath = folder[0].fsPath;
-            context.workspaceState.update('python3rdEditionDownloadPath', downloadPath);
+            // Save to workspace state (takes precedence)
+            context.workspaceState.update('pythonDownloadPath', downloadPath);
+            // Also update the global setting to keep them in sync
+            await vscode.workspace.getConfiguration('python3rdEditionBuddy').update('downloadPath', downloadPath, vscode.ConfigurationTarget.Global);
             treeViewProvider.setDownloadPath(downloadPath);
         }
     });
@@ -211,7 +214,33 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
     });
-    
+
+    // Register configuration change listener
+    const configChangeListener = vscode.workspace.onDidChangeConfiguration(async (event) => {
+        if (event.affectsConfiguration('python3rdEditionBuddy.downloadPath')) {
+            // Only update if there's no saved download path (workspace state takes precedence)
+            const savedPath = context.workspaceState.get<string>('pythonDownloadPath');
+            if (!savedPath) {
+                const config = vscode.workspace.getConfiguration('python3rdEditionBuddy');
+                let newPath = config.get<string>('downloadPath');
+                
+                // If the configured path is the default placeholder, expand it to the user's home directory
+                if (newPath === '~/python-crash-course-3rd-edition-buddy') {
+                    const homeDir = require('os').homedir();
+                    newPath = path.join(homeDir, 'python-crash-course-3rd-edition-buddy');
+                }
+                
+                treeViewProvider.setDownloadPath(newPath || undefined);
+            }
+            // If there is a saved path, we still want to update the setting to match
+            // This handles the case where the user changed via tree view but setting wasn't updated
+            else {
+                // Update the global setting to match the workspace state
+                await vscode.workspace.getConfiguration('python3rdEditionBuddy').update('downloadPath', savedPath, vscode.ConfigurationTarget.Global);
+            }
+        }
+    });
+
     // Register our commands and providers
     context.subscriptions.push(treeView);
     context.subscriptions.push(refreshCommand);
@@ -219,6 +248,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(selectDownloadWorkspaceCommand);
     context.subscriptions.push(openFileCommand);
     context.subscriptions.push(providerRegistration);
+    context.subscriptions.push(configChangeListener);
 }
 
 export function deactivate() {}

@@ -34,6 +34,22 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<Depend
             }
         }
         
+        // If no download path was provided, try to get it from settings
+        if (!this.downloadPath) {
+            const config = vscode.workspace.getConfiguration('cppPrimer5thEditionBuddy');
+            let configuredPath = config.get<string>('downloadPath');
+            
+            // If the configured path is the default placeholder, expand it to the user's home directory
+            if (configuredPath === '~/cpp-primer-5th-edition-buddy') {
+                const homeDir = require('os').homedir();
+                configuredPath = path.join(homeDir, 'cpp-primer-5th-edition-buddy');
+            }
+            
+            if (configuredPath) {
+                this.downloadPath = configuredPath;
+            }
+        }
+        
         console.log('C++ Primer 5th Edition root path:', this.rootPath);
     }
 
@@ -41,9 +57,13 @@ export class CppPrimerTreeViewProvider implements vscode.TreeDataProvider<Depend
         this._onDidChangeTreeData.fire();
     }
 
-    setDownloadPath(downloadPath: string): void {
-        this.downloadPath = downloadPath;
-        this.refresh();
+    public setDownloadPath(path: string | undefined): void {
+        this.downloadPath = path;
+        this.refresh(); // Refresh the tree view to update the download workspace item
+    }
+
+    public getDownloadPath(): string | undefined {
+        return this.downloadPath;
     }
 
     getTreeItem(element: Dependency): vscode.TreeItem {
