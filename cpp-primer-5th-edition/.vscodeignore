@@ -45,3 +45,4 @@ compile_commands.json
 **/a.exe
 **/cpp-primer-5th-edition-buddy-web.png
 **/cpp-primer-5th-edition-buddy.png
+out/*.map
