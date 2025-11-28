@@ -22,8 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved file opening to show original filenames without prefixes
 - Enhanced tree view with better organization and visual separation
 - Optimized extension packaging to exclude unnecessary files
+- Updated README.md with proper formatting and image reference
 
 ### Fixed
 - Command registration issues preventing file opening
 - Permission errors with temporary file creation
 - Text selection issues in read-only files
+- Corrected .gitignore configuration to properly track extension files

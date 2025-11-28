@@ -12,7 +12,7 @@ The book emphasizes practical learning with exercises that encourage active codi
 
 This book is an excellent resource for beginners who want to learn Python programming through practical, hands-on exercises and projects.
 
-![Python Crash Course 3rd Edition Buddy](https://raw.githubusercontent.com/terminail/learning-buddy/main/python-3rd-edition/media/python-3rd-edition-buddy-web.png)
+![Python Crash Course 3rd Edition Buddy](https://raw.githubusercontent.com/terminail/learning-buddy/main/python-3rd-edition/python-3rd-edition-buddy.png)
 
 ## How This Extension Helps You Learn
 
