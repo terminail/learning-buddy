@@ -2,7 +2,7 @@
   "name": "cpp-primer-5th-edition-buddy",
   "displayName": "C++ Primer 5th Edition Buddy",
   "description": "A VS Code extension that helps navigate C++ Primer 5th Edition course files with a directory tree view",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.74.0"
   },
