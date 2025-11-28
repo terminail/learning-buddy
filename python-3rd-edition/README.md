@@ -12,6 +12,8 @@ The book emphasizes practical learning with exercises that encourage active codi
 
 This book is an excellent resource for beginners who want to learn Python programming through practical, hands-on exercises and projects.
 
+![Python Crash Course 3rd Edition Buddy](https://raw.githubusercontent.com/terminail/learning-buddy/main/python-3rd-edition/media/python-3rd-edition-buddy-web.png)
+
 ## How This Extension Helps You Learn
 
 This extension makes it easier to navigate and work with the comprehensive exercises for Python Crash Course 3rd Edition, organized by chapter and topic. All exercises follow Python best practices and the pedagogical approach of providing conceptual guidance in TODO comments rather than code solutions, encouraging active learning through implementation.
@@ -58,3 +60,9 @@ This extension does not contribute any settings.
 ## Known Issues
 
 No known issues at this time.
+
+## Release Notes
+
+### 0.0.1
+
+Initial release of Python Crash Course 3rd Edition Buddy.
