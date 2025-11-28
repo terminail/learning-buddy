@@ -9,6 +9,7 @@
   "categories": [
     "Education"
   ],
+  "readme": "./readme.md",
   "publisher": "learning-buddy",
   "main": "./out/extension.js",
   "icon": "media/icon-512.png",
