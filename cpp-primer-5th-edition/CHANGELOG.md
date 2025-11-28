@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Included build and run examples with detailed logs in exercises for enhanced learning experience
 
+### Fixed
+- Moved extension icon to media folder and updated README.md image path for proper display on Open VSX marketplace
+
 ## [0.0.1] - 2025-11-28
 
 ### Added
