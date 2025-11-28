@@ -47,4 +47,3 @@ compile_commands.json
 **/__pycache__/**
 **/*.egg-info
 **/*.egg-info/**
-out/
