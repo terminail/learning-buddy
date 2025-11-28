@@ -43,3 +43,5 @@ compile_commands.json
 **/*.exe
 **/a.out
 **/a.exe
+**/cpp-primer-5th-edition-buddy-web.png
+**/cpp-primer-5th-edition-buddy.png
