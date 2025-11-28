@@ -1,7 +1,0 @@
-# Ignore node_modules and other build artifacts
-node_modules/
-out/
-.vscode/
-*.vsix
-*.log
-.env
