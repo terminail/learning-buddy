@@ -1,4 +1,5 @@
 python-3rd-edition/**
+!python-3rd-edition/.gitkeep
 node_modules/
 out/
 !python-3rd-edition
