@@ -60,4 +60,5 @@ out/
 .env
 
 # C++ Primer content
-cpp-primer-5th-edition/
+cpp-primer-5th-edition/**
+!cpp-primer-5th-edition/.gitkeep
