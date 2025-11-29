@@ -28,7 +28,7 @@
         {
           "id": "python3rdEditionBuddy",
           "title": "Python Crash Course 3rd Edition Buddy",
-          "icon": "media/icon-512.png"
+          "icon": "media/icon.png"
         }
       ]
     },
@@ -96,5 +96,8 @@
     "@types/vscode": "^1.100.0",
     "@vscode/vsce": "^3.7.1",
     "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "sharp": "^0.34.5"
   }
 }
